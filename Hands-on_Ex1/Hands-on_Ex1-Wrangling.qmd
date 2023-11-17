@@ -1,0 +1,223 @@
+---
+title: "Hands-on Exercise 1: Geospatial Data Wrangling with R"
+editor: visual
+---
+
+## Overview
+
+In this hands-on exercise, I learn how to import and wrangling geospatial data using appropriate R packages.
+
+## Getting Started
+
+The code chunk below install and load [sf](https://r-spatial.github.io/sf/) and tidyverse packages into R environment.
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap)
+```
+
+## Importing Geospatial Data
+
+### Importing polygon feature data in shapefile format
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+### Importing polygon feature data in shapefile form
+
+```{r}
+cyclingpath <- st_read(dsn = "data/geospatial", layer = "CyclingPathGazette")
+```
+
+### Importing GIS data in kml format
+
+```{r}
+preschool <- st_read(dsn = "data/geospatial/PreSchoolsLocation.kml")
+```
+
+## Checking the Content of A Simple Feature Data Frame
+
+### Working with st_geometry
+
+```{r}
+st_geometry(mpsz)
+```
+
+### Working with glimpse
+
+```{r}
+glimpse(mpsz)
+```
+
+### Working with head()
+
+```{r}
+head(mpsz, n=5)
+```
+
+## Plotting the Geospatial Data
+
+### Plot Everything
+
+```{r}
+plot(mpsz, max.plot = 15)
+```
+
+### Plot only the Geometry
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+### Plot Based on Specific Object
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+## Working with Projection
+
+### Assigning EPSG code to a simple feature data frame
+
+```{r}
+st_crs(mpsz)
+```
+
+assign correct EPSG code to mspz
+
+```{r}
+mpsz3414 <- st_set_crs(mpsz, 3414)
+```
+
+check the correction result
+
+```{r}
+st_crs(mpsz3414)
+```
+
+### Transforming the projection of preschool from wgs84 to svy21
+
+```{r}
+preschool3414 <- st_transform(preschool, crs = 3414)
+```
+
+## Importing and Converting an Aspatial Data
+
+### Importing the aspatial data
+
+```{r}
+listings <- read_csv("data/aspatial/listings.csv")
+```
+
+show the listing
+
+```{r}
+list(listings)
+```
+
+### Creating a simple feature data frame from an aspatial dara frame
+
+convert listing into simple feature
+
+```{r}
+listings_sf <- st_as_sf(listings, coords = c("longitude", "latitude"), crs=4326) %>% st_transform(crs = 3414)
+```
+
+examine the content
+
+```{r}
+glimpse(listings_sf)
+```
+
+## Geoprocessing with sf package
+
+### Buffering
+
+compute 5-meter buffers around cycling paths
+
+```{r}
+buffer_cycling <- st_buffer(cyclingpath, dist=5, nQuadSegs = 30)
+```
+
+calculate the area of buffers
+
+```{r}
+buffer_cycling$AREA <- st_area(buffer_cycling)
+```
+
+derive the total land involved
+
+```{r}
+sum(buffer_cycling$AREA)
+```
+
+### Point-in-polygon count
+
+identify pre-schools located inside each Planning Subzone, then calculate numbers of pre-schools inside each planning subzone
+
+```{r}
+mpsz3414$`PreSch Count`<- lengths(st_intersects(mpsz3414, preschool3414))
+```
+
+check the summary statistics
+
+```{r}
+summary(mpsz3414$`PreSch Count`)
+```
+
+check the subzone with most number of pre-school
+
+```{r}
+top_n(mpsz3414, 1, `PreSch Count`)
+```
+
+Calculate the density of pre-school by planning subzone. First step, derive the area of each planning subzone.
+
+```{r}
+mpsz3414$Area <- mpsz3414 %>%
+  st_area()
+```
+
+Second step, compute density
+
+```{r}
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
+```
+
+## Exploratory Data Analysis (EDA)
+
+Plotting hitogram for PreSch Density
+
+```{r}
+hist(mpsz3414$`PreSch Density`)
+```
+
+Plot better histogram using GG Plot:
+
+```{r}
+ggplot(data=mpsz3414, 
+       aes(x= as.numeric(`PreSch Density`)))+
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  labs(title = "Are pre-school even distributed in Singapore?",
+       subtitle= "There are many planning sub-zones with a single pre-school, on the other hand, \nthere are two planning sub-zones with at least 20 pre-schools",
+      x = "Pre-school density (per km sq)",
+      y = "Frequency")
+```
+
+Plot a scatterplot using GGPlot
+
+```{r}
+ggplot(data=mpsz3414, 
+       aes(y = `PreSch Count`, 
+           x= as.numeric(`PreSch Density`)))+
+  geom_point(color="black", 
+             fill="light blue") +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(title = "",
+      x = "Pre-school density (per km sq)",
+      y = "Pre-school count")
+```
