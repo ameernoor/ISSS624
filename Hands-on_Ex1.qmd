@@ -6,7 +6,7 @@ editor: visual
 
 ## Overview
 
-This is the overview paragraph.
+On this hands-on exercise 1, wrangling and exploratory data analysis on geospatial data are discussed.
 
 # Getting Started
 

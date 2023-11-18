@@ -5,7 +5,7 @@ editor: visual
 
 ## Overview
 
-In this hands-on exercise, I learn how to import and wrangling geospatial data using appropriate R packages.
+This hands-on exercise is about importing and wrangling geospatial data using appropriate R packages.
 
 ## Getting Started
 
@@ -220,4 +220,4 @@ ggplot(data=mpsz3414,
   labs(title = "",
       x = "Pre-school density (per km sq)",
       y = "Pre-school count")
-``` 
+```
