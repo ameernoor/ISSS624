@@ -1,6 +1,6 @@
 ---
 # the --- border define yml part in this script
-title: "In-class Exercise 1: My First Date With Geospatial Data Analytics"
+title: "In-class Exercise 1: Introduction to Geospatial Data Analytics"
 author: "Muhamad Ameer Noor"
 date: "18 November 2023"
 date-modified: "last-modified"
@@ -36,12 +36,7 @@ odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 # bus10 <- read_csv("data/aspatial/origin_destination_bus_202310.csv") # for future use
 ```
 #### Change Character Data Type to Numerical Factor
-
-::: {.pinbox .solve data-latex="pin"}
-
 **odbus08** is a tibble dataframe. However, `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` are in character format. These are transformed into factors (categorical data type) for further analysis. 
-
-:::
 
 ```{r}
 #| eval: false

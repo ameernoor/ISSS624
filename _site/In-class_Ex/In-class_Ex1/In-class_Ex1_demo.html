@@ -9,7 +9,7 @@
 <meta name="author" content="Muhamad Ameer Noor">
 <meta name="dcterms.date" content="2023-11-18">
 
-<title>ISSS624 - In-class Exercise 1: My First Date With Geospatial Data Analytics</title>
+<title>ISSS624 - In-class Exercise 1: Introduction to Geospatial Data Analytics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -138,7 +138,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
         <li>
-    <a class="dropdown-item" href="../../In_class_Ex/In-class_Ex1/In-class_Ex1_demo.html" rel="" target="">
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex1/In-class_Ex1_demo.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 1</span></a>
   </li>  
     </ul>
@@ -183,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">In-class Exercise 1: My First Date With Geospatial Data Analytics</h1>
+<h1 class="title">In-class Exercise 1: Introduction to Geospatial Data Analytics</h1>
 </div>
 
 
@@ -238,9 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="change-character-data-type-to-numerical-factor" class="level4">
 <h4 class="anchored" data-anchor-id="change-character-data-type-to-numerical-factor">Change Character Data Type to Numerical Factor</h4>
-<div class="pinbox solve">
 <p><strong>odbus08</strong> is a tibble dataframe. However, <code>ORIGIN_PT_CODE</code> and <code>DESTINATION_PT_CODE</code> are in character format. These are transformed into factors (categorical data type) for further analysis.</p>
-</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>odbus<span class="sc">$</span>ORIGIN_PT_CODE <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(odbus<span class="sc">$</span>ORIGIN_PT_CODE)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>odbus<span class="sc">$</span>DESTINATION_PT_CODE <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(odbus<span class="sc">$</span>DESTINATION_PT_CODE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
