@@ -16,7 +16,9 @@ pacman::p_load(sf, tidyverse, tmap)
 ```
 
 ## Importing The Data
+
 ### Geospatial Data
+
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
