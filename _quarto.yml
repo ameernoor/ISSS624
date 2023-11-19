@@ -7,18 +7,24 @@ website:
     left: 
       - text: Hands-on Exercise
         menu:
-          - text: Hands-on Exercise 1, Wrangling
-            href: Hands-on_Ex1/Hands-on_Ex1.html
-          - text: Hands-on Exercise 1, Choropleth Mapping
-            href: Hands-on_Ex1/Hands-on_Ex1-Choropleth.html
+          - text: Hands-on Exercise 1 - Wrangling
+            href: hands-on/hoe1.html
+          - text: Hands-on Exercise 1 - Choropleth Mapping
+            href: hands-on/hoe1-choropleth.html
       - text: In-class Exercise
         menu:
           - text: In-class Exercise 1
-            href: In-class_Ex/In-class_Ex1/In-class_Ex1_demo.html
+            href: in-class/ice1.html
     right:
       - href: index.qmd
         text: Home
       - about.qmd
+      - icon: linkedin
+        href: https://www.linkedin.com/in/muhamad-ameer-noor/
+        aria-label: Linkedin
+      - icon: github
+        href: https://github.com/ameernoor
+        aria-label: Github
 
 format:
   html:

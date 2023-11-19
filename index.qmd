@@ -1,11 +1,10 @@
--   <div>
+---
+title: "ISSS624"
+author: "Muhamad Ameer Noor"
+---
 
-    ---
-    title: "ISSS624"
-    author: "Muhamad Ameer Noor"
-    ---
 
-    </div>
+
 
 Welcome to ISSS624 Geospatial Analytics Applications!
 
