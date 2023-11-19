@@ -1,13 +1,24 @@
 ---
-title: "ISSS624"
+title: "Applied Geospatial Analytics (ISSS624) "
 author: "Muhamad Ameer Noor"
 ---
 
+# Welcome to Geospatial Analytics Exploration!
+![Geospatial Analytics](images/homepage1.jpg)
+*Image Source: [Freepik Image Generator](https://www.freepik.com)
 
+Hello there! I'm Muhamad Ameer Noor, and this is my space dedicated to the exciting world of geospatial analytics. Join me on this journey as I delve into the fascinating realm of spatial data analysis and its applications.
 
+## What to Expect
 
-Welcome to ISSS624 Geospatial Analytics Applications!
+On this webpage, I'll be sharing insights, discoveries, and projects related to geospatial analytics. Whether you're a fellow enthusiast, a student, or just curious about the power of location-based data, you're in the right place!
 
-In this webpage, i am going to share with you my learning journey of geospatial analytics.
+## Learning Journey
 
-Further exploration on how to build the webpage can refer to the [Quarto websites](https://quarto.org/docs/websites/) documentation.
+I'll document my experiences and challenges as I navigate through ISSS624 Geospatial Analytics. Expect a mix of tutorials and case studies that showcase the practical applications of geospatial analytics.
+
+## Dive Deeper
+
+Curious about how this webpage was built? Check out the [Quarto websites documentation](https://quarto.org/docs/websites/)
+
+Thanks for stopping by, and let's explore the world through geospatial analytics!
