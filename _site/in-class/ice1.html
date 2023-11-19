@@ -180,11 +180,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#preparing-the-data-flow" id="toc-preparing-the-data-flow" class="nav-link" data-scroll-target="#preparing-the-data-flow">Preparing the Data Flow</a>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started"><span class="header-section-number">1</span> Getting Started</a></li>
+  <li><a href="#preparing-the-data-flow" id="toc-preparing-the-data-flow" class="nav-link" data-scroll-target="#preparing-the-data-flow"><span class="header-section-number">2</span> Preparing the Data Flow</a>
   <ul class="collapse">
-  <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data">Importing the Aspatial data</a></li>
-  <li><a href="#importing-the-geospatial-data" id="toc-importing-the-geospatial-data" class="nav-link" data-scroll-target="#importing-the-geospatial-data">Importing the geospatial data</a></li>
+  <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data"><span class="header-section-number">2.1</span> Importing the Aspatial data</a></li>
+  <li><a href="#importing-the-geospatial-data" id="toc-importing-the-geospatial-data" class="nav-link" data-scroll-target="#importing-the-geospatial-data"><span class="header-section-number">2.2</span> Importing the geospatial data</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -233,18 +233,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <figcaption class="figure-caption">Preparing Data Flow Illustration</figcaption>
 </figure>
 </div>
-<section id="getting-started" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<section id="getting-started" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="getting-started"><span class="header-section-number">1</span> Getting Started</h2>
 <p>The code chunk below load the following packages: - <strong>tmap</strong>: for thematic mapping - <strong>sf</strong> : for geospatial data handling - <strong>tidyverse</strong> for non-spatial data handling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tmap, sf, tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># load the libraries, the pacman itself will only be loaded temporarily</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="preparing-the-data-flow" class="level2">
-<h2 class="anchored" data-anchor-id="preparing-the-data-flow">Preparing the Data Flow</h2>
-<section id="importing-the-aspatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-the-aspatial-data">Importing the Aspatial data</h3>
+<section id="preparing-the-data-flow" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="preparing-the-data-flow"><span class="header-section-number">2</span> Preparing the Data Flow</h2>
+<section id="importing-the-aspatial-data" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="importing-the-aspatial-data"><span class="header-section-number">2.1</span> Importing the Aspatial data</h3>
 <p>Import the <em>Passenger Volume by Origin Destination Bus Stops</em> data set downloaded from LTA DataMall by using <code>read_csv()</code> of <strong>readr</strong> package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|eval: false</span></span>
@@ -286,8 +286,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="importing-the-geospatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-the-geospatial-data">Importing the geospatial data</h3>
+<section id="importing-the-geospatial-data" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="importing-the-geospatial-data"><span class="header-section-number">2.2</span> Importing the geospatial data</h3>
 <p>Two geospatial data will be used in this exercise both data contain coordinate in geometry column:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#} eval: false</span></span>

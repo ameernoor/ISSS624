@@ -1,6 +1,14 @@
 ---
 title: "Hands-on Exercise 1: Geospatial Data Wrangling with R"
 editor: visual
+format: 
+  html:
+    number-sections: true
+    number-depth: 3
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
 ---
 
 ![Data Wrangling Illustration](../images/wrangling.png)
@@ -139,27 +147,37 @@ plot(mpsz["PLN_AREA_N"])
 ## Working with Projection
 Map projection is an important property of a geospatial data. In order to perform geoprocessing using two geospatial data, we need to ensure that both geospatial data are projected using similar coordinate system. In this section, you will learn how to project a simple feature data frame from one coordinate system to another coordinate system. The technical term of this process is called **projection transformation**.
 
-::: panel-tabset
 
 ### Assigning EPSG code to a simple feature data frame
 
-One of the common issue that can happen during importing geospatial data into R is that the coordinate system of the source data was either missing (such as due to missing .proj for ESRI shapefile) or wrongly assigned during the importing process. The st_crs is a function to retrieve coordinate reference system from sf or sfc object. In this case, it is used to obtain the current EPSG code of the 'mpsz' dataset, providing information about its current coordinate reference system. The EPSG code (European Petroleum Survey Group) is a standardized identifier used to uniquely reference a coordinate reference system.
+One of the common issue that can happen during importing geospatial data into R is that the coordinate system of the source data was either missing (such as due to missing .proj for ESRI shapefile) or wrongly assigned during the importing process.
 
+::: panel-tabset
+
+#### Checking default EPSG Code 
+
+The **st_crs** is a function to retrieve coordinate reference system from sf or sfc object. In this case, it is used to obtain the current EPSG code of the 'mpsz' dataset, providing information about its current coordinate reference system. The EPSG code (European Petroleum Survey Group) is a standardized identifier used to uniquely reference a coordinate reference system.
 ```{r}
 st_crs(mpsz)
 ```
 
-**assign correct EPSG code to mspz** Although mpsz data frame is projected in svy21 but when we read until the end of the print, it indicates that the EPSG is 9001. This is a wrong EPSG code because the correct EPSG code for svy21 should be 3414. This code assigns the EPSG code 3414 to the 'mpsz' dataset, ensuring that it adheres to the SVY21 coordinate reference system (EPSG 3414) for accurate spatial representation.
+#### Correcting EPSG Code
+
+Although mpsz data frame is projected in svy21 but when we read until the end of the print, it indicates that the EPSG is 9001. This is a wrong EPSG code because the correct EPSG code for svy21 should be 3414. This code assigns the EPSG code 3414 to the 'mpsz' dataset, ensuring that it adheres to the SVY21 coordinate reference system (EPSG 3414) for accurate spatial representation.
 
 ```{r}
 mpsz3414 <- st_set_crs(mpsz, 3414)
 ```
 
-**check the correction result** The following code is to re-run st_crs to verify that the correction was successful by displaying the updated EPSG code (EPSG 3414) of the 'mpsz3414' dataset.
+#### Checking Correction Result
+
+The following code is to re-run st_crs to verify that the correction was successful by displaying the updated EPSG code (EPSG 3414) of the 'mpsz3414' dataset.
 
 ```{r}
 st_crs(mpsz3414)
 ```
+:::
+
 
 ### Transforming the projection of preschool from wgs84 to svy21
 
@@ -168,7 +186,6 @@ In geospatial analytics, it is very common for us to transform the original data
 ```{r}
 preschool3414 <- st_transform(preschool, crs = 3414)
 ```
-:::
 
 
 ## Importing and Converting an Aspatial Data
@@ -176,6 +193,7 @@ preschool3414 <- st_transform(preschool, crs = 3414)
 In practice, it is not unusual that we will come across data such as listing of Inside Airbnb. We call this kind of data aspatial data. This is because it is not a geospatial data but among the data fields, there are two fields that capture the x- and y-coordinates of the data points. In this section, you will learn how to import an aspatial data into R environment and save it as a tibble data frame. Next, you will convert it into a simple feature data frame.
 
 ::: panel-tabset
+
 ### Importing the aspatial data
 
 Since listings data set is in csv file format, we will use read_csv() of readr package to import listing.csv as shown the code chunk below. The output R object is called listings and it is a tibble data frame.
