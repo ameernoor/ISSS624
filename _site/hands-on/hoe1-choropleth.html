@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISSS624 - Hands-on Exercise 1: Choropleth Mapping</title>
+<title>ISSS624 - Applied Geospatial Analytics - Hands-on Exercise 1: Choropleth Mapping</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -106,7 +106,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">ISSS624</span>
+    <span class="navbar-title">ISSS624 - Applied Geospatial Analytics</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -122,11 +122,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
         <li>
     <a class="dropdown-item" href="../hands-on/hoe1.html" rel="" target="">
- <span class="dropdown-text">Hands-on Exercise 1 - Wrangling</span></a>
+ <span class="dropdown-text">1A - Geospatial Data Wrangling</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../hands-on/hoe1-choropleth.html" rel="" target="">
- <span class="dropdown-text">Hands-on Exercise 1 - Choropleth Mapping</span></a>
+ <span class="dropdown-text">1B - Choropleth Mapping</span></a>
   </li>  
     </ul>
   </li>
@@ -137,7 +137,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
         <li>
     <a class="dropdown-item" href="../in-class/ice1.html" rel="" target="">
- <span class="dropdown-text">In-class Exercise 1</span></a>
+ <span class="dropdown-text">1 - Preparing The Data Flow</span></a>
   </li>  
     </ul>
   </li>
@@ -147,10 +147,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
-  </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/muhamad-ameer-noor/" rel="" target=""><i class="bi bi-linkedin" role="img" aria-label="Linkedin">
 </i> 
@@ -158,6 +154,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/ameernoor" rel="" target=""><i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=TS_ilSMAAAAJ&amp;hl=en&amp;oi=ao" rel="" target=""><i class="bi bi-book" role="img" aria-label="Google Scholar">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -223,6 +224,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/choropleth.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Painting Choropleth Map Illustration</figcaption>
+</figure>
+</div>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>In this hands-on exercise, we will continue on Exploratory Data Analysis, specifically using Choropleth Mapping</p>
@@ -280,7 +287,7 @@ Geodetic CRS:  WGS 84</code></pre>
 <section id="attribute-data" class="level3">
 <h3 class="anchored" data-anchor-id="attribute-data">Attribute Data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>popdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/aspatial/respopagesextod2011to2020.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>popdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/aspatial/respopagesextod2011to2020.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 984656 Columns: 7
 ── Column specification ────────────────────────────────────────────────────────

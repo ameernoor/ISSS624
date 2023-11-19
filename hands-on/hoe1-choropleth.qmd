@@ -3,6 +3,8 @@ title: "Hands-on Exercise 1: Choropleth Mapping"
 editor: visual
 ---
 
+![Painting Choropleth Map Illustration](../images/choropleth.png)
+
 ## Overview
 
 In this hands-on exercise, we will continue on Exploratory Data Analysis, specifically using Choropleth Mapping

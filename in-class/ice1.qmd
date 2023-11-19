@@ -1,6 +1,6 @@
 ---
 # the --- border define yml part in this script
-title: "In-class Exercise 1: Introduction to Geospatial Data Analytics"
+title: "In-class Exercise 1: Preparing the Data Flow"
 author: "Muhamad Ameer Noor"
 date: "18 November 2023"
 date-modified: "last-modified"
@@ -12,9 +12,14 @@ execute:
 editor: visual 
 ---
 
+![Preparing Data Flow Illustration](../images/flow.png)
+
 ## Getting Started
 
-The code chunk below load the following packages: - **tmap**: for thematic mapping - **sf** : for geospatial data handling - **tidyverse** for non-spatial data handling.
+The code chunk below load the following packages:
+- **tmap**: for thematic mapping
+- **sf** : for geospatial data handling
+- **tidyverse** for non-spatial data handling.
 
 ```{r}
 pacman::p_load(tmap, sf, tidyverse)

@@ -1,9 +1,0 @@
----
-title: "About"
----
-
-[About this site](links: - icon: linkedin text: LinkedIn href: https://www.linkedin.com/in/hailey-sy-cheong/ - icon: diagram-3-fill text: Tableau href: https://public.tableau.com/app/profile/hailey.cheong - icon: github text: Github href: https://github.com/haileycsy)
-
-```{r}
-1 + 1
-```

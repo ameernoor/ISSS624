@@ -4,14 +4,14 @@ author: "Muhamad Ameer Noor"
 ---
 
 # Welcome to Geospatial Analytics Exploration!
-![Geospatial Analytics](images/homepage1.jpg)
-*Image Source: [Freepik Image Generator](https://www.freepik.com)
+
+![Exploring Geospatial Analytics Illustration](images/homepage4.png)
 
 Hello there! I'm Muhamad Ameer Noor, and this is my space dedicated to the exciting world of geospatial analytics. Join me on this journey as I delve into the fascinating realm of spatial data analysis and its applications.
 
 ## What to Expect
 
-On this webpage, I'll be sharing insights, discoveries, and projects related to geospatial analytics. Whether you're a fellow enthusiast, a student, or just curious about the power of location-based data, you're in the right place!
+On this webpage, I'll be sharing insights, discoveries, and projects related to geospatial analytics that I learned from ISSS624 - Applied Geospatial Analytics Course under \[MITB Programme at Singapore Management University\] (https://masters.smu.edu.sg/programme/master-of-it-in-business). Whether you're a fellow enthusiast, a student, or just curious about the power of location-based data, you're in the right place!
 
 ## Learning Journey
 

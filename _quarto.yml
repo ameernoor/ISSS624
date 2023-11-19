@@ -2,18 +2,18 @@ project:
   type: website
 
 website:
-  title: "ISSS624"
+  title: "ISSS624 - Applied Geospatial Analytics"
   navbar:
     left: 
       - text: Hands-on Exercise
         menu:
-          - text: Hands-on Exercise 1 - Wrangling
+          - text: 1A - Geospatial Data Wrangling
             href: hands-on/hoe1.html
-          - text: Hands-on Exercise 1 - Choropleth Mapping
+          - text: 1B - Choropleth Mapping
             href: hands-on/hoe1-choropleth.html
       - text: In-class Exercise
         menu:
-          - text: In-class Exercise 1
+          - text: 1 - Preparing The Data Flow
             href: in-class/ice1.html
     right:
       - href: index.qmd
@@ -24,10 +24,13 @@ website:
       - icon: github
         href: https://github.com/ameernoor
         aria-label: Github
+      - icon: book
+        href: https://scholar.google.com/citations?user=TS_ilSMAAAAJ&hl=en&oi=ao
+        aria-label: Google Scholar      
 
 format:
   html:
-    theme: cosmo
+    theme: cerulean
     css: styles.css
     toc: true
 
