@@ -58,7 +58,7 @@ hunan2012 <- read_csv("../data/aspatial/Hunan_2012.csv")
 glimpse(hunan2012)
 ```
 
-### Import CSV
+### Join the Geospatial and Aspatial Data
 
 The following code use `left_join()` from **dplyr** package to merge the aspatial data to the geospatial data
 
@@ -99,6 +99,8 @@ Two main criteria are used to define contiguity: 'rook' and 'queen'. Rook contig
 :::
 
 ![Queen vs Rook Contiguity](../images/queenrook.png)
+
+
 *Source: [Research Gate](https://www.researchgate.net/figure/Figure-S1-Spatial-contiguity-weights-Rooks-and-Queens-A-Rooks-Weight-B-Queenss_fig1_309672985)*
 
 
