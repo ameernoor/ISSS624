@@ -1,0 +1,16 @@
+---
+title: "Hands-on Exercise 2: Local Measures of Spatial Autocorrelation"
+editor: visual
+format: 
+  html:
+    code-fold: true
+    code-summary: "code chunk"
+    number-sections: true
+    number-depth: 3
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
+---
+
+![Weighing Space Illustration](../images/spatialweighting.png)

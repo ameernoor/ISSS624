@@ -11,6 +11,12 @@ website:
             href: hands-on/hoe1.html
           - text: 1B - Choropleth Mapping
             href: hands-on/hoe1-choropleth.html
+          - text: 2A - Spatial Weights and Application
+            href: hands-on/hoe2-spatialweight.html
+          - text: 2B - Global Measures of Spatial Autocorrelation
+            href: hands-on/hoe2-globalautocor.html
+          - text: 2C - Local Measures of Spatial Autocorrelation 
+            href: hands-on/hoe2-localautocor.html
       - text: In-class Exercise
         menu:
           - text: 1 - Preparing The Data Flow

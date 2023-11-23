@@ -6,6 +6,8 @@ date: "18 November 2023"
 date-modified: "last-modified"
 format: 
   html:
+    code-fold: true
+    code-summary: "code chunk"
     number-sections: true
     number-depth: 3
 execute:
@@ -25,6 +27,7 @@ The code chunk below load the following packages:
 - **tidyverse** for non-spatial data handling.
 
 ```{r}
+#| code-fold: false
 pacman::p_load(tmap, sf, tidyverse)
 # load the libraries, the pacman itself will only be loaded temporarily
 ```
@@ -36,7 +39,8 @@ pacman::p_load(tmap, sf, tidyverse)
 Import the *Passenger Volume by Origin Destination Bus Stops* data set downloaded from LTA DataMall by using `read_csv()` of **readr** package.
 
 ```{r}
-#|eval: false
+#| code-fold: false
+#| eval: false
 odbus <- read_csv("../data/aspatial/origin_destination_bus_202308.csv.gz")
 head(odbus)
 ```
@@ -46,6 +50,7 @@ head(odbus)
 **odbus08** is a tibble dataframe. However, `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` are in character format. These are transformed into factors (categorical data type) for further analysis.
 
 ```{r}
+#| code-fold: false
 #| eval: false
 odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
 odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
@@ -72,7 +77,8 @@ glimpse(origtrip_7_9)
 Two geospatial data will be used in this exercise both data contain coordinate in geometry column:
 
 ```{r}
-#} eval: false
+#| code-fold: false
+#| eval: false
 busstop <- st_read(dsn = "../data/geospatial",
                    layer = "BusStop") %>%
   st_transform(crs = 3414) # the st_transform is for projection
@@ -80,6 +86,7 @@ glimpse(busstop)
 ```
 
 ```{r}
+#| code-fold: false
 #| eval: false
 mpsz <- st_read(dsn = "../data/geospatial",
                 layer = "MPSZ-2019") %>%

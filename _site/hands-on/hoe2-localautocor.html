@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Muhamad Ameer Noor">
 
-<title>ISSS624 - Applied Geospatial Analytics - Applied Geospatial Analytics (ISSS624)</title>
+<title>ISSS624 - Applied Geospatial Analytics - Hands-on Exercise 2: Local Measures of Spatial Autocorrelation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,22 +23,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -62,7 +61,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -72,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">ISSS624 - Applied Geospatial Analytics</span>
     </a>
   </div>
@@ -88,23 +87,23 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
         <li>
-    <a class="dropdown-item" href="./hands-on/hoe1.html" rel="" target="">
+    <a class="dropdown-item" href="../hands-on/hoe1.html" rel="" target="">
  <span class="dropdown-text">1A - Geospatial Data Wrangling</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./hands-on/hoe1-choropleth.html" rel="" target="">
+    <a class="dropdown-item" href="../hands-on/hoe1-choropleth.html" rel="" target="">
  <span class="dropdown-text">1B - Choropleth Mapping</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./hands-on/hoe2-spatialweight.html" rel="" target="">
+    <a class="dropdown-item" href="../hands-on/hoe2-spatialweight.html" rel="" target="">
  <span class="dropdown-text">2A - Spatial Weights and Application</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./hands-on/hoe2-globalautocor.html" rel="" target="">
+    <a class="dropdown-item" href="../hands-on/hoe2-globalautocor.html" rel="" target="">
  <span class="dropdown-text">2B - Global Measures of Spatial Autocorrelation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./hands-on/hoe2-localautocor.html" rel="" target="">
+    <a class="dropdown-item" href="../hands-on/hoe2-localautocor.html" rel="" target="">
  <span class="dropdown-text">2C - Local Measures of Spatial Autocorrelation</span></a>
   </li>  
     </ul>
@@ -115,7 +114,7 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
         <li>
-    <a class="dropdown-item" href="./in-class/ice1.html" rel="" target="">
+    <a class="dropdown-item" href="../in-class/ice1.html" rel="" target="">
  <span class="dropdown-text">1 - Preparing The Data Flow</span></a>
   </li>  
     </ul>
@@ -123,7 +122,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item compact">
@@ -153,37 +152,20 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#welcome-to-geospatial-analytics-exploration" id="toc-welcome-to-geospatial-analytics-exploration" class="nav-link active" data-scroll-target="#welcome-to-geospatial-analytics-exploration">Welcome to Geospatial Analytics Exploration!</a>
-  <ul class="collapse">
-  <li><a href="#what-to-expect" id="toc-what-to-expect" class="nav-link" data-scroll-target="#what-to-expect">What to Expect</a></li>
-  <li><a href="#learning-journey" id="toc-learning-journey" class="nav-link" data-scroll-target="#learning-journey">Learning Journey</a></li>
-  <li><a href="#dive-deeper" id="toc-dive-deeper" class="nav-link" data-scroll-target="#dive-deeper">Dive Deeper</a></li>
-  </ul></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Applied Geospatial Analytics (ISSS624)</h1>
+<h1 class="title">Hands-on Exercise 2: Local Measures of Spatial Autocorrelation</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Muhamad Ameer Noor </p>
-          </div>
-  </div>
     
   
     
@@ -192,31 +174,14 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="welcome-to-geospatial-analytics-exploration" class="level1">
-<h1>Welcome to Geospatial Analytics Exploration!</h1>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/homepage4.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Exploring Geospatial Analytics Illustration</figcaption>
+<p><img src="../images/spatialweighting.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Weighing Space Illustration</figcaption>
 </figure>
 </div>
-<p>Hello there! I’m Muhamad Ameer Noor, and this is my space dedicated to the exciting world of geospatial analytics. Join me on this journey as I delve into the fascinating realm of spatial data analysis and its applications.</p>
-<section id="what-to-expect" class="level2">
-<h2 class="anchored" data-anchor-id="what-to-expect">What to Expect</h2>
-<p>On this webpage, I’ll be sharing insights, discoveries, and projects related to geospatial analytics that I learned from ISSS624 - Applied Geospatial Analytics Course under [MITB Programme at Singapore Management University] (https://masters.smu.edu.sg/programme/master-of-it-in-business). Whether you’re a fellow enthusiast, a student, or just curious about the power of location-based data, you’re in the right place!</p>
-</section>
-<section id="learning-journey" class="level2">
-<h2 class="anchored" data-anchor-id="learning-journey">Learning Journey</h2>
-<p>I’ll document my experiences and challenges as I navigate through ISSS624 Geospatial Analytics. Expect a mix of tutorials and case studies that showcase the practical applications of geospatial analytics.</p>
-</section>
-<section id="dive-deeper" class="level2">
-<h2 class="anchored" data-anchor-id="dive-deeper">Dive Deeper</h2>
-<p>Curious about how this webpage was built? Check out the <a href="https://quarto.org/docs/websites/">Quarto websites documentation</a></p>
-<p>Thanks for stopping by, and let’s explore the world through geospatial analytics!</p>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

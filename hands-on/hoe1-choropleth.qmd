@@ -3,6 +3,8 @@ title: "Hands-on Exercise 1: Choropleth Mapping"
 editor: visual
 format: 
   html:
+    code-fold: true
+    code-summary: "code chunk"
     number-sections: true
     number-depth: 4
 execute:
@@ -26,6 +28,7 @@ In this chapter, you'll discover how to create accurate and meaningful choroplet
 The code chunk below install and load [sf](https://r-spatial.github.io/sf/), [tidyverse](https://www.rdocumentation.org/packages/tidyverse/versions/2.0.0) and [tmap](https://cran.r-project.org/web/packages/tmap/) packages into R environment.
 
 ```{r}
+#| code-fold: false
 pacman::p_load(sf, tidyverse, tmap)
 ```
 
@@ -43,6 +46,7 @@ The code below does the following
 1. uses the **st_read()** function from the sf package to bring in the MP14_SUBZONE_WEB_PL shapefile into R, and import it as a simple feature data frame named mpsz.
 2. display the data frame by calling **mpsz**
 ```{r}
+#| code-fold: false
 mpsz <- st_read(dsn = "../data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 mpsz
 ```
@@ -54,6 +58,7 @@ Note that only the first ten records are displayed. By default, R shows a summar
 Next, we're going to bring in the **respopagsex2011to2020.csv** file into RStudio and store it in a data table named popdata. We'll do this using the `read_csv()` function from the **readr** package, as you can see in the code snippet below.
 
 ```{r}
+#| code-fold: false
 popdata <- read_csv("../data/aspatial/respopagesextod2011to2020.csv.gz")
 ```
 :::
@@ -122,6 +127,7 @@ glimpse(mpsz_pop2020)
 
 Lastly, the `write_rds()` function is used to save our combined data (stored in the mpsz_pop2020 data frame) into an RDS file.
 ```{r}
+#| code-fold: false
 write_rds(mpsz_pop2020, "../data/rds/mpszpop2020.rds")
 ```
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -141,6 +147,7 @@ The fastest way to draw a choropleth map using tmap is with `qtm()`. It's straig
 The following code snippet will generate a standard choropleth map.
 
 ```{r}
+#| code-fold: false
 tmap_mode("plot")
 qtm(mpsz_pop2020, fill = "DEPENDENCY")
 ```
@@ -184,6 +191,7 @@ each of the **tmap** functions that are used to create the plot can be seen in t
 #### base map
 
 ```{r}
+#| code-fold: false
 tm_shape(mpsz_pop2020) +
   tm_polygons()
 ```
@@ -191,6 +199,7 @@ tm_shape(mpsz_pop2020) +
 #### tm_polygons
 
 ```{r}
+#| code-fold: false
 tm_shape(mpsz_pop2020)+
   tm_polygons("DEPENDENCY")
 ```
@@ -203,6 +212,7 @@ tm_shape(mpsz_pop2020)+
 #### tm_fill
 without setting the border, the planning subzones will not have any boundary if the dependency value is the same
 ```{r}
+#| code-fold: false
 tm_shape(mpsz_pop2020)+
   tm_fill("DEPENDENCY")
 ```
@@ -214,6 +224,7 @@ Parameters of `tm_border()`:
 - *lwd* = border line width. The default is 1, and
 - *lty* = border line type. The default is “solid”.
 ```{r}
+#| code-fold: false
 tm_shape(mpsz_pop2020)+
   tm_fill("DEPENDENCY") +
   tm_borders(lwd = 0.1,  alpha = 1)
@@ -362,6 +373,7 @@ the automated break calculation in previous method can be overriden by explicitl
 before starting, the following code will show descriptive statistics to be used for break reference.
 
 ```{r}
+#| code-fold: false
 summary(mpsz_pop2020$DEPENDENCY)
 ```
 
@@ -463,6 +475,7 @@ tm_shape(mpsz_pop2020)+
 reset the **tmap** setting to default style.
 
 ```{r}
+#| code-fold: false
 tmap_style("white")
 ```
 
