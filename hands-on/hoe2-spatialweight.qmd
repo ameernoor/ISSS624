@@ -98,7 +98,7 @@ Two main criteria are used to define contiguity: 'rook' and 'queen'. Rook contig
 *Summarized from: [Anselin](https://lanselin.github.io/introbook_vol1/CHcontiguityweights.html)*
 :::
 
-![Queen vs Rook Contiguity](../images/choropleth.png)
+![Queen vs Rook Contiguity](../images/queenrook.png)
 *Source: [Research Gate](https://www.researchgate.net/figure/Figure-S1-Spatial-contiguity-weights-Rooks-and-Queens-A-Rooks-Weight-B-Queenss_fig1_309672985)*
 
 
