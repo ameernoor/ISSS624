@@ -1,0 +1,121 @@
+---
+title: "In-class_Ex2 - Spatial Weights & Time Series Cube"
+editor: visual
+format: 
+  html:
+    code-fold: true
+    code-summary: "code chunk"
+    number-sections: true
+    number-depth: 3
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
+---
+
+## Preparation
+::: panel-tabset
+### load the packages
+```{r}
+#| code-fold: false
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, plotly, zoo, Kendall)
+```
+
+### load the geospatial data
+```{r}
+#| code-fold: false
+hunan <- st_read(dsn = "../data/geospatial", 
+                 layer = "Hunan")
+```
+### load the aspatial data
+```{r}
+#| code-fold: false
+hunan2012 <- read_csv("../data/aspatial/Hunan_2012.csv")
+```
+### join the data
+```{r}
+#| code-fold: false
+hunan_GDPPC <- left_join(hunan,hunan2012)%>%
+  select(1:4,7,15)
+```
+:::
+
+
+### Deriving Contiguity Weights: Queen's Method
+The following code will use queen method to derive contiguity weights (it's the default method when the argument is not specified).
+the `st_weights()` provides three arguments which includes:
+- *nb*: a neighbor list object as created by st_neighbors()
+- *style*: Default "W" for row standardized weights. The value can also be "B", "C", "U", "minmax", and "S". B is the basic binary coding, W is row standardises (sums over all links to n), C is globally standardised(sums over all links to n). U is equal to C divided by number of neighbours.
+
+```{r}
+wm_q <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb, style = 'W'),
+         .before=1)
+```
+
+
+## Computing local Moran's I
+This section will compute Local Moran's I of GDPPC at county level by using `local_moran()` of **sfdep** package
+```{r}
+lisa <- wm_q %>%
+  mutate(local_moran = local_moran(
+    GDPPC, nb, wt, nsim = 99),
+    .before = 1) %>%
+  unnest(local_moran) 
+```
+unnest is to add local_moran into individual columns. without it, it will be a list
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+in choosing whether to use mean or median, look at the data distribution.
+if it's evenly distributed, mean can be used. else, use median
+:::
+
+
+## Creating a Time Series Cube
+read the raw data
+```{r}
+GDPPC <- read_csv('../data/aspatial/Hunan_GDPPC.csv')
+```
+
+transform into time series cube
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col = "County",
+                      .time_col = "Year")
+```
+use `_is_spacetime_cube9) of *sfdep* package will be used to verify if GDPPC_st is indeed an space-time cube object.
+
+```{r}
+is_spacetime_cube(GDPPC_st)
+```
+
+## Computing Gi*
+gi_stars <- GDPPC_nb %>%
+  group_by(Year) %>%
+  mutate(gi_star = local_gstar_perm(
+    GDPPC, nb, wt)) %>%
+  tidyr::unnest(gi_star)
+
+## Performing Emerging Hotspot Analysis
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x = GDPPC_st,
+  .var = "GDPPC",
+  k = 1,
+  nsim = 99)
+head(ehsa)
+```
+
+
+## EHSA
+ehsa_sig <- hunan_ehsa %>%
+  filter(p_value < 0.05)
+tmap_mode("plot")
+tm_shape(hunan_ehsa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+  tm_shape(ehsa_sig) +
+  tm_fill("classification")  +
+  tm_borders(alpha = 0.4)
+
