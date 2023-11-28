@@ -1,10 +1,11 @@
 ---
-title: "In-class_Ex2 - Spatial Weights & Time Series Cube"
+title: "In-class Exercise 2 - sfdep for Spatial Weights, GLSA & EHSA"
 editor: visual
 format: 
   html:
     code-fold: true
     code-summary: "code chunk"
+    fontsize: 20px
     number-sections: true
     number-depth: 3
 execute:
@@ -12,110 +13,784 @@ execute:
   eval: true # all code chunk will running live (be evaluated)
   warning: false # don't display warning
 ---
+![Illustration](../images/ice2.png)
 
-## Preparation
+# Preparation
+
+This in-class exercise use Hunan geospatial data and attribute data
+
 ::: panel-tabset
-### load the packages
+
+## load the packages
+
 ```{r}
 #| code-fold: false
 pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, plotly, zoo, Kendall)
 ```
 
-### load the geospatial data
+## load the geospatial data
+
 ```{r}
 #| code-fold: false
 hunan <- st_read(dsn = "../data/geospatial", 
                  layer = "Hunan")
 ```
-### load the aspatial data
+
+## load the aspatial data
+
 ```{r}
 #| code-fold: false
 hunan2012 <- read_csv("../data/aspatial/Hunan_2012.csv")
 ```
-### join the data
+```{r}
+GDPPC <- read_csv("../data/aspatial/Hunan_GDPPC.csv")
+```
+
+## join the data
+in order to retain the geospatial properties, the sf data frame must always be on the left
 ```{r}
 #| code-fold: false
 hunan_GDPPC <- left_join(hunan,hunan2012)%>%
   select(1:4,7,15)
 ```
+
+## Choropleth Map
+to get a glimpse of the data distribution
+```{r}
+#| fig-width: 10
+#| fig-height: 8
+
+# Set the tmap mode to "plot" for plotting
+tmap_mode("plot")
+
+# Create a thematic map using the 'hunan_GDPPC' dataset
+tm_shape(hunan_GDPPC) +
+
+  # Fill the map with the variable 'GDPPC' using quantile classification
+  tm_fill("GDPPC", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "GDPPC") +
+
+  # Add semi-transparent borders to the map
+  tm_borders(alpha = 0.5) +
+
+  # Set the layout options for the thematic map
+  tm_layout(main.title = "Distribution of GDP per capita by district, Hunan Province",
+            main.title.position = "left",
+            main.title.size = 0.8,
+            legend.outside = TRUE,
+            legend.outside.position = c("right","center"),
+            frame = TRUE) +
+
+  # Add a compass rose with eight points and a size of 2
+  tm_compass(type="8star", size = 2, position = "left") +
+
+  # Add a scale bar to the map
+  tm_scale_bar(position = 'left') +
+
+  # Add a grid to the map with a transparency of 0.2
+  tm_grid(alpha = 0.2)
+```
 :::
 
+# Spatial Weights
+## Calculating Spatial Weights
 
-### Deriving Contiguity Weights: Queen's Method
-The following code will use queen method to derive contiguity weights (it's the default method when the argument is not specified).
-the `st_weights()` provides three arguments which includes:
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Two types of Spatial Weights:
+***1) Contiguity Weights*** considers how neighboring areas are connected or share a common border, emphasizing spatial adjacency; ***2) Distance-based Weights***: This type takes into account the distance between locations, giving more weight to closer locations and less weight to those farther away, capturing spatial relationships based on proximity.
+:::
+
+### Contiguity Weights
+This part of exercise will use contiguity spatial weights using **sfdep** package. To derive the weights, the following steps is required:
+
+1.  identify contiguity neighbour list by using [`st_contiguity()`](https://sfdep.josiahparry.com/reference/st_contiguity.html) from **sfdep** package.
+
+2.  derive the spatial weights by using [`st_weights()`](https://sfdep.josiahparry.com/reference/st_weights.html) from **sfdep** package
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The advantage of **sfdep** over **spdep** is that its output is in the form of an sf tibble data frame. This is beneficial because sf tibble data frames are part of the tidyverse ecosystem, making it easier to work with and integrate into tidy data workflows in R.
+:::
+
+#### Identifying Contiguity Neighbours
+the following panel will show how to identify contiguity neighbours using various methods.
+
+::: panel-tabset
+
+##### Queen's Method
+
+```{r}
+# Create neighbor dataframe using Queen Method from the original 'hunan_GDPPC' dataframe
+nb_queen <- hunan_GDPPC %>%
+
+  # Add a new column 'nb' (neighbors) representing contiguity relationships using spatial geometries
+  mutate(nb = st_contiguity(geometry),
+
+         # Insert the newly created columns at the beginning of the dataset
+         .before=1)
+
+# summarize the neighbors column
+summary(nb_queen$nb)
+```
+##### Rook's Method
+```{r}
+# Create neighbor dataframe using Rook Method from the original 'hunan_GDPPC' dataframe
+nb_rook <- hunan_GDPPC %>%
+
+  # Add a new column 'nb' (neighbors) representing contiguity relationships using spatial geometries
+  mutate(nb = st_contiguity(geometry, queen = FALSE),
+
+         # Add another column 'wt' calculating weights based on contiguity relationships
+         wt = st_weights(nb, style = 'W'),
+
+         # Insert the newly created columns at the beginning of the dataset
+         .before=1)
+
+# summarize the neighbors column
+summary(nb_rook$nb)
+```
+
+##### Higher Order Neighbors
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Spatial relationships may extend beyond immediate neighbors when we're dealing with complex geographical patterns or phenomena that involve interactions across multiple layers or scales. In such cases, high-order contiguity becomes relevant because it allows us to capture and analyze more distant spatial connections. This is particularly important when studying phenomena with a broader reach or influence that goes beyond the traditional notion of adjacent neighbors, providing a more comprehensive understanding of spatial dependencies in the data.
+:::
+
+The following code chunk give example of using [`st_nb_lag_cumul()`](https://sfdep.josiahparry.com/reference/st_nb_lag_cumul.html) to derive contiguity neighbour list using lag 2 Queen's method. It set the lag order to 2, so the result contains both 1st and 2nd order neighbors.
+
+```{r}
+nb2_queen <-  hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+          # Add another new column 'nb2' calculating cumulative second-order contiguity relationships
+         nb2 = st_nb_lag_cumul(nb, 2),
+         .before = 1)
+
+# Check the output
+summary(nb2_queen$nb2)
+```
+
+:::
+
+the following code check the whole output using the 2 orders contiguity as example
+```{r}
+kable(head(nb2_queen, n=10))
+```
+
+
+#### Deriving contiguity weights
+The following panel shows how to use [`st_weights()`](https://sfdep.josiahparry.com/reference/st_weights.html) of **sfdep** package to derive contiguity weights. the function provides three arguments which includes:
 - *nb*: a neighbor list object as created by st_neighbors()
-- *style*: Default "W" for row standardized weights. The value can also be "B", "C", "U", "minmax", and "S". B is the basic binary coding, W is row standardises (sums over all links to n), C is globally standardised(sums over all links to n). U is equal to C divided by number of neighbours.
+- *style*: Default "W" for row standardized weights. The value can also be "B", "C", "U", "minmax", and "S". B is the basic binary coding, W is row standardises (sums over all links to n), C is globally standardised(sums over all links to n). U is equal to C divided by number of neighbours (sums over all links to unity, while S is a variance-stabilizing coding scheme (sums over all links to n).
+- *allow_zero*: If TRUE, assigns zero as lagged value to zone without neighbors.
+
+
+::: panel-tabset
+
+##### Queen - W
+The following code will use queen method to derive contiguity weights (it's the default method when the argument is not specified)
 
 ```{r}
 wm_q <- hunan_GDPPC %>%
   mutate(nb = st_contiguity(geometry),
-         wt = st_weights(nb, style = 'W'),
-         .before=1)
+         # add the weight column
+         wt = st_weights(nb, style = "W"),
+         .before = 1) 
+# check the output
+wm_q
 ```
 
-
-## Computing local Moran's I
-This section will compute Local Moran's I of GDPPC at county level by using `local_moran()` of **sfdep** package
+##### Higher Order Queen - W
 ```{r}
+wm2_q <-  hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb, style = "W"),
+         nb2 = st_nb_lag_cumul(nb, 2),
+         wt2 = st_weights(nb2, style = "W"),
+                  .before = 1)
+
+# Check the output
+wm2_q
+```
+:::
+
+### Distance-based Weights
+The following panel display examples of how to use various method of deriving distance-based spatial weights. Important functions used includes:
+-   [`st_nb_dists()`](https://sfdep.josiahparry.com/reference/st_nb_dists.html) of **sfdep** to calculate the nearest neighbour distance, generating a list of distances for each feature's neighbors.
+-   [`unlist()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist) of **Base R** to convert output into a vector form to enable summary statistics.
+-   [`st_dists_band()`](https://sfdep.josiahparry.com/reference/st_dist_band.html) of **sfdep** is used to identify neighbors based on a distance band, by specifiying `upper` and `lower` arguments. The output is a list of neighbours (i.e. nb).
+-   [`st_weights()`](https://sfdep.josiahparry.com/reference/st_weights.html) is used to calculate spatial weights of the nb list.
+-   [`st_knn()`](https://sfdep.josiahparry.com/reference/st_knn.html) of **sfdep** is used to identify specified number of neighbors (default is *k=1*, one nearest neighbour).
+-   [`st_contiguity()`](https://sfdep.josiahparry.com/reference/st_contiguity.html) of **sfdep** is used to identify the neighbours using contiguity criteria.
+-   [`st_inverse_distance()`](https://sfdep.josiahparry.com/reference/st_inverse_distance.html) is used to calculate inverse distance weights of neighbours on the nb list.
+
+::: panel-tabset
+#### fixed distance weights
+
+find maximum distance in knn with 1 neighbor
+```{r}
+# Extract the geometry (spatial information) from the 'hunan_GDPPC' dataset
+geo <- sf::st_geometry(hunan_GDPPC)
+
+# Create a spatial weights matrix using k-nearest neighbors (KNN) for the extracted geometry
+nb <- st_knn(geo, longlat = TRUE)
+
+# Calculate the distances between each feature's centroid and its k-nearest neighbors
+dists <- unlist(st_nb_dists(geo, nb))
+
+# show the result
+summary(dists)
+```
+
+use the maximum distance to set threshold value in the following fixed distance weights calculation code:
+```{r}
+# Create a new variable wm_fd using the hunan_GDPPC data frame
+wm_fd <- hunan_GDPPC %>%
+  
+  # Add a new column 'nb' to the data frame
+  mutate(
+    nb = st_dist_band(geometry, upper = 66),  # Calculate a distance band based on geometry
+    
+    # Add a new column 'wt' to the data frame
+    wt = st_weights(nb),  # Calculate weights based on the distance band
+    
+    # Place the new columns 'nb' and 'wt' before the existing columns in the data frame
+    .before = 1
+  )
+
+# check the output
+print(summary(wm_fd$nb))
+print(glimpse(wm_fd))
+```
+
+#### adaptive distance weights
+using `st_knn` with number of neighbors (*k*) fixed to 8, it will find 8 nearest neighbours for each feature, without being limited by maximum distance (***adaptive***). 
+```{r}
+wm_ad <- hunan_GDPPC %>% 
+  mutate(nb = st_knn(geometry,
+                     k=8),
+         wt = st_weights(nb),
+               .before = 1)
+
+# check the output
+print(summary(wm_ad$nb))
+print(glimpse(wm_ad))
+```
+
+#### inverse distance weights
+calculate the weight based on inverse distance (the farther from the feature, the less weight).
+```{r}
+wm_idw <- hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry), # set the neighbours based on contiguity
+         wts = st_inverse_distance(nb, geometry,  # Create a new variable 'wts' representing inverse distance weights by using the 'st_inverse_distance' function.
+                                   scale = 1,  # Set the scale parameter to 1, meaning distances will be used as they are.
+                                   alpha = 1),  # Set the alpha parameter to 1, indicating a linear decrease in influence with distance.
+         .before = 1)
+
+# check the output
+print(summary(wm_idw$nb))
+print(glimpse(wm_idw))
+```
+
+:::
+
+# Global and Local Measures of Spatial Association 
+
+## Global Measures of Spatial Association
+The global spatial association here is measured using Moran's I statistics in **sfdep** package. Specifically [global_moran](https://rdrr.io/cran/sfdep/man/global_moran.html), and [`global_moran_test()`](https://sfdep.josiahparry.com/reference/global_moran_test.html), [`globel_moran_perm()`](https://sfdep.josiahparry.com/reference/global_moran_perm.html) and  functions are used.
+
+The following panel show step by step of how its done.
+
+::: panel-tabset
+### 1 Derive contiguity weights
+```{r}
+wm_q <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb,
+                         style = "W"),
+         .before = 1)
+# check the output
+glimpse(wm_q)
+```
+
+### 2 Computing Global Moran's I
+```{r}
+moranI <- global_moran(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+# check the output
+glimpse(moranI)
+```
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The Moran's I value of 0.301 indicates that there is a moderate positive spatial autocorrelation in the distribution of GDP per capita (GDPPC). Spatial autocorrelation means that similar values tend to be clustered together in geographic space. In this context, areas with similar economic conditions are somewhat grouped or clustered on the map.
+The value of K, which is 7.64 in this case, provides a reference point for what we might expect under the assumption of spatial randomness. If the observed Moran's I value is significantly different from the expected value of K, it suggests that the spatial pattern is not random. In simpler terms, the Moran's I value of 0.301 is telling us that the distribution of GDP per capita in the geographic areas being studied is not random – there is a discernible pattern where neighboring areas tend to have similar economic conditions.
+:::
+
+### Global Moran's I test
+```{r}
+global_moran_test(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+```
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The Global Moran's I test was conducted to assess whether the spatial pattern of GDP per capita (GDPPC) is random or exhibits clustering. The Moran I statistic standard deviate, which is 4.7351, indicates a strong positive spatial autocorrelation, reaffirming our earlier finding of a moderate positive spatial autocorrelation (Moran's I value of 0.301). The p-value, being very small (1.095e-06), suggests that the observed spatial pattern is highly unlikely to occur by random chance. In simpler terms, this indicates a significant spatial clustering of similar economic conditions in neighboring areas on the map.
+:::
+
+### Global Moran's I permutation test
+```{r}
+set.seed(1234) # set seed to ensure computation is reproducible
+global_moran_perm(wm_q$GDPPC,
+                  wm_q$nb,
+                  wm_q$wt,
+                  nsim = 99) # number of simulation is nsim + 1, which means in this current setting, 100 simulation will be performed.
+```
+p-value is smaller than alpha value of 0.05. Hence, reject the null hypothesis that the spatial patterns spatial independent. Because the Moran's I statistics is greater than 0. We can infer the spatial distribution shows sign of clustering.
+::: 
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The use of Monte Carlo simulation `global_moran_perm()`, is preferred over the normal global Moran test `global_moran_test()` when assessing spatial patterns because it provides a more reliable statistical test. Monte Carlo simulation generates many random scenarios to estimate the distribution of Moran's I under the assumption of spatial randomness, allowing for a non-parametric evaluation of statistical significance. This approach is robust, especially when the assumptions of normality may not hold, making it a more flexible and accurate method for detecting spatial patterns in real-world data.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+***Interpreting Global Moran's I Value***: *1) Positive Value* Indicates positive spatial autocorrelation, meaning similar values are clustered together; *2) Negative Value* Indicates negative spatial autocorrelation, meaning dissimilar values are clustered together; *3) Magnitude*, The closer the value is to 1 (positively) or -1 (negatively), the stronger the spatial autocorrelation.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+***Interpreting P-value of GLobal Moran's I test***: *P-Value < α* Suggests that the observed spatial pattern is unlikely to be due to random chance, and vice versa. *Positive Moran's I and significant P* Indicates a significant spatial clustering of similar values in neighboring areas.
+*Negative Moran's I and significant P* Suggests a significant spatial dispersion or segregation of dissimilar values.
+:::
+
+
+## Local Measure of Spatial Autocorrelation
+### Computing local Moran's I
+This section will compute Local Moran's I of GDPPC at county level by using [`local_moran()`](https://sfdep.josiahparry.com/reference/local_moran.html) of **sfdep** package.
+[`unnest()`](https://tidyr.tidyverse.org/reference/unnest.html) of **tidyr** package is used to expand a list-column containing data frames into rows and columns.
+
+
+```{r}
+# LISA (Local Indicator of Spatial Autocorrelation)
 lisa <- wm_q %>%
   mutate(local_moran = local_moran(
     GDPPC, nb, wt, nsim = 99),
     .before = 1) %>%
-  unnest(local_moran) 
+  unnest(local_moran) # unnest is to add local_moran into individual columns. without it, it will be a list
+
+# check the output
+glimpse(lisa)
 ```
-unnest is to add local_moran into individual columns. without it, it will be a list
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Note that there are 88 rows in the output which represent the number of County in Hunan. This implied that each county have its own statistical value, which highlight that this is a Local Moran for measuring Local Spatial Autocorrelation. 
+:::
+
+Output of `local_moran`:
+- ii: local moran statistic
+- eii: expectation of local moran statistic; for local_moran_perm, its the permutation sample means
+- var_ii: variance of local moran statistic; for local_moran_perm, its the permutation sample standard deviations
+- z_ii: standard deviation of local moran statistic; for local_moran_perm, its based on permutation sample means and standard deviations
+- p_ii: p-value of local moran statistic using pnorm(); for local_moran_perm, its using standard deviation based on permutation sample means and standard deviations
+- p_ii_sim: For `local_moran_perm()`, `rank()` and `punif()` of observed statistic rank for \[0, 1\] p-values using `alternative=`
+- p_folded_sim: the simulation folded \[0, 0.5\] range ranked p-value [source](https://github.com/pysal/esda/blob/4a63e0b5df1e754b17b5f1205b cadcbecc5e061/esda/crand.py#L211-L213)
+- skewness: For `local_moran_perm`, the output of e1071::skewness() for the permutation samples underlying the standard deviates
+- kurtosis: For `local_moran_perm`, the output of e1071::kurtosis() for the permutation samples underlying the standard deviates.
+
+### Visualizing The Moran's I Result
+::: panel-tabset
+#### *ii*
+```{r}
+#| fig-width: 8
+tmap_mode("plot")
+tm_shape(lisa) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of GDPPC",
+            main.title.size = 0.8)
+```
+
+#### p-value
+The following plot customize the map using common statistically significant alpha value threshold.
+```{r}
+tmap_mode("plot")
+
+# Specify breaks and labels for classification
+breaks <- c(0, 0.01, 0.05, 0.1, 1.01)
+labels <- c("Significant at 1%", "Significant at 5%", "Significant at 10%", "Not Significant")
+
+tm_shape(lisa) +
+  tm_fill("p_ii_sim", breaks = breaks, labels = labels) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8, legend.outside = TRUE,
+            legend.outside.position = 'right')
+```
+#### *ii* and p-value
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of GDPPC",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa) +
+  tm_fill("p_ii",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+#### LISA map
+Local Indicators of Spatial Association (LISA)  map is a categorical map showing outliers and clusters. There are two types of outliers namely: High-Low and Low-High outliers. Likewise, there are two type of clusters namely: High-High and Low-Low clusters. In fact, LISA map is an interpreted map by combining local Moran's I of geographical areas and their respective p-values.
+
+In lisa sf data.frame, we can find three fields contain the LISA categories. They are *mean*, *median* and *pysal*. In general, classification in *mean* will be used as shown in the code chunk below.
+
+::: {style="font-size: 1.5em"}
+```{r}
+# Filter the 'lisa' data frame to include only observations where the p-value ('p_ii') is less than 0.05.
+lisa_sig <- lisa  %>%
+  filter(p_ii < 0.05)
+# Set tmap mode to "plot" for plotting maps.
+tmap_mode("plot") 
+# Create a map using the 'lisa' data frame.
+tm_shape(lisa) +
+  tm_polygons() + # Add polygon (geographical shape) layer to the map.
+  tm_borders(alpha = 0.5) + # Add borders to the polygons with a specified level of transparency.
+# Create another layer on the map using the filtered 'lisa_sig' data frame.
+tm_shape(lisa_sig) +
+  tm_fill("mean") +  # Fill the polygons with color based on the 'mean' variable.
+  tm_borders(alpha = 0.4)
+```
+
+:::
+
+# Hot Spot and Cold Spot Area Analysis (HCSA)
+HCSA employs spatial weights to detect statistically significant hot spots and cold spots in a spatially weighted attribute. These spots are identified based on their proximity to each other, determined by a calculated distance. The analysis groups features into clusters when similar high (hot) or low (cold) values are observed. Typically, the polygon features represent administrative boundaries or a custom grid structure.
+
+Firstly, derive inverse distance weights matrix
+```{r}
+wm_idw <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+# check the output
+glimpse(wm_idw)
+```
+Next, use [`local_gstar_perm()`](https://sfdep.josiahparry.com/reference/local_gstar) of **sfdep** package to calculate the local Gi\* statistics
+```{r}
+HCSA <- wm_idw %>% 
+  mutate(local_Gi = local_gstar_perm(
+    GDPPC, nb, wt, nsim = 99),
+         .before = 1) %>%
+  unnest(local_Gi)
+
+# show the output
+glimpse(HCSA)
+```
+
+The following panel shows how to visualize and interpret the result
+
+::: panel-tabset
+
+## Gi\*
+```{r}
+# Set tmap mode to "plot" for plotting maps.
+tmap_mode("plot")
+
+# Create a map using the 'HCSA' data frame.
+tm_shape(HCSA) +
+  tm_fill("gi_star") +  # Fill the polygons with color based on the 'gi_star' variable.
+  tm_borders(alpha = 0.5) +  # Add borders to the polygons with a specified level of transparency.
+  tm_view(set.zoom.limits = c(6, 8))  # Set zoom limits for the map view.
+```
+Green areas indicate clusters of counties with higher GDP per Capita, known as hot spots, while red areas indicate clusters with lower GDP per Capita, referred to as cold spots. The varying shades from green to red reflect the intensity of the clustering effect.
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
-in choosing whether to use mean or median, look at the data distribution.
-if it's evenly distributed, mean can be used. else, use median
+The Getis-Ord Gi* statistical method  identifies spatial clusters of high values (hot spots) and low values (cold spots) by comparing local averages to the overall average. It's not just about which areas have higher or lower GDP per Capita, but rather how those areas compare to their neighboring areas and to the region as a whole. This clustering effect can reveal patterns that are not immediately obvious from the raw data alone. For example, an area might have a high GDP per Capita but not be considered a hot spot if it's surrounded by areas with even higher values. Conversely, an area with a moderate GDP per Capita could be a hot spot if it's significantly higher than its neighbors. The Gi* statistic takes into account both the local context and the broader regional context to provide insights into spatial patterns and relationships.
 :::
+
+## p-value of HCSA
+```{r}
+tmap_mode("plot")
+tm_shape(HCSA) +
+  tm_fill("p_sim") + 
+  tm_borders(alpha = 0.5)
+```
+The map displays the p-values from a Hot Spot Analysis (HCSA) of GDP per Capita data for Hunan County. The areas in lighter shades indicate lower p-values, suggesting that the identified hot or cold spots are statistically significant and unlikely due to random chance. Conversely, darker shades represent higher p-values, indicating less statistical significance in the spatial clustering of GDP per Capita.
+
+## local HCSA
+```{r}
+# Set tmap mode to "plot" for plotting maps.
+tmap_mode("plot")
+
+# Create the first map ('map1') using the 'HCSA' data frame.
+map1 <- tm_shape(HCSA) +
+  tm_fill("gi_star") +  # Fill the polygons with color based on the 'gi_star' variable.
+  tm_borders(alpha = 0.5) +  # Add borders to the polygons with a specified level of transparency.
+  tm_view(set.zoom.limits = c(6, 8)) +  # Set zoom limits for the map view.
+  tm_layout(main.title = "Gi* of GDPPC",  # Add a main title to the map.
+            main.title.size = 0.8)  # Set the font size for the main title.
+
+# Create the second map ('map2') using the 'HCSA' data frame.
+map2 <- tm_shape(HCSA) +
+  tm_fill("p_sim",  # Fill the polygons with color based on the 'p_value' variable.
+          breaks = c(0, 0.001, 0.01, 0.05, 1),  # Set breaks for the classification of p-values.
+          labels = c("0.001", "0.01", "0.05", "Not sig")) +  # Add labels to the breaks for interpretation.
+  tm_borders(alpha = 0.5) +  # Add borders to the polygons with a specified level of transparency.
+  tm_layout(main.title = "p-value of Gi*",  # Add a main title to the map.
+            main.title.size = 0.8)  # Set the font size for the main title.
+
+# Arrange the two maps side by side in a 2-column layout.
+tmap_arrange(map1, map2, ncol = 2)
+
+```
+
+## Hot Spot and Cold Spot Areas
+
+```{r}
+```
+
+```{r}
+HCSA_sig <- HCSA  %>%
+  filter(p_sim < 0.05)
+tmap_mode("plot")
+tm_shape(HCSA) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(HCSA_sig) +
+  tm_fill("gi_star") + 
+  tm_borders(alpha = 0.4)
+```
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The map visualizes areas in Hunan County with significant spatial clustering of GDP per Capita, as identified by the Hot Spot Analysis (HCSA) with a significance level (p-value) less than 0.05. Green shades indicate areas with a high Gi* statistic value, representing statistically significant hot spots of high GDP per Capita. The orange area indicates a statistically significant cold spot with a low Gi* value. Areas not highlighted are not statistically significant at the 0.05 level according to the HCSA.
+:::
+
+:::
+
+# Emerging Hot Spot Analysis
+Emerging Hot Spot Analysis (EHSA) is an analytical technique that explores the spatio-temporal evolution of hot spot and cold spot areas. The procedure involves four key steps:
+- Constructing a space-time cube.
+- Computing the Getis-Ord local Gi* statistic for each bin, incorporating a False Discovery Rate (FDR) correction (to account for the possibility of false positives in the results).
+- Assessing hot and cold spot trends using the Mann-Kendall trend test.
+- Classifying each location in the study area based on the resulting trend z-score and p-value, considering both the overall data and the hot spot z-score and p-value for each bin.
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+he Getis-Ord local Gi* statistic is a measure used to identify spatial clusters or hot spots. It assesses whether a feature (such as an event or attribute) exhibits clustering in relation to its neighboring features.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+False Discovery Rate (FDR) is a statistical method used to address the issue of multiple comparisons in hypothesis testing. When you are conducting numerous statistical tests simultaneously, the likelihood of obtaining false positives (errors) increases. FDR correction helps control this rate of false positives, enhancing the reliability of the statistical analysis.
+:::
+
+ehsa_sig \<- hunan_ehsa %\>% filter(p_value \< 0.05) tmap_mode("plot") tm_shape(hunan_ehsa) + tm_polygons() + tm_borders(alpha = 0.5) + tm_shape(ehsa_sig) + tm_fill("classification") + tm_borders(alpha = 0.4)
 
 
 ## Creating a Time Series Cube
-read the raw data
-```{r}
-GDPPC <- read_csv('../data/aspatial/Hunan_GDPPC.csv')
-```
+A spacetime cube, in the context of geospatial analytics, is a data structure where each location has a value for every time index, essentially representing a regular time-series for each location. In ESRI's terminology, the fundamental component of a spacetime cube is a "bin," which is a unique combination of a location and time index. Collections of these locations for each time index are termed "time slices," and the set of bins at each time index for a location form a "bin time-series".
+For more details on using **sfdep** package to create spatio-temporal cube visit this [link](https://sfdep.josiahparry.com/articles/spacetime-s3.html)
 
-transform into time series cube
+in the following code chunks, these function is used:
+- [`spacetime()`](https://sfdep.josiahparry.com/reference/spacetime.html) of **sfdep** to create an spacetime cube.
+- `is_spacetime_cube()` of **sfdep** package to verify if GDPPC_st is indeed an space-time cube object.
+ 
+ 
 ```{r}
+# Create a spacetime object named GDPPC_st using the spacetime function
 GDPPC_st <- spacetime(GDPPC, hunan,
                       .loc_col = "County",
                       .time_col = "Year")
+
+# verify that it is space time cube
+print(is_spacetime_cube(GDPPC_st))
+
+# Display a summary of the spacetime object
+print(glimpse(GDPPC_st))
 ```
-use `_is_spacetime_cube9) of *sfdep* package will be used to verify if GDPPC_st is indeed an space-time cube object.
+The **TRUE** return confirms that *GDPPC_st* object is indeed an time-space cube.
+
+## Computing Gi\*
+Next, compute the local Gi\* statistics. To do it, derive inverse distance weights first.
+```{r}
+# Create a neighbors and weights object named DPPC_nb using the GDPPC_st spacetime object
+GDPPC_nb <- GDPPC_st %>%
+  # Activate the spatial geometry component of the spacetime object, allowing spatial operations to be performed
+  activate("geometry") %>%
+  # Add a new variable 'nb' representing neighbors and 'wt' representing weights
+  mutate(nb = include_self(st_contiguity(geometry)),
+         wt = st_inverse_distance(nb, geometry,
+                                  scale = 1,
+                                  alpha = 1),
+         .before = 1) %>%
+  # Set the neighbors using the 'nb' variable
+  set_nbs("nb") %>%
+  # Set the weights using the 'wt' variable
+  set_wts("wt")
+
+# Display a summary of the neighbors and weights object
+glimpse(GDPPC_nb)
+```
 
 ```{r}
-is_spacetime_cube(GDPPC_st)
+GDPPC_st
 ```
 
-## Computing Gi*
-gi_stars <- GDPPC_nb %>%
-  group_by(Year) %>%
+Compute Gi\* using the following code
+```{r}
+gi_stars <- GDPPC_nb %>% 
+  group_by(Year) %>% 
   mutate(gi_star = local_gstar_perm(
-    GDPPC, nb, wt)) %>%
+    GDPPC, nb, wt)) %>% 
   tidyr::unnest(gi_star)
 
-## Performing Emerging Hotspot Analysis
+# check the output
+glimpse(gi_stars)
+```
+## Mann-Kendall Test
+Using Gi\* measures, Mann-Kendall test can be run to valuate each location for a trend
 ```{r}
-ehsa <- emerging_hotspot_analysis(
-  x = GDPPC_st,
-  .var = "GDPPC",
-  k = 1,
-  nsim = 99)
-head(ehsa)
+cbg <- gi_stars %>% 
+  ungroup() %>% 
+  filter(County == "Changsha") |> 
+  select(County, Year, gi_star)
+
+# check the output
+glimpse(cbg)
+```
+plot the result
+```{r}
+ggplot(data = cbg, 
+       aes(x = Year, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light()
+```
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The graph shows a time series of the standardized Gi* statistic (gi_star) for Changsha county in Hunan, which is a measure of local spatial association for GDP per capita over time. The trend indicates fluctuations with peaks and troughs, suggesting periods of relatively high and low localized economic performance when compared to the overall spatial-temporal dataset.
+:::
+
+Alternatively, create an interactive plot using `ggplotly()` of **plotly** package.
+```{r}
+p <- ggplot(data = cbg, 
+       aes(x = Year, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light()
+
+ggplotly(p)
 ```
 
 
-## EHSA
-ehsa_sig <- hunan_ehsa %>%
+```{r}
+cbg %>%
+  # Summarize the data using the Mann-Kendall test and store the results in a list named 'mk'
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>% 
+  # Unnest the 'mk' list and widen it to create separate columns for each element
+  tidyr::unnest_wider(mk)
+```
+
+
+In the above result, sl is the p-value. This result tells us that there is a slight upward but insignificant trend.
+
+We can replicate this for each location by using `group_by()` of **dplyr** package.
+
+
+```{r}
+ehsa <- gi_stars %>%
+  # Group the data by 'County'
+  group_by(County) %>%
+  # Summarize the data within each group using the Mann-Kendall test and store the results in a list named 'mk'
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  # Unnest the 'mk' list and widen it to create separate columns for each element
+  tidyr::unnest_wider(mk)
+
+# check the output
+glimpse(ehsa)
+```
+
+## Arrange to show significant emerging hot/cold spots
+
+```{r}
+emerging <- ehsa %>% 
+  # Arrange the data in ascending order based on the 'sl' column and the absolute value of 'tau' column
+  arrange(sl, abs(tau)) %>%
+  # Extract the top 5 rows after sorting
+  slice(1:5)
+
+# check the output
+glimpse(emerging)
+```
+
+## Performing Emerging Hotspot Analysis
+
+Lastly, we will perform EHSA analysis by using [`emerging_hotspot_analysis()`](https://sfdep.josiahparry.com/reference/emerging_hotspot_analysis.html) of **sfdep** package. It takes a spacetime object x (i.e. GDPPC_st), and the quoted name of the variable of interest (i.e. GDPPC) for .var argument. The k argument is used to specify the number of time lags which is set to 1 by default. Lastly, nsim map numbers of simulation to be performed.
+
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x = GDPPC_st,     # Input data: Spacetime object representing data with spatial and temporal dimensions
+  .var = "GDPPC",   # Variable of interest for the analysis is "GDPPC"
+  k = 1,             # number of time lags to include in the neighborhood for calculating the local Gi*
+  nsim = 99         # determining the number of simulations to calculate simulated p-value for logal Gi*
+)
+
+# check the output
+glimpse(ehsa)
+```
+Classifications:
+
+- Consecutive Hotspot: A consecutive hotspot in EHSA refers to a spatial and temporal pattern where a specific area consistently exhibits high values over consecutive time periods.
+
+- No Pattern Detected: When EHSA identifies "no pattern detected," it indicates that there is no discernible consistent spatial or temporal trend in the analyzed data.
+
+- Oscillating Coldspot: An oscillating coldspot in EHSA describes a location that alternates between periods of exhibiting lower values and periods of relative inactivity.
+
+- Oscillating Hotspot: An oscillating hotspot in EHSA characterizes a location that alternates between periods of exhibiting higher values and periods of relative inactivity.
+
+- Sporadic Coldspot: A sporadic coldspot in EHSA refers to a location that irregularly experiences periods of lower values without a clear, sustained pattern.
+
+- Sporadic Hotspot: A sporadic hotspot in EHSA describes a location that irregularly experiences periods of higher values without a clear, sustained pattern.
+
+
+the next panel will visualise the result:
+
+::: panel-tabset
+
+### Distribution of EHSA classes
+```{r}
+ggplot(data = ehsa,
+       aes(x = classification)) +
+  geom_bar()
+```
+
+Figure above shows that sporadic cold spots class has the highest numbers of county.
+
+### Geographic EHSA classes distribution
+```{r}
+# join the dataset
+hunan_ehsa <- hunan %>%
+  left_join(ehsa,
+            by = join_by(County == location))
+
+# plot the map
+ehsa_sig <- hunan_ehsa  %>%
   filter(p_value < 0.05)
 tmap_mode("plot")
 tm_shape(hunan_ehsa) +
   tm_polygons() +
   tm_borders(alpha = 0.5) +
-  tm_shape(ehsa_sig) +
-  tm_fill("classification")  +
+tm_shape(ehsa_sig) +
+  tm_fill("classification") + 
   tm_borders(alpha = 0.4)
-
+```
+:::
