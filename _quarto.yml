@@ -17,12 +17,18 @@ website:
             href: hands-on/hoe2-globalautocor.html
           - text: 2C - Local Measures of Spatial Autocorrelation 
             href: hands-on/hoe2-localautocor.html
+          - text: 3 - Processing and Visualising Flow Data 
+            href: hands-on/hoe3.html
       - text: In-class Exercise
         menu:
           - text: 1 - Preparing The Data Flow
             href: in-class/ice1.html
           - text: 2 - sfdep for Spatial Weights, GLSA & EHSA
             href: in-class/ice2.html
+      - text: Take-Home Exercise
+        menu:
+          - text: 1 - Geospatial Analytics for Public Goods
+            href: take-home/the1.html
     right:
       - href: index.qmd
         text: Home
