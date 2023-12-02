@@ -73,6 +73,7 @@ odbus6_9 <- odbus202308 %>%
 datatable(odbus6_9)
 # Displaying the data in an interactive table format
 ```
+
 ## Working with Geospatial Data
 
 We'll use two geospatial datasets:
@@ -131,7 +132,6 @@ glimpse(od_data)
 ```
 
 Checking for duplicate records is crucial, if duplicates exist, we keep only unique records:
-
 
 ```{r}
 duplicate <- od_data %>%
@@ -239,7 +239,7 @@ tm_shape(mpsz) +
 Focusing on selected flows can be insightful, especially when data are skewed:
 
 ```{r}
-tmap_mode("view")
+tmap_mode("plot")
 tmap_options(check.and.fix = TRUE)
 ```
 
