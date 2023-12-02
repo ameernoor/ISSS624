@@ -17,7 +17,7 @@ website:
             href: hands-on/hoe2-globalautocor.html
           - text: 2C - Local Measures of Spatial Autocorrelation 
             href: hands-on/hoe2-localautocor.html
-          - text: 3 - Processing and Visualising Flow Data 
+          - text: 3 - Flow Data 
             href: hands-on/hoe3.html
       - text: In-class Exercise
         menu:
