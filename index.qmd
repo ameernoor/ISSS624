@@ -11,7 +11,7 @@ Hello there! I'm Muhamad Ameer Noor, and this is my space dedicated to the excit
 
 ## What to Expect
 
-On this webpage, I'll be sharing insights, discoveries, and projects related to geospatial analytics that I learned from ISSS624 - Applied Geospatial Analytics Course under [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486) during my \[MITB Programme at Singapore Management University\] (https://masters.smu.edu.sg/programme/master-of-it-in-business). Whether you're a fellow enthusiast, a student, or just curious about the power of location-based data, you're in the right place!
+On this webpage, I'll be sharing insights, discoveries, and projects related to geospatial analytics that I learned from ISSS624 - Applied Geospatial Analytics Course under [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486) during my [MITB Programme at Singapore Management University](https://masters.smu.edu.sg/programme/master-of-it-in-business). Whether you're a fellow enthusiast, a student, or just curious about the power of location-based data, you're in the right place!
 
 ## Learning Journey
 
