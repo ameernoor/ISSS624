@@ -92,7 +92,11 @@ busstop <- st_read(dsn = "../data/geospatial", layer = "BusStop") %>%
 
 mpsz <- st_read(dsn = "../data/geospatial", layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
-# Importing and transforming the MPSZ-2019 data
+
+# export the data for future use
+mpsz <- write_rds(mpsz, "../data/rds/mpsz.rds")
+
+# show the output
 mpsz
 ```
 

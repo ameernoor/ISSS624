@@ -25,6 +25,8 @@ website:
             href: in-class/ice1.html
           - text: 2 - sfdep for Spatial Weights, GLSA & EHSA
             href: in-class/ice2.html
+          - text: 3 - Calibrating Spatial Interaction Models with R
+            href: in-class/ice3.html
       - text: Take-Home Exercise
         menu:
           - text: 1 - Geospatial Analytics for Public Goods
