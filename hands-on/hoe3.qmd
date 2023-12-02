@@ -191,6 +191,12 @@ glimpse(od_data)
 # check the final data
 ```
 
+Export the output to rds for future usage.
+```{r}
+write_rds(od_data, "../data/rds/od_data.rds")
+```
+
+
 ## Visualising Spatial Interaction
 
 We'll now create and visualize desire lines using the **stplanr** package.

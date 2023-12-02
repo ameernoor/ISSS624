@@ -601,8 +601,6 @@ busstop_map = tm_shape(odb10_final)+
   )+
   tm_borders(col = "grey40", lwd = 0.7)
 busstop_map
-
-tmap_mode("plot")
 ```
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -659,8 +657,6 @@ combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_li
 
 # Show the combined map
 combined_map
-
-tmap_mode("plot")
 ```
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -714,8 +710,6 @@ combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_li
 
 # Show the combined map
 combined_map
-
-tmap_mode("plot")
 ```
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -844,13 +838,6 @@ for (vc in value_columns) {
 ## Visualizing Significant Local Moran's I at 95% Confidence Level
 
 Utilize tmap core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted.
-
-
-```{r}
-#restoring tmap mode for rendering
-tmap_mode("plot")
-```
-
 
 # References
 
