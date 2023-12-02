@@ -35,9 +35,9 @@ We'll employ four R packages for this analysis:
 -   **tmap**: For creating thematic maps.
 
 ```{r}
+#pacman::p_load' ensures all specified packages are installed and loaded
 pacman::p_load(tmap, sf, DT, stplanr, performance,
                ggpubr, tidyverse)
-#pacman::p_load' ensures all specified packages are installed and loaded
 ```
 
 ## Preparing the Flow Data
@@ -47,11 +47,11 @@ pacman::p_load(tmap, sf, DT, stplanr, performance,
 We begin by importing the *Passenger Volume by Origin Destination Bus Stops* dataset using the `read_csv()` function from the **readr** package.
 
 ```{r}
+# The dataset is converted to a dataframe with appropriate data types
 odbus202308 <- read_csv("../data/aspatial/origin_destination_bus_202308.csv.gz")
 odbus202308 <- data.frame(lapply(odbus202308, factor))
 odbus202308$TOTAL_TRIPS <- as.numeric(odbus202308$TOTAL_TRIPS)
 odbus202308$TIME_PER_HOUR <- as.numeric(odbus202308$TIME_PER_HOUR)
-# The dataset is converted to a dataframe with appropriate data types
 
 # display the summary of the dataset
 glimpse(odbus202308)
@@ -62,16 +62,15 @@ glimpse(odbus202308)
 Our focus is on weekday commuting flows between 6 and 9 AM.
 
 ```{r}
+# Filtering and aggregating data for specific time and day
 odbus6_9 <- odbus202308 %>%
   filter(DAY_TYPE == "WEEKDAY") %>%
   filter(TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
   group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>%
   summarise(TRIPS = sum(TOTAL_TRIPS))
-# Filtering and aggregating data for specific time and day
 
-# View the extracted data
-datatable(odbus6_9)
 # Displaying the data in an interactive table format
+datatable(odbus6_9)
 ```
 
 ## Working with Geospatial Data
@@ -86,9 +85,9 @@ We'll use two geospatial datasets:
 The datasets will be imported as follows:
 
 ```{r}
+# Importing and transforming the BusStop and mpsz data
 busstop <- st_read(dsn = "../data/geospatial", layer = "BusStop") %>%
   st_transform(crs = 3414)
-# Importing and transforming the BusStop data
 
 mpsz <- st_read(dsn = "../data/geospatial", layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
@@ -112,24 +111,23 @@ mpsz
 We'll merge the planning subzone codes from the mpsz dataset into the busstop dataset.
 
 ```{r}
+# Merging data and retaining essential columns
 busstop_mpsz <- st_intersection(busstop, mpsz) %>%
   select(BUS_STOP_N, SUBZONE_C) %>%
   st_drop_geometry()
-# Merging data and retaining essential columns
 
 # Note: Five bus stops outside Singapore's boundary are excluded.
 
-# check the output
-datatable(busstop_mpsz)
 # Viewing the combined data
+datatable(busstop_mpsz)
 ```
 
 Now, let's append the planning subzone codes to the `odbus6_9` dataset:
 
 ```{r}
+# Joining and renaming columns for clarity
 od_data <- left_join(odbus6_9, busstop_mpsz, by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE, ORIGIN_SZ = SUBZONE_C, DESTIN_BS = DESTINATION_PT_CODE)
-# Joining and renaming columns for clarity
 
 # check the data
 glimpse(od_data)
@@ -138,64 +136,64 @@ glimpse(od_data)
 Checking for duplicate records is crucial, if duplicates exist, we keep only unique records:
 
 ```{r}
+# Identifying any duplicate records
 duplicate <- od_data %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
-# Identifying any duplicate records
 
-od_data <- unique(od_data)
 # Retaining only unique records
+od_data <- unique(od_data)
 
-glimpse(od_data)
 # check the data
+glimpse(od_data)
 ```
 
 We'll now complete the dataset with destination subzone codes:
 
 ```{r}
+# Further enriching the dataset with destination subzone codes
 od_data <- left_join(od_data, busstop_mpsz, by = c("DESTIN_BS" = "BUS_STOP_N")) %>%
    rename(DESTIN_SZ = SUBZONE_C)
-# Further enriching the dataset with destination subzone codes
 
-glimpse(od_data)
 # check the data
+glimpse(od_data)
 ```
 
 Checking for and removing any remaining duplicates:
 
 ```{r}
+# Re-checking for duplicates
 duplicate <- od_data %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
-# Re-checking for duplicates
 
-od_data <- unique(od_data)
 # Ensuring all records are unique
+od_data <- unique(od_data)
 
-glimpse(od_data)
 # Check the data
+glimpse(od_data)
 ```
 
 Finally, we'll prepare the data for visualisation:
 
 ```{r}
+# Final data preparation step
 od_data <- od_data %>%
   drop_na() %>%
   group_by(ORIGIN_SZ, DESTIN_SZ) %>%
   summarise(MORNING_PEAK = sum(TRIPS))
-# Final data preparation step
 
-glimpse(od_data)
 # check the final data
+glimpse(od_data)
 ```
 
 Export the output to rds for future usage.
+
 ```{r}
 write_rds(od_data, "../data/rds/od_data.rds")
 ```
-
 
 ## Visualising Spatial Interaction
 
@@ -206,11 +204,11 @@ We'll now create and visualize desire lines using the **stplanr** package.
 Intra-zonal flows are not required for our analysis:
 
 ```{r}
-od_data1 <- od_data[od_data$ORIGIN_SZ != od_data$DESTIN_SZ,]
 # Removing intra-zonal flows for clarity in visualization
+od_data1 <- od_data[od_data$ORIGIN_SZ != od_data$DESTIN_SZ,]
 
-glimpse(od_data1)
 # check the output
+glimpse(od_data1)
 ```
 
 ### Creating Desire Lines

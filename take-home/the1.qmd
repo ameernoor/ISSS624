@@ -96,8 +96,6 @@ Before starting with the analysis, we have to load the library (and install it i
 pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT)
 ```
 
-pacman::p_load(kableExtra, DT, ggplot2, patchwork, ggrain)
-
 Explanations for the imported library:
 
 -   [tmap](https://cran.r-project.org/web/packages/tmap/) for visualizing geospatial
@@ -115,18 +113,6 @@ Explanations for the imported library:
 -   [mapview](https://cran.r-project.org/web/packages/mapview/index.html) for interactive map backgrouds
 
 -   [DT](https://rstudio.github.io/DT/) library to create interactive html tables
-
-Unused Yet 
--   **kableExtra** and **DT** for formatting of dataframes
-
--   **ggplot2, patchwork** and **ggrain** for visualising attributes
-
--   **urbnthemes** for consistent plot theming
-
-
--   [ggplot2](https://ggplot2.tidyverse.org/) to plot graphs
-
--   [plotly](https://plotly.com/r/) to plot interactive graphs
 
 ## Import and Setup the Data
 
@@ -663,14 +649,14 @@ combined_map
 Using the same classification scaling for all maps, it clearly shows that weekdays trips volume is higher in general than weekend/holiday. Nevertheless, at a glance, the crowded area are more or less the same across all days and time. This confirmed the previous finding on bus stops in which the area with most traffics are likely to encompassing the Central Business District (CBD) and surrounding residential areas, which are known to be highly populated and active the area of Singapore. At the same time, it also reflects Singapore's urban planning and transportation strategy, in which the busiest area with potential high traffics are supported by more bus stops.
 :::
 
-### Distribution of Average Trips per Bus Stop
+## Distribution of Average Trips per Bus Stop
 The next distribution will see which bus stop is the busiest on average, in terms of number of trips per bus stop. To do that, firstly the following code will generate new columns of trip per bus stop for each hexagon.
 ```{r}
 # Create a new dataframe with transformed columns
-odb10_final <- odb10_final %>%
+odb10_final_avg <- odb10_final %>%
   mutate(across(all_of(value_columns), ~ .x / n_busstops, .names = "avg_{.col}"))
 # check the summary for determining break points
-summary(odb10_final)
+summary(odb10_final_avg)
 ```
 the following code plot the comparison map
 ```{r}
@@ -727,7 +713,7 @@ Before delving into global/local spatial autocorrelation statistics, we need to 
 
 - Each feature should have at least one neighbor, and no feature should be a neighbor with all other features.
 
-- For skewed data, each feature should ideally have at least 8 neighbors (we'll start with 6).
+- For skewed data, each feature should ideally have at least 8 neighbors (12 is used here).
 
 Given the sparse distribution of bus stops in certain regions (e.g., central catchment areas, military training areas, and airports), distance-based methods are favored over contiguity methods.
 
@@ -817,27 +803,121 @@ lisa_results <- list()
 
 # Apply the function for each time interval and store results in the list
 for (vc in value_columns) {
-  lisa_results[[vc]] <- get_lisa(wm_all, vc, k = 6)
+  lisa_results[[vc]] <- get_lisa(wm_all, vc, k = 12)
+  
+  # Remove columns that don't belong to the specific time interval
+  unwanted_columns <- setdiff(value_columns, vc)
+  lisa_results[[vc]] <- lisa_results[[vc]][, !(names(lisa_results[[vc]]) %in% unwanted_columns)]
 }
 
-# Create a function to display a data table
-display_datatable <- function(lisa_result, value_column) {
-  datatable(
-    lisa_result,
-    class = 'cell-border stripe',
-    options = list(pageLength = 5),
-    caption = paste("Local Moran's I for", value_column)
-  )
-}
+# show sample output in an interactive table
+datatable(lisa_results[["Weekday morning peak"]], 
+          class = 'cell-border stripe', 
+          options = list(pageLength = 5))
 
-# Display data tables for each value column
-for (vc in value_columns) {
-  display_datatable(lisa_results[[vc]], vc)
-}
 ```
+
 ## Visualizing Significant Local Moran's I at 95% Confidence Level
 
-Utilize tmap core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted.
+Utilize `tmap` core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted.
+
+```{r}
+get_sig_lmi_map <- function(lisa_table, title) {
+  
+  sig_lisa_table <- lisa_table %>%
+    filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisa_table) +
+    tm_polygons() +
+    tm_borders(alpha = 0.5) +
+    tm_shape(sig_lisa_table) +
+    tm_fill("ii") + 
+    tm_borders(alpha = 0.4) +
+    tm_layout(
+      main.title = title,
+      main.title.size = 1.3
+    )
+  
+  return(result)
+  
+}
+
+sig_lmi_1 <- get_sig_lmi_map(lisa_results[["Weekday morning peak"]], "Local Moran's I of Total Trips generated on Weekday Morning at 95% CL" )
+sig_lmi_2 <- get_sig_lmi_map(lisa_results[["Weekday evening peak"]], "Local Moran's I of Total Trips generated on Weekday Afternoon at 95% CL" )
+sig_lmi_3 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Local Moran's I of Total Trips generated on Weekend Morning at 95% CL" )
+sig_lmi_4 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Local Moran's I of Total Trips generated on Weekend Afternoon at 95% CL" )
+
+tmap_mode('plot')
+
+tmap_arrange(
+  sig_lmi_1,
+  sig_lmi_2,
+  sig_lmi_3,
+  sig_lmi_4,
+  asp = 2,
+  nrow = 2,
+  ncol = 2
+)
+```
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The choropleth maps displaying Local Moran's I reveal that **darker orange** and **darker green** areas signify **outlier regions**. To classify it into low-high or high-low cluster, further analysis is required using LISA. Similarly, the **light green** are indicates either high-high or low-low regions. Notably, the the area around **Tuas and Jurong**is most likelya low-low area based on the previous geovisualization.
+:::
+
+```{r}
+get_sig_lisa_map <- function(lisatable, title) {
+  
+  sig_lisatable <- lisatable  %>%
+  filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisatable) +
+    tm_polygons(alpha = 0.5) +
+    tm_borders(alpha = 0.5) +
+    
+    tm_shape(sig_lisatable) +
+    tm_fill("median",
+            palette = c("#2c7bb6",  "#fdae61", "#abd9e9", "#d7191c"),
+            alpha= 0.7) + 
+    tm_dots('grid_id', alpha=0.05) +
+    tm_borders(alpha = 0.4) +
+    tm_layout(main.title = title,
+              main.title.size = 1.5,
+              legend.position = c("left", "top"))
+    
+  return(result)
+  
+}
+
+sig_lisa_1 <- get_sig_lisa_map(lisa_results[["Weekday morning peak"]],"LISA categories generated on Weekday Morning at 95% CL" )
+sig_lisa_2 <- get_sig_lisa_map(lisa_results[["Weekday evening peak"]], "LISA categories generated on Weekday Afternoon at 95% CL" )
+sig_lisa_3 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Morning at 95% CL" )
+sig_lisa_4 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Afternoon at 95% CL" )
+
+The choropleth maps above show significant clusters and outliers for passenger trips generated by origin at each hexagon. The confidence level used is 95%.
+
+**Low-low regions** represent Low-Low clusters.
+
+**Low-High regions** indicate Low-High outliers.
+
+**High-Low regions** represent High-Low outliers.
+
+**High-High regions** indicate High-High clusters.
+
+The spatial pattern exhibits higher concentrations in the East, North, and West residential regions compared to the Southern part of Singapore. Major interchanges contributing to high clusters include Ang Mo Kio, Bedok, Boon Lay, Bukit Batok, Chua Chu Kang, Clementi, Hougang, Joo Koon, Seng Kang, Tampines, Toa Payoh, Woodlands, and Yishun.
+
+**Analysis by Regions**
+
+- **High Clusters:** North, East, and West residential regions.
+- **Low Clusters:** Western parts of Singapore, mainly industrial zones with company-provided transport.
+
+**Analysis of Edges**
+Clusters of low passenger trips are observed along the Western and Southern edges, with notable outliers such as Gul Circle, Jurong port, Pandan subzones, Penjuru Crescent, Pioneer Sector, Samulun, Shipyard, and Tuas.
+
+**Analysis of Weekends vs. Weekdays**
+Hexagons along Bukit Timah/Dunearn Road, Singapore Botanic Gardens, and Woodlands Checkpoint exhibit interesting patterns during weekends, transitioning into high-low outliers or high clusters.
+
+While this analysis identifies clusters and outliers and provides potential reasons, other factors like income levels, population density, and demographics may contribute to the observed spatial patterns.
+
 
 # References
 
