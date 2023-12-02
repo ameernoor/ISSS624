@@ -1,5 +1,5 @@
 ---
-title: "Take-home 1 - Geospatial Analytics for Public Good"
+title: "Take-home 1 - Geospatial Analytics for Public Goods"
 author: "Muhamad Ameer Noor"
 date: "2 December 2023"
 date-modified: "last-modified"
@@ -121,8 +121,8 @@ Explanations for the imported library:
 the following code will import all the origin destination bus data and check a sample dataframe. The process also involved transforming georeference data type into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
 
 ::: panel-tabset
-
 #### August 2023
+
 ```{r}
 # Load each csv file
 odb8 <- read_csv("../data/aspatial/origin_destination_bus_202308.csv.gz")
@@ -139,6 +139,7 @@ describe(odb8)
 ```
 
 #### September 2023
+
 ```{r}
 # Load each csv file
 odb9 <- read_csv("../data/aspatial/origin_destination_bus_202309.csv.gz")
@@ -156,6 +157,7 @@ describe(odb9)
 ```
 
 #### October 2023
+
 ```{r}
 # Load each csv file
 odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
@@ -171,7 +173,6 @@ odb10 <- odb10 %>%
 describe(odb10)
 ```
 :::
-
 
 Explanations for each field in the data can be found in the following metadata.
 
@@ -192,12 +193,14 @@ Explanations for each field in the data can be found in the following metadata.
 :::
 
 ### Geospatial
+
 the following panel show the import process for the bus stop geospatial data. The geospatial layer of the data shows ***point*** location of bus stops across Singapore.
 
 ::: panel-tabset
-
 #### Import and Check the Data
+
 As previously done, while reading the data, categorical data that can serve as reference are converted into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
+
 ```{r}
 busstop <- st_read(
     dsn = "../data/geospatial",
@@ -212,10 +215,10 @@ busstop <- st_read(
 # check the output
 glimpse(busstop)
 ```
+
 ##### Check the unique values
 
 ::: panel-tabset
-
 ###### BUS_STOP_N
 
 count of unique/distinct values are:
@@ -247,7 +250,6 @@ count of unique/distinct values are:
 ```{r}
 n_distinct(busstop$geometry)
 ```
-
 :::
 
 Explanations for each field in the data can be found in the following metadata.
@@ -261,9 +263,7 @@ Explanations for each field in the data can be found in the following metadata.
 
 #### Setup EPSG Code, CRS and Prepare the data for joining
 
-To ensure that geospatial data from different sources can be processed together, both have to be projected using similar coordinate systems and be assigned the correct EPSG code based on CRS. The [st_crs](https://r-spatial.github.io/sf/reference/st_crs.html) function is used to check for ESPG Code and Coordinate System of both geospatial files. For Singapore, the coordinate system is *SVY21* with *EPSG 3414* (source: [epsg.io](https://epsg.io/?q=Singapore)).
-The following code chunk output shows how the CRS was initially not *3414*, then corrected using [st_set_crs](https://www.rdocumentation.org/packages/sf/versions/1.0-14/topics/st_crs).
-Simultaneously, the dataframe is also prepared for joining process.
+To ensure that geospatial data from different sources can be processed together, both have to be projected using similar coordinate systems and be assigned the correct EPSG code based on CRS. The [st_crs](https://r-spatial.github.io/sf/reference/st_crs.html) function is used to check for ESPG Code and Coordinate System of both geospatial files. For Singapore, the coordinate system is *SVY21* with *EPSG 3414* (source: [epsg.io](https://epsg.io/?q=Singapore)). The following code chunk output shows how the CRS was initially not *3414*, then corrected using [st_set_crs](https://www.rdocumentation.org/packages/sf/versions/1.0-14/topics/st_crs). Simultaneously, the dataframe is also prepared for joining process.
 
 ```{r}
 # Check the current Coordinate Reference System (CRS) of the busstop dataset
@@ -298,11 +298,14 @@ print(st_crs(busstop))
 ## Data Wrangling
 
 ### check for duplicates
+
 In this step, we inspect the dataset for duplicate entries. This precautionary step is crucial to avoid the inadvertent repetition of records, which could lead to the overcounting of passenger trips. By identifying and addressing duplicates at this stage, we ensure the accuracy and reliability of our analysis, laying the groundwork for more precise and trustworthy results in the subsequent analytical processes. Checking for duplicates is a fundamental practice that contributes to the integrity of the data and the overall robustness of the geospatial analysis.
 
 ::: panel-tabset
 #### Aspatial - Origin Destination Bus
+
 the following code is used to check duplicates and show how many duplicates exist in each *odb*.
+
 ```{r}
 # Count the number of rows in each dataframe with duplicates
 count_duplicate_rows <- function(df, df_name) {
@@ -330,7 +333,9 @@ The result shows that there are no duplicated data in the origin destination bus
 :::
 
 #### Geospatial - Bus Stop
-The following codes 
+
+The following codes
+
 ```{r}
 # Subset rows where origin_pt_code has duplicates
 duplicates <- busstop[duplicated(busstop$origin_pt_code) | duplicated(busstop$origin_pt_code, fromLast = TRUE), ]
@@ -340,8 +345,7 @@ kable(head(duplicates, n=32))
 ```
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
-The result shows that there are some duplicated data in the geospatial bus stop dataset. This might interfere with the joining data process and generated double count on later on. Note that the checking was based on the origin_pt_code field only, because it will be the basis of reference for joining the dataset later on.
-At a glance, the table above also show that, the ***duplicated code are actually located near each other***. Therefore, removing the duplicates can be considered safe as the remaining *bus stop code* can represent the deleted one. The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced.
+The result shows that there are some duplicated data in the geospatial bus stop dataset. This might interfere with the joining data process and generated double count on later on. Note that the checking was based on the origin_pt_code field only, because it will be the basis of reference for joining the dataset later on. At a glance, the table above also show that, the ***duplicated code are actually located near each other***. Therefore, removing the duplicates can be considered safe as the remaining *bus stop code* can represent the deleted one. The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced.
 :::
 
 ```{r}
@@ -351,12 +355,10 @@ busstop <- busstop[!duplicated(busstop$origin_pt_code) | duplicated(busstop$orig
 # Display the resulting dataset
 glimpse(busstop)
 ```
-
 :::
 
-
-
 ### categorical peak time variable
+
 on the interest of analyzing the peak time, the following code will assign new column that categorize peak time, filter data that is not on peak time, and show a sample of the output.
 
 ```{r}
@@ -393,7 +395,9 @@ glimpse(odb10)
 ```
 
 ### choosing the month
-In order to decide which month is better to perform LISA or whether analyzing all month separately will yield interesting result, it is a good step to check the data distribution of each month. By comparing the data distribution for each month, we can make an educated guess whether the LISA result for each month would be starkly different or just similar.  
+
+In order to decide which month is better to perform LISA or whether analyzing all month separately will yield interesting result, it is a good step to check the data distribution of each month. By comparing the data distribution for each month, we can make an educated guess whether the LISA result for each month would be starkly different or just similar.
+
 ```{r}
 # Combine odb8, odb9, and odb10 into one dataframe
 combined_data <- bind_rows(
@@ -418,7 +422,9 @@ bus_boxplot <- combined_data %>%
 bus_boxplot
 
 ```
+
 The box plot to show the data distribution was not too helpful as it shows that all peak time across months has extreme outliers. Therefore, the next code chunk modify the boxplot by log-transforming the number of trips.
+
 ```{r}
 # Create a modified vertical box plot
 bus_boxplot <- combined_data %>%
@@ -435,10 +441,10 @@ bus_boxplot <- combined_data %>%
 
 bus_boxplot
 ```
+
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 The log-transformed box plot show that **the distribution of each peak periods across months is quite similar**. In general, number of trips in the weekday peaks are typically higher than weekend/holiday peak. The similarity also extend to extreme outliers. For example, the green box plot (*Weekday morning peak*) always have a single point extreme outlier on the top of the box plot. Based on this observation, it can be inferred that performing LISA on one of month is most likely enough to discover the pattern. The month October, as the latest data available, is chosen for the next processes.
 :::
-
 
 ### extract trip numbers into wide form of peak period categories
 
@@ -461,7 +467,8 @@ glimpse(odb10_wide)
 ```
 
 ### join aspatial and geospatial data
-To retain the geospatial property, use `left_join` by using *busstop* as the main dataframe and *bus stop code* as the reference.  
+
+To retain the geospatial property, use `left_join` by using *busstop* as the main dataframe and *bus stop code* as the reference.
 
 ```{r}
 odb10_sf <- left_join(busstop, odb10_wide, by = "origin_pt_code")
@@ -470,15 +477,15 @@ glimpse(odb10_sf)
 ```
 
 ### Creating Hexagon Spatial Grid
+
 *odb10_sf* represents a spatial point dataframe, which might not be optimal for spatial autocorrelation analysis where the definition of 'areas' requires the representation of spatial entities as polygons instead of individual points. To address this, the subsequent code sections transform these bus stops into a grid of hexagons.
 
 ::: panel-tabset
-
 #### 1. Generate Hexagon Grid
 
-- Utilize the `st_make_grid()` function to create a hexagon grid.
-- The `cellsize` parameter, measured in the same units as the dataframe's spatial reference system, determines the width of each hexagon. Given that *odb10_sf* is projected in ESPG code 3414 with meters as the unit, the hexagon width is set to 500m.
-- Each hexagon is assigned a unique identifier, known as `hex_id`, which serves as the primary key for future reference.
+-   Utilize the `st_make_grid()` function to create a hexagon grid.
+-   The `cellsize` parameter, measured in the same units as the dataframe's spatial reference system, determines the width of each hexagon. Given that *odb10_sf* is projected in ESPG code 3414 with meters as the unit, the hexagon width is set to 500m.
+-   Each hexagon is assigned a unique identifier, known as `hex_id`, which serves as the primary key for future reference.
 
 **Output: Spatial Polygons with Hexagonal Geometry and Hex_id Identification**
 
@@ -501,13 +508,11 @@ This code utilizes the `st_make_grid` function to create a hexagon grid based on
 
 Given that each hexagonal area may encompass multiple bus stops, the `hex_id` serves as the primary key for aggregation. The subsequent procedures outline how to organize attributes based on `hex_id`:
 
-- Utilize the `st_join()` function with `join = st_within` to associate bus stop points with hexagon areas.
-- The `st_set_geometry(NULL)` argument eliminates the geospatial layer, focusing on attribute aggregation.
-- Employ `group_by()` to obtain a unique `hex_id` for each row.
-- Utilize `summarise()` to calculate the aggregate count of bus stops and trips per peak period within each hexagon area.
-- Replace all `NA` values with 0 using `replace(is.na(.), 0)`.
-
-
+-   Utilize the `st_join()` function with `join = st_within` to associate bus stop points with hexagon areas.
+-   The `st_set_geometry(NULL)` argument eliminates the geospatial layer, focusing on attribute aggregation.
+-   Employ `group_by()` to obtain a unique `hex_id` for each row.
+-   Utilize `summarise()` to calculate the aggregate count of bus stops and trips per peak period within each hexagon area.
+-   Replace all `NA` values with 0 using `replace(is.na(.), 0)`.
 
 **Output: Attribute Dataframe, with Hex_id as the Primary Key**
 
@@ -538,11 +543,10 @@ glimpse(odb10_stops)
 
 #### 3. Join the grid and attribute dataframe
 
-- Use `left_join` to combine the new **odb10_stops** attribute dataframe with the existing **odb10_hex** hexagon geospatial layer, linking them by `hex_id` to integrate attributes into the spatial polygon dataframe.
-- Employ `filter` to exclude hexagons without bus stops.
+-   Use `left_join` to combine the new **odb10_stops** attribute dataframe with the existing **odb10_hex** hexagon geospatial layer, linking them by `hex_id` to integrate attributes into the spatial polygon dataframe.
+-   Employ `filter` to exclude hexagons without bus stops.
 
 **Output: Spatial Polygon Dataframe**
-
 
 ```{r}
 odb10_complete <- odb10_hex %>%
@@ -563,12 +567,12 @@ In Step 2, the code outlines a process for associating bus stop attributes with 
 
 Moving to Step 3, the code then combines this attribute dataframe with the original hexagon geospatial layer, **odb10_hex**, utilizing `left_join`. The resulting spatial polygon dataframe, **bustraffic10**, integrates both geometric and attribute information. The `filter` operation ensures that only hexagons containing bus stops are retained in the final dataframe.
 
-
 # Making Sense of the Data (GeoVisualization and Analysis)
 
 Transform Data Here if exploration show sumtin glimpse (wankee) every dataset or think of a better method bus stop, population, passenger volume, subzone. Isn't this also better be put on data checking?
 
 ## Distribution of Bus Stop
+
 ```{r}
 # Plot the hexagon grid based on n_busstops
 tmap_mode("view")
@@ -593,10 +597,10 @@ busstop_map
 From the map, we can infer that the central region, likely encompassing the Central Business District (CBD) and surrounding residential areas, which are known to be highly populated and active, has a higher number of bus stops. This correlates with the need for robust public transportation in densely populated areas to support the daily commute of residents and workers. Lighter shades are observed towards the periphery of the island, suggesting fewer bus stops, which could correspond to less urbanized or industrial areas, like the Western and North-Eastern regions where the population density is lower. The map reflects Singapore's urban planning and transportation strategy, which aims to provide accessibility and connectivity, particularly in high-density regions where demand for public transit is greatest.
 :::
 
-
-
 ## Distribution of Trips Across Peak Hours
+
 find the ideal breaks for plotting the trips using `summary`
+
 ```{r}
 summary(odb10_final)
 ```
@@ -606,6 +610,7 @@ The summary result confirmed that the trips data is right-skewed and contains ex
 :::
 
 the following code plot the comparison map
+
 ```{r}
 # Define the columns for which we want to find the global min and max
 value_columns <- c("Weekday morning peak", "Weekday evening peak", "Weekend/holiday morning peak", "Weekend/holiday evening peak")
@@ -650,7 +655,9 @@ Using the same classification scaling for all maps, it clearly shows that weekda
 :::
 
 ## Distribution of Average Trips per Bus Stop
+
 The next distribution will see which bus stop is the busiest on average, in terms of number of trips per bus stop. To do that, firstly the following code will generate new columns of trip per bus stop for each hexagon.
+
 ```{r}
 # Create a new dataframe with transformed columns
 odb10_final_avg <- odb10_final %>%
@@ -658,7 +665,9 @@ odb10_final_avg <- odb10_final %>%
 # check the summary for determining break points
 summary(odb10_final_avg)
 ```
+
 the following code plot the comparison map
+
 ```{r}
 # Define the columns for which we want to find the global min and max
 value_columns <- c("avg_Weekday morning peak", "avg_Weekday evening peak", "avg_Weekend/holiday morning peak", "avg_Weekend/holiday evening peak")
@@ -668,7 +677,7 @@ tmap_mode("view")
 
 # Define a function to create each map with a customized legend
 create_map <- function(value_column) {
-  tm_shape(odb10_final) +
+  tm_shape(odb10_final_avg) +
     tm_fill(
       col = value_column,
       palette = "-RdBu",
@@ -702,7 +711,6 @@ combined_map
 at a glance, using the average trips per bus stop shows slightly different insight. Comparatively to the total trips, average number of trips shows that the area around **Jurong**, **Woodlands**, and bus stops in **Johor** (part of Malaysia) is actually busier than what total trips suggest. In the context of transport policy, this might be the first lead to expand the number of bus stops in the particular area to cater for more commuters.
 :::
 
-
 # Local Indicators of Spatial Association analysis
 
 In this section, we will employ Local Indicators of Spatial Association (LISA) statistics to explore the presence of clusters or outliers in the total number of trips generated at the hexagon layer. Specifically, we will utilize Moran's I statistic to detect spatial patterns such as clustering or dispersion of total trips.
@@ -711,9 +719,9 @@ In this section, we will employ Local Indicators of Spatial Association (LISA) s
 
 Before delving into global/local spatial autocorrelation statistics, we need to create a spatial weights matrix for our study area. This matrix defines the neighbors of hexagonal spatial units based on their distances. Here are some considerations:
 
-- Each feature should have at least one neighbor, and no feature should be a neighbor with all other features.
+-   Each feature should have at least one neighbor, and no feature should be a neighbor with all other features.
 
-- For skewed data, each feature should ideally have at least 8 neighbors (12 is used here).
+-   For skewed data, each feature should ideally have at least 8 neighbors (12 is used here).
 
 Given the sparse distribution of bus stops in certain regions (e.g., central catchment areas, military training areas, and airports), distance-based methods are favored over contiguity methods.
 
@@ -770,6 +778,7 @@ results <- lapply(value_columns, function(vc) perform_global_moran(wm_all, vc, k
 # Print the results
 print(results)
 ```
+
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 For all four time intervals, since the p-value for global Moran's I is smaller than 0.05, we can reject the null hypothesis that the spatial patterns are random. Moreover, as the Moran's I statistics are greater than 0, we can infer that the spatial distribution exhibits signs of clustering for all four time intervals, consistent with the choropleth maps plotted earlier.
 :::
@@ -876,9 +885,9 @@ get_sig_lisa_map <- function(lisatable, title) {
     
     tm_shape(sig_lisatable) +
     tm_fill("median",
-            palette = c("#2c7bb6",  "#fdae61", "#abd9e9", "#d7191c"),
+            id = "loc_desc",
+            palette = c("blue", "lightcoral", "lightblue", "red"),
             alpha= 0.7) + 
-    tm_dots('grid_id', alpha=0.05) +
     tm_borders(alpha = 0.4) +
     tm_layout(main.title = title,
               main.title.size = 1.5,
@@ -892,32 +901,74 @@ sig_lisa_1 <- get_sig_lisa_map(lisa_results[["Weekday morning peak"]],"LISA cate
 sig_lisa_2 <- get_sig_lisa_map(lisa_results[["Weekday evening peak"]], "LISA categories generated on Weekday Afternoon at 95% CL" )
 sig_lisa_3 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Morning at 95% CL" )
 sig_lisa_4 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Afternoon at 95% CL" )
+```
+
+::: panel-tabset
+### Weekday morning peak
+
+```{r}
+tmap_mode('view')
+sig_lisa_1
+```
+
+### Weekday evening peak
+
+```{r}
+tmap_mode('view')
+sig_lisa_2
+```
+
+### Weekend/holiday morning peak
+
+```{r}
+tmap_mode('view')
+sig_lisa_3
+```
+
+### Weekend/holiday evening peak
+
+```{r}
+tmap_mode('view')
+sig_lisa_1
+```
+:::
 
 The choropleth maps above show significant clusters and outliers for passenger trips generated by origin at each hexagon. The confidence level used is 95%.
 
-**Low-low regions** represent Low-Low clusters.
+```{=html}
+This is some normal text, but <span style="color: blue;">this part is blue</span>, and this is normal again.
+```
 
-**Low-High regions** indicate Low-High outliers.
+::: {.callout-note title="Cluster Interpretation"}
+-   **Blue** regions (Low-Low clusters): These areas signify locations where the number of total trips at bus stops is relatively low and is surrounded by other locations with similarly low trip counts. This indicates spatial clustering of lower activity.
 
-**High-Low regions** represent High-Low outliers.
+-   **Light Coral** regions (Low-High outliers): In these regions, bus stops experience a lower number of total trips compared to their neighbors, suggesting an outlier pattern where specific locations have lower activity amidst areas with higher trip counts.
 
-**High-High regions** indicate High-High clusters.
+-   **Light Blue** regions (High-Low outliers): High-Low regions denote areas where bus stops have a higher number of total trips compared to their neighbors, standing out as outliers with higher activity within regions of lower overall trip counts.
 
+-   **Red regions** (High-High clusters): These regions represent clusters of higher activity, where bus stops experience a higher number of total trips and are surrounded by other locations with similarly high trip counts. This implies spatial clustering of higher activity zones.
+:::
+
+
+## Findings
+
+::: panel-tabset
+
+### General Concentration
 The spatial pattern exhibits higher concentrations in the East, North, and West residential regions compared to the Southern part of Singapore. Major interchanges contributing to high clusters include Ang Mo Kio, Bedok, Boon Lay, Bukit Batok, Chua Chu Kang, Clementi, Hougang, Joo Koon, Seng Kang, Tampines, Toa Payoh, Woodlands, and Yishun.
 
-**Analysis by Regions**
-
-- **High Clusters:** North, East, and West residential regions.
-- **Low Clusters:** Western parts of Singapore, mainly industrial zones with company-provided transport.
-
-**Analysis of Edges**
-Clusters of low passenger trips are observed along the Western and Southern edges, with notable outliers such as Gul Circle, Jurong port, Pandan subzones, Penjuru Crescent, Pioneer Sector, Samulun, Shipyard, and Tuas.
-
-**Analysis of Weekends vs. Weekdays**
+### Weekends vs. Weekdays
 Hexagons along Bukit Timah/Dunearn Road, Singapore Botanic Gardens, and Woodlands Checkpoint exhibit interesting patterns during weekends, transitioning into high-low outliers or high clusters.
 
-While this analysis identifies clusters and outliers and provides potential reasons, other factors like income levels, population density, and demographics may contribute to the observed spatial patterns.
+### High-Low Clusters
+-   **High Clusters:** North, East, and West residential regions.
+-   **Low Clusters:** Western parts of Singapore, mainly industrial zones with company-provided transport.
 
+### Borders
+Clusters of low passenger trips are observed along the Western and Southern borders, with notable outliers such as Gul Circle, Jurong port, Pandan subzones, Penjuru Crescent, Pioneer Sector, Samulun, Shipyard, and Tuas.
+:::
+
+While this analysis identifies clusters and outliers and provides potential reasons, other factors like income levels, population density, and demographics may contribute to the observed spatial patterns.
 
 # References
 
@@ -929,11 +980,11 @@ Sarah Gates (2017). ["Emerging Hot Spot Analysis: Finding Patterns over Space an
 
 Sid Dhuri (2020). ["Spatial Data Analysis With Hexagonal Grids"](https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e)
 
-Tin Seong Kam. ["2 Choropleth Mapping with R"](https://r4gdsa.netlify.app/chap02) From R for Geospatial Data Science and Analytics 
+Tin Seong Kam. ["2 Choropleth Mapping with R"](https://r4gdsa.netlify.app/chap02) From R for Geospatial Data Science and Analytics
 
-Tin Seong Kam. ["9 Global Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap09) From R for Geospatial Data Science and Analytics 
+Tin Seong Kam. ["9 Global Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap09) From R for Geospatial Data Science and Analytics
 
-Tin Seong Kam. ["10 Local Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap10) From R for Geospatial Data Science and Analytics 
+Tin Seong Kam. ["10 Local Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap10) From R for Geospatial Data Science and Analytics
 
 Land Transport Authority. [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en.html)
 
