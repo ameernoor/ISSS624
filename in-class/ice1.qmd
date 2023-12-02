@@ -21,10 +21,7 @@ editor: visual
 
 ## Getting Started
 
-The code chunk below load the following packages:
-- **tmap**: for thematic mapping
-- **sf** : for geospatial data handling
-- **tidyverse** for non-spatial data handling.
+The code chunk below load the following packages: - **tmap**: for thematic mapping - **sf** : for geospatial data handling - **tidyverse** for non-spatial data handling.
 
 ```{r}
 #| code-fold: false

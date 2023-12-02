@@ -1,5 +1,8 @@
 ---
 title: "Hands-on Exercise 2: Spatial Weights and Application"
+author: "Muhamad Ameer Noor"
+date: "24 November 2023"
+date-modified: "last-modified"
 editor: visual
 format: 
   html:
@@ -333,7 +336,6 @@ summary(unlist(rswm_ids$weights))
 This part will explore how to create four types of spatial lagged variables as shown in the panel.
 
 ::: panel-tabset
-
 ### row-standardized weights The following code computes the average neighbor GDPPC. These values are called ***spatially lagged values***.
 
 ```{r}
@@ -542,7 +544,6 @@ tmap_arrange(lag_sum_gdppc, w_sum_gdppc, asp=1, ncol=2)
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 This is similar to the spatial window average, but instead of averaging the values, it sums them up. This method calculates the total value by adding the value at a specific location to the sum of its neighboring values. It provides a more cumulative measure of spatial influence compared to the average. *summarized from: [Anselin](https://geodacenter.github.io/workbook/4d_weights_applications/lab4d.html)*
 :::
-
 :::
 
 ## References

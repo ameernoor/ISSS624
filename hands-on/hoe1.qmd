@@ -1,5 +1,8 @@
 ---
 title: "Hands-on Exercise 1: Geospatial Data Wrangling with R"
+author: "Muhamad Ameer Noor"
+date: "17 November 2023"
+date-modified: "last-modified"
 editor: visual
 format: 
   html:
