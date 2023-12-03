@@ -193,7 +193,7 @@ describe(odb10)
 
 -   DESTINATION_PT_CODE: ID of destination bus stop
 
--   TOTAL_TRIPS: Number of trips
+-   TOTAL_TRIPS: Number of trips which represent passenger volumes
 :::
 
 ### Geospatial
@@ -309,14 +309,12 @@ print(st_crs(busstop))
 ```
 :::
 
-## Data Wrangling
-
-### check for duplicates
+## Check for Duplicates
 
 In this step, we inspect the dataset for duplicate entries. This precautionary step is crucial to avoid the inadvertent repetition of records, which could lead to the overcounting of passenger trips. By identifying and addressing duplicates at this stage, we ensure the accuracy and reliability of our analysis, laying the groundwork for more precise and trustworthy results in the subsequent analytical processes. Checking for duplicates is a fundamental practice that contributes to the integrity of the data and the overall robustness of the geospatial analysis.
 
 ::: panel-tabset
-#### Aspatial - Origin Destination Bus
+### Aspatial - Origin Destination Bus
 
 the following code is used to check duplicates and show how many duplicates exist in each *odb*.
 
@@ -355,7 +353,7 @@ print(all_duplicates)
 The result shows that there are no duplicated data in the origin destination bus dataset. Note that the checking was based on a very loose criteria of duplicate, in which duplicated rows need to have the same value across all columns.
 :::
 
-#### Geospatial - Bus Stop
+### Geospatial - Bus Stop
 
 The following codes
 
@@ -385,7 +383,7 @@ glimpse(busstop)
 ```
 :::
 
-### categorical peak time variable
+## Categorical Peak Time Variable
 
 on the interest of analyzing the peak time, the following code will assign new column that categorize peak time, filter data that is not on peak time, and show a sample of the output.
 
@@ -434,7 +432,7 @@ glimpse(odb10)
 :::
 
 
-### choosing the month
+## Choosing the Month
 
 In order to decide which month is better to perform LISA or whether analyzing all month separately will yield interesting result, it is a good step to check the data distribution of each month. By comparing the data distribution for each month, we can make an educated guess whether the LISA result for each month would be starkly different or just similar.
 
@@ -497,7 +495,7 @@ bus_boxplot
 The log-transformed box plot show that **the distribution of each peak periods across months is quite similar**. In general, number of trips in the weekday peaks are typically higher than weekend/holiday peak. The similarity also extend to extreme outliers. For example, the green box plot (*Weekday morning peak*) always have a single point extreme outlier on the top of the box plot. Based on this observation, it can be inferred that performing LISA on one of month is most likely enough to discover the pattern. The month October, as the latest data available, is chosen for the next processes.
 :::
 
-### extract trip numbers into wide form of peak period categories
+## Extract Trip Numbers Into Wide Form of Peak Period Categories
 Pivoting data into a wide format before merging aspatial and geospatial datasets is beneficial for streamlined analysis. It helps organize information by transforming rows into columns, making it easier to align and combine trip count data across various peak periods. This wide format simplifies subsequent data integration steps, facilitating a more efficient join between datasets based on common identifiers or keys.
 ```{r}
 # Extract data from odb10 and store as a separate dataframe
@@ -522,7 +520,7 @@ DT::datatable(odb10_wide,
 -   [datatable](https://rstudio.github.io/DT/) from **DT** package creates an interactive table (data table) widget, offering functionalities like pagination. The `options` parameter allows customization of the table, such as setting the number of rows to display per page (`pageLength`).
 :::
 
-### join aspatial and geospatial data
+## Join Aspatial and Geospatial Data
 
 To retain the geospatial property, use `left_join` by using *busstop* as the main dataframe and *bus stop code* as the reference.
 
@@ -537,12 +535,12 @@ glimpse(odb10_sf)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, giving a quick overview of its structure, including column types and the first few entries in each column.
 :::
 
-### Creating Hexagon Spatial Grid
+## Creating Hexagon Spatial Grid
 
 *odb10_sf* represents a spatial point dataframe, which might not be optimal for spatial autocorrelation analysis where the definition of 'areas' requires the representation of spatial entities as polygons instead of individual points. To address this, the subsequent code sections transform these bus stops into a grid of hexagons.
 
 ::: panel-tabset
-#### 1. Generate Hexagon Grid
+### 1. Generate Hexagon Grid
 
 This code utilizes the `st_make_grid` function to create a hexagon grid based on the specified parameters. The resulting hexagon grid is then converted into a spatial dataframe (`st_sf()`) to maintain its geospatial properties. The `rowid_to_column` function is employed to assign a unique identifier (*hex_id*) to each hexagon, facilitating subsequent analyses or referencing.
 
@@ -569,7 +567,7 @@ glimpse(odb10_hex)
 :::
 
 
-#### 2. Generate Attribute Dataframe using Hexagon Identifiers
+### 2. Generate Attribute Dataframe using Hexagon Identifiers
 
 Given that each hexagonal area may encompass multiple bus stops, the *hex_id* serves as the primary key for aggregation. The subsequent procedures outline how to organize attributes based on *hex_id*:
 
@@ -617,7 +615,7 @@ glimpse(odb10_stops)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame.
 :::
 
-#### 3. Join the grid and attribute dataframe
+### 3. Join the grid and attribute dataframe
 
 -   Use `left_join` to combine the new **odb10_stops** attribute dataframe with the existing **odb10_hex** hexagon geospatial layer, linking them by *hex_id* to integrate attributes into the spatial polygon dataframe.
 -   Employ `filter` to exclude hexagons without bus stops.
@@ -847,6 +845,13 @@ wm_all <- odb10_final %>%
 # check the output
 kable(head(wm_all))
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new columns to a data frame or modify existing ones.
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data. Here, it is used to find the nearest 12 neighbors for each geometry in `odb10_final`.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** computes spatial weights. The `style = 'W'` argument specifies the type of weights to be calculated.
+-   The `.before = 1` argument in `mutate` specifies that the new columns should be added at the beginning of the data frame.
+-   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates simple tables from a data frame for markdown format output.
+:::
 
 ## Global Autocorrelation of Spatial Association (Global Moran's I with Simulation)
 
@@ -885,6 +890,14 @@ results <- lapply(value_columns, function(vc) perform_global_moran(wm_all, vc, k
 # Print the results
 print(results)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [set.seed](https://r-coder.com/set-seed-r/#google_vignette) from **base** R package is used to set the seed of R's random number generator, ensuring reproducibility of results.
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data, used here to create spatial weights.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** package calculates spatial weights. The `style = 'W'` argument specifies the type of weights.
+-   [global_moran_perm](https://rdrr.io/cran/sfdep/man/global_moran_perm.html) from **fpdep** package performs a permutation test for global Moran's I, a measure of spatial autocorrelation.
+-   [lapply](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lapply) from **base R** applies a function over a list or vector.
+:::
+
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 For all four time intervals, since the p-value for global Moran's I is smaller than 0.05, we can reject the null hypothesis that the spatial patterns are random. Moreover, as the Moran's I statistics are greater than 0, we can infer that the spatial distribution exhibits signs of clustering for all four time intervals, consistent with the choropleth maps plotted earlier.
@@ -932,6 +945,15 @@ datatable(lisa_results[["Weekday morning peak"]],
           options = list(pageLength = 5))
 
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data, used here for spatial weights calculation.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** package creates spatial weights with the specified style (`'W'`).
+-   [local_moran](https://rdrr.io/cran/sfdep/man/local_moran.html) from **sfdep** package performs local Moran's I analysis, a measure of local spatial autocorrelation.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) and [unnest](https://tidyr.tidyverse.org/reference/unnest.html) from **dplyr** and **tidyr** respectively, are used to modify and expand nested data within a data frame.
+-   [datatable](https://rstudio.github.io/DT/) from **DT** package creates an interactive table widget.
+-   The `for` loop in base R iteratively applies the `get_lisa` function to each value column.
+:::
+
 
 ## Visualizing Significant Local Moran's I at 95% Confidence Level
 
@@ -975,6 +997,12 @@ tmap_arrange(
   ncol = 2
 )
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset rows based on a condition, here filtering for statistically significant local Moran's I results.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape), [tm_polygons](https://rdrr.io/cran/tmap/man/tm_polygons.html), [tm_borders](https://www.rdocumentation.org/packages/tmap/versions/0.7/topics/tm_borders), [tm_fill](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_fill), and [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) from **tmap** package are used to create and customize thematic maps.
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) sets the tmap mode, here `'plot'` is for static maps.
+-   [tmap_arrange](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_arrange) arranges multiple `tmap` objects in a grid layout.
+:::
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 The choropleth maps displaying Local Moran's I reveal that **darker orange** and **darker green** areas signify **outlier regions**. To classify it into low-high or high-low cluster, further analysis is required using LISA. Similarly, the **light green** are indicates either high-high or low-low regions. Notably, the the area around **Tuas and Jurong**is most likelya low-low area based on the previous geovisualization.
