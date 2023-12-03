@@ -39,7 +39,7 @@ In this exercise, we're going to focus on bus trips during specific peak hours:
 | Weekend/holiday morning peak | 11am to 2pm     |
 | Weekend/holiday evening peak | 4pm to 7pm      |
 
-To better understand these movement patterns and behaviors, we're going to use something called Exploratory Spatial Data Analysis (ESDA). It's like a powerful tool that helps us tackle complex challenges in society. In this project, we're going to use specific methods like Local Indicators of Spatial Association ([LISA](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x)) that will help us dig deep into the data and uncover valuable insights.
+To better understand these movement patterns and behaviors, we're going to use something called Exploratory Spatial Data Analysis (ESDA). It's like a powerful tool that helps us tackle complex challenges in society. In this project, we're going to use specific methods Local Indicators of Spatial Association ([LISA](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x)) that will help us dig deep into the data and uncover valuable insights.
 
 ::: {.callout-note collapse="true" title="What is LISA?"}
 Local Indicators of Spatial Association (LISA) statistics serve two primary purposes. Firstly, they act as indicators of local pockets of nonstationarity, or hotspots. Secondly, they are used to assess the influence of individual locations on the magnitude of a global statistic. In simpler terms, LISA helps in identifying specific areas (like hotspots) that differ significantly from their surrounding areas and evaluates how these individual areas contribute to the overall pattern observed in a larger region.
@@ -86,11 +86,12 @@ Summarized from: [Dhuri](https://medium.com/swlh/spatial-data-analysis-with-hexa
 
 # Preparation
 
-Before starting with the analysis, we have to load the library (and install it if it does not exist in the environment yet), import the data, and process the data
+Before starting with the analysis, we have to load the library (and install it if it does not exist in the environment yet) and import the data. This section also contains minor checking and setup of the data.
 
 ## Import Library
 
 ```{r}
+#| code-fold: false
 pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT)
 ```
 
@@ -206,6 +207,7 @@ the following panel show the import process for the bus stop geospatial data. Th
 The geospatial data is imported using [st_read](https://r-spatial.github.io/sf/reference/st_read.html) function from **sf** package. As previously done, while reading the data, categorical data that can serve as reference are converted into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing. The imported dataset is then checked using [glimpse]() function from **dplyr** package that shows the columns, a glimpse of the values and the data type.
 
 ```{r}
+#| code-fold: false
 busstop <- st_read(
     dsn = "../data/geospatial",
     layer = "BusStop"
@@ -219,7 +221,6 @@ busstop <- st_read(
 # check the output
 glimpse(busstop)
 ```
-
 ##### Check the unique values
 
 To see more of the data characteristics, the following panel will show the number of distinct values in each column. it use (n_distinct)\[https://dplyr.tidyverse.org/reference/n_distinct.html\] function from **dplyr** package.
@@ -309,6 +310,9 @@ print(st_crs(busstop))
 ```
 :::
 
+# Data Wrangling
+Following the initial preparation, this section will do further data checking and processing before the analysis.
+
 ## Check for Duplicates
 
 In this step, we inspect the dataset for duplicate entries. This precautionary step is crucial to avoid the inadvertent repetition of records, which could lead to the overcounting of passenger trips. By identifying and addressing duplicates at this stage, we ensure the accuracy and reliability of our analysis, laying the groundwork for more precise and trustworthy results in the subsequent analytical processes. Checking for duplicates is a fundamental practice that contributes to the integrity of the data and the overall robustness of the geospatial analysis.
@@ -371,9 +375,10 @@ kable(head(duplicates, n=32))
 :::
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
-The result shows that there are some duplicated data in the geospatial bus stop dataset. This might interfere with the joining data process and generated double count on later on. Note that the checking was based on the origin_pt_code field only, because it will be the basis of reference for joining the dataset later on. At a glance, the table above also show that, the ***duplicated code are actually located near each other***. Therefore, removing the duplicates can be considered safe as the remaining *bus stop code* can represent the deleted one. The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced.
+The result shows that there are some duplicated data in the geospatial bus stop dataset. This might interfere with the joining data process and generated double count on later on. Note that the checking was based on the origin_pt_code field only, because it will be the basis of reference for joining the dataset later on. At a glance, the table above also show that, the ***duplicated code are actually located near each other***. Therefore, removing the duplicates can be considered safe as the remaining *bus stop code* can represent the deleted one.
 :::
 
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced.
 ```{r}
 # Keep one row of the duplicates in the original dataset
 busstop <- busstop[!duplicated(busstop$origin_pt_code) | duplicated(busstop$origin_pt_code, fromLast = TRUE), ]
@@ -568,7 +573,6 @@ glimpse(odb10_hex)
 
 
 ### 2. Generate Attribute Dataframe using Hexagon Identifiers
-
 Given that each hexagonal area may encompass multiple bus stops, the *hex_id* serves as the primary key for aggregation. The subsequent procedures outline how to organize attributes based on *hex_id*:
 
 -   Utilize the `st_join()` function with `join = st_within` to associate bus stop points with hexagon areas.
@@ -637,10 +641,6 @@ glimpse(odb10_final)
 ```
 :::
 
-In Step 2, the code outlines a process for associating bus stop attributes with hexagonal areas using `st_join`. This involves grouping and summarizing the attributes based on the unique *hex_id*. The resulting dataframe, **odb10_stops**, serves as an attribute-centric representation with the *hex_id* as the primary key.
-
-Moving to Step 3, the code then combines this attribute dataframe with the original hexagon geospatial layer, **odb10_hex**, utilizing `left_join`. The resulting spatial polygon dataframe, **bustraffic10**, integrates both geometric and attribute information. The `filter` operation ensures that only hexagons containing bus stops are retained in the final dataframe.
-
 # Making Sense of the Data (GeoVisualization and Analysis)
 In this section, several geovisualization will be shown to analyze the distribution and general patterns of bus stops and trips in the dataset.
 
@@ -689,7 +689,7 @@ summary(odb10_final)
 The summary result confirmed that the trips data is right-skewed and contains extreme outliers. This knowledge is then used to customize the break in the comparison map.
 :::
 
-the following code plot the comparison map
+The following code plot the comparison map. the map is set on "plot" mode for rendering, but was set on "view" mode for analysis.
 
 ```{r}
 # Define the columns for which we want to find the global min and max
@@ -762,7 +762,7 @@ summary(odb10_final_avg)
 -   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the object's contents, typically giving minimum, maximum, mean, and other useful statistics.
 :::
 
-the following code plot the comparison map
+The following code plot the comparison map. the map is set on "plot" mode for rendering, but was set on "view" mode for analysis.
 
 ```{r}
 # Define the columns for which we want to find the global min and max
@@ -797,7 +797,7 @@ create_map <- function(value_column) {
 map_list <- lapply(value_columns, create_map)
 
 # Combine the maps into a 2x2 grid
-combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_list[[4]], ncol = 1, nrow = 4)
+combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_list[[4]], ncol = 2, nrow = 2)
 
 # Show the combined map
 combined_map
@@ -957,7 +957,7 @@ datatable(lisa_results[["Weekday morning peak"]],
 
 ## Visualizing Significant Local Moran's I at 95% Confidence Level
 
-Utilize `tmap` core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted.
+Utilize `tmap` core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted. The following code will fetch the significant Local Moran's I for mapping purpose.
 
 ```{r}
 get_sig_lmi_map <- function(lisa_table, title) {
@@ -1008,6 +1008,7 @@ tmap_arrange(
 The choropleth maps displaying Local Moran's I reveal that **darker orange** and **darker green** areas signify **outlier regions**. To classify it into low-high or high-low cluster, further analysis is required using LISA. Similarly, the **light green** are indicates either high-high or low-low regions. Notably, the the area around **Tuas and Jurong**is most likelya low-low area based on the previous geovisualization.
 :::
 
+The following panel displays the significant LISA map for each peak time.
 ```{r}
 get_sig_lisa_map <- function(lisatable, title) {
   
