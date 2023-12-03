@@ -17,6 +17,9 @@ execute:
   warning: false # don't display warning
 ---
 
+![Illustration](../images/ice3.png)
+
+
 # Overview
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -39,7 +42,8 @@ pacman::p_load(tmap, sf, sp, DT, performance, reshape2, units, tidyverse, patchw
 -   `sp` is for storing special polygon dataframe in which the processes will be more efficient with
 -   `tidyverse` for importing, integrating, wrangling and visualising data.
 -   `performance` for checking model performance.
--   `reshape2` for doing certain processes in which it's more efficient compared to tidyverse? (it's an old package).
+-   `reshape2` for doing certain processes in which it's more efficient compared to tidyverse (it's an old package).
+-   `patchwork` for arranging several charts in one display.
 
 ## import the data
 
