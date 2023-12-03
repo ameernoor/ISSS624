@@ -21,7 +21,6 @@ execute:
 
 ![Illustration](../images/the1.png)
 
-
 # Overview
 
 ::: panel-tabset
@@ -40,14 +39,10 @@ In this exercise, we're going to focus on bus trips during specific peak hours:
 | Weekend/holiday morning peak | 11am to 2pm     |
 | Weekend/holiday evening peak | 4pm to 7pm      |
 
-To better understand these movement patterns and behaviors, we're going to use something called Exploratory Spatial Data Analysis (ESDA). It's like a powerful tool that helps us tackle complex challenges in society. In this project, we're going to use specific methods like Local Indicators of Spatial Association ([LISA](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x)) and Emerging Hot Spot Analysis ([EHSA](https://www.azavea.com/blog/2017/08/15/emerging-hot-spot-spatial-statistics/)) to reveal the interesting spatial and time-related mobility patterns of people who take public buses in Singapore. These methods will help us dig deep into the data and uncover valuable insights.
+To better understand these movement patterns and behaviors, we're going to use something called Exploratory Spatial Data Analysis (ESDA). It's like a powerful tool that helps us tackle complex challenges in society. In this project, we're going to use specific methods like Local Indicators of Spatial Association ([LISA](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x)) that will help us dig deep into the data and uncover valuable insights.
 
 ::: {.callout-note collapse="true" title="What is LISA?"}
 Local Indicators of Spatial Association (LISA) statistics serve two primary purposes. Firstly, they act as indicators of local pockets of nonstationarity, or hotspots. Secondly, they are used to assess the influence of individual locations on the magnitude of a global statistic. In simpler terms, LISA helps in identifying specific areas (like hotspots) that differ significantly from their surrounding areas and evaluates how these individual areas contribute to the overall pattern observed in a larger region.
-:::
-
-::: {.callout-note collapse="true" title="What is EHSA?"}
-Emerging Hot Spot Analysis (EHSA) is a type of spatial statistical analysis that examines data over space and time to identify trends and patterns, specifically focusing on the detection of statistical hot and cold spots within a study region. This method is applicable in various fields, including crime patterns, disease outbreaks, and environmental issues. EHSA allows users to set parameters and then determines whether identified hot or cold spots are persistent, increasing, or decreasing in a given area.
 :::
 
 ## The Data
@@ -121,7 +116,13 @@ Explanations for the imported library:
 
 ### Aspatial
 
-the following code will import all the origin destination bus data and check a sample dataframe. The process also involved transforming georeference data type into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
+the following code will import all the origin destination bus data and check a sample dataframe. The process involved:
+
+1.  import the csv file using `read_csv` function from [readr](https://www.rdocumentation.org/packages/readr/versions/2.1.4) package
+
+2.  using [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package, transform georeference data type into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
+
+3.  using [describe](https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1/topics/describe) from **hmisc** package, display the summary statistics of the dataset.
 
 ::: panel-tabset
 #### August 2023
@@ -177,7 +178,7 @@ describe(odb10)
 ```
 :::
 
-Explanations for each field in the data can be found in the following metadata.
+***Explanations for each field in the data can be found in the following metadata.***
 
 ::: {.callout-note collapse="true" title="metadata"}
 -   YEAR_MONTH: Represent year and Month in which the data is collected. Since it is a monthly data frame, only one unique value exist in each data frame.
@@ -200,9 +201,10 @@ Explanations for each field in the data can be found in the following metadata.
 the following panel show the import process for the bus stop geospatial data. The geospatial layer of the data shows ***point*** location of bus stops across Singapore.
 
 ::: panel-tabset
+
 #### Import and Check the Data
 
-As previously done, while reading the data, categorical data that can serve as reference are converted into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
+The geospatial data is imported using [st_read](https://r-spatial.github.io/sf/reference/st_read.html) function from **sf** package. As previously done, while reading the data, categorical data that can serve as reference are converted into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing. The imported dataset is then checked using [glimpse]() function from **dplyr** package that shows the columns, a glimpse of the values and the data type.
 
 ```{r}
 busstop <- st_read(
@@ -220,12 +222,12 @@ glimpse(busstop)
 ```
 
 ##### Check the unique values
+To see more of the data characteristics, the following panel will show the number of distinct values in each column. it use (n_distinct)[https://dplyr.tidyverse.org/reference/n_distinct.html] function from **dplyr** package.
 
 ::: panel-tabset
 ###### BUS_STOP_N
 
 count of unique/distinct values are:
-
 ```{r}
 n_distinct(busstop$BUS_STOP_N)
 ```
@@ -255,7 +257,7 @@ n_distinct(busstop$geometry)
 ```
 :::
 
-Explanations for each field in the data can be found in the following metadata.
+***Explanations for each field in the data can be found in the following metadata.***
 
 ::: {.callout-note collapse="true" title="metadata"}
 -   BUS_STOP_N: The unique identifier for each bus stop.
@@ -266,13 +268,19 @@ Explanations for each field in the data can be found in the following metadata.
 
 #### Setup EPSG Code, CRS and Prepare the data for joining
 
-To ensure that geospatial data from different sources can be processed together, both have to be projected using similar coordinate systems and be assigned the correct EPSG code based on CRS. The [st_crs](https://r-spatial.github.io/sf/reference/st_crs.html) function is used to check for ESPG Code and Coordinate System of both geospatial files. For Singapore, the coordinate system is *SVY21* with *EPSG 3414* (source: [epsg.io](https://epsg.io/?q=Singapore)). The following code chunk output shows how the CRS was initially not *3414*, then corrected using [st_set_crs](https://www.rdocumentation.org/packages/sf/versions/1.0-14/topics/st_crs). Simultaneously, the dataframe is also prepared for joining process.
+To ensure that geospatial data from different sources can be processed together, both have to be projected using similar coordinate systems and be assigned the correct EPSG code based on CRS. The [st_crs](https://r-spatial.github.io/sf/reference/st_crs.html) function is used to check for ESPG Code and Coordinate System of both geospatial files. For Singapore, the coordinate system is *SVY21* with *EPSG 3414* (source: [epsg.io](https://epsg.io/?q=Singapore)). The following code chunk output shows how the CRS was initially not *3414*, then corrected using [st_set_crs](https://www.rdocumentation.org/packages/sf/versions/1.0-14/topics/st_crs). Both function are from **sf** package.
+Simultaneously, the dataframe is also prepared for joining process. It involve standardization of the data type to [factor](https://r4ds.hadley.nz/factors) and using [tolower](https://search.r-project.org/CRAN/refmans/textTools/html/str_tolower.html) function from **base R** package.
 
+
+**Current CRS of busstop dataset:**
 ```{r}
 # Check the current Coordinate Reference System (CRS) of the busstop dataset
-print("Current CRS of busstop dataset:")
 print(st_crs(busstop))
+```
 
+**Assign new EPSG code**
+```{r}
+#| code-fold: false
 # Assign a new EPSG code (Spatial Reference ID)
 busstop <- st_set_crs(
    busstop, 
@@ -291,9 +299,10 @@ select(
 rename_with(
    tolower, everything()
 )
+```
 
-# Confirm the updated EPSG code after the assignment
-print("Updated CRS of busstop dataset:")
+**Confirm the updated EPSG code after the assignment**
+```{r}
 print(st_crs(busstop))
 ```
 :::
@@ -330,6 +339,15 @@ all_duplicates <- bind_rows(duplicate1, duplicate2, duplicate3)
 # Print the counts
 print(all_duplicates)
 ```
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [group_by_all](https://dplyr.tidyverse.org/reference/group_by_all.html) from **dplyr** package to group a data frame by all of its variables. Essentially, it creates groups based on every column present in the data frame.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset a data frame, retaining all rows that satisfy your conditions. To be retained, the row must produce a value of TRUE for all conditions.
+-   [ungroup](https://dplyr.tidyverse.org/articles/grouping.html) from **dplyr** package to remove grouping information from a data frame. When you have a grouped data frame (created using functions like group_by), ungroup will return it to its original, ungrouped state. This is useful when you've finished performing grouped operations (like summarization) and want to perform operations that don't require the data to be grouped, or to prevent accidental misinterpretation or errors in subsequent data manipulations that are not intended to be group-wise operations.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset a data frame, retaining all rows that satisfy your conditions. To be retained, the row must produce a value of TRUE for all conditions.
+-   [summarise](https://r-spatial.github.io/sf/reference/tidyverse.html) from **sf** package used to compute summary statistics or aggregate values for groups of data. When used on spatial data frames (such as those handled by sf), summarise can perform operations like calculating the mean, maximum, or sum of a particular variable for each group. This function is often used in combination with group_by to define the groups for which the summary statistics will be calculated. The result is a simplified representation of the data, focusing on key aggregated metrics.
+-   [bind_rows](https://dplyr.tidyverse.org/reference/bind_rows.html) from **dplyr** package to to combine two or more data frames by rows. It stacks the data frames on top of each other, effectively appending the rows of the second data frame to the first, the third to the combined first and second, and so on. This function is particularly useful when you have multiple data frames with the same variables and you want to create a single, combined data frame. It's important that the columns in the data frames are compatible, either having the same names and types, or being able to be coerced into the same type.
+:::
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 The result shows that there are no duplicated data in the origin destination bus dataset. Note that the checking was based on a very loose criteria of duplicate, in which duplicated rows need to have the same value across all columns.
@@ -938,61 +956,72 @@ sig_lisa_1
 
 The choropleth maps above show significant clusters and outliers for passenger trips generated by origin at each hexagon. The confidence level used is 95%.
 
-::: {.callout-note title="Cluster Interpretation"}
+**Cluster Interpretation:**
+
 ```{=html}
 <span style="color: blue;">Blue regions (Low-Low Clusters):</span> These areas signify locations where the number of total trips at bus stops is relatively low and is surrounded by other locations with similarly low trip counts. This indicates spatial clustering of lower activity.
 ```
 
 ```{=html}
-<span style="color: lightcoral;">Light Coral regions (Low-High outliers):</span> In these regions, bus stops experience a lower number of total trips compared to their neighbors, suggesting an outlier pattern where specific locations have lower activity amidst areas with higher trip counts.
-```
+<span style="color: lightblue;">Light Blue regions (Low-High outliers):</span> In these regions, bus stops experience a lower number of total trips compared to their neighbors, suggesting an outlier pattern where specific locations have lower activity amidst areas with higher trip counts.
+    ```
 
 ```{=html}
-<span style="color: lightblue;">Light Blue regions (High-Low outliers):</span> High-Low regions denote areas where bus stops have a higher number of total trips compared to their neighbors, standing out as outliers with higher activity within regions of lower overall trip counts.
+<span style="color: lightcoral;">Light Coral regions (High-Low outliers):</span> High-Low regions denote areas where bus stops have a higher number of total trips compared to their neighbors, standing out as outliers with higher activity within regions of lower overall trip counts.
 ```
 
 ```{=html}
 <span style="color: red;">Red regions (High-High clusters:</span> These regions represent clusters of higher activity, where bus stops experience a higher number of total trips and are surrounded by other locations with similarly high trip counts. This implies spatial clustering of higher activity zones.
 ```
-:::
 
+    </div>
 
 ## Findings and Future Improvements
 
 ::: panel-tabset
-
 ### General Concentration
+
 The spatial distribution reveals higher concentrations of total bus trips in the residential regions of the East, North, and West, in contrast to lower concentrations in the Southern part of Singapore. Notable high-activity clusters are associated with major transportation interchanges such as Ang Mo Kio, Bedok, Boon Lay, Bukit Batok, Chua Chu Kang, Clementi, Hougang, Joo Koon, Seng Kang, Tampines, Toa Payoh, Woodlands, and Yishun.
 
 ### Weekends vs. Weekdays
+
 Certain hexagonal areas, particularly along Bukit Timah/Dunearn Road, Singapore Botanic Gardens, and Woodlands Checkpoint, exhibit distinctive patterns during weekends. These areas transition between high-low outliers and high clusters, suggesting dynamic changes in bus trip patterns during different days of the week.
 
 ### High and Low Clusters
+
 -   **High Clusters:** Regions in the North, East, and West, primarily residential, show higher concentrations of bus trips. These areas are likely characterized by increased commuting and local activities.
 -   **Low Clusters:** The western parts of Singapore, mainly comprising industrial zones with company-provided transport, exhibit lower concentrations of bus trips. This pattern suggests a lower reliance on public transportation in these industrial areas.
 
 ### Borders
+
 Clusters of low passenger trips are observed along the Western and Southern borders of Singapore. Notable outliers, such as Gul Circle, Jurong port, Pandan subzones, Penjuru Crescent, Pioneer Sector, Samulun, Shipyard, and Tuas, indicate areas that serve as gateways for nearby migrant workers and tourists. These regions might have unique transportation needs, contributing to the observed patterns.
 
 ### Mode of Transport Influence
+
 The spatial distribution of bus trips may be influenced by the availability and efficiency of alternative modes of transportation, such as the MRT (Mass Rapid Transit) system or private vehicles. Areas with robust alternative public transportation networks might exhibit different bus trip patterns compared to regions heavily reliant on private vehicles. Analyzing the interplay between different modes of transport can offer insights into the dynamics of bus trip concentrations and outliers.
 
 ### Population Density Correlation
+
 Exploring the correlation between bus trip patterns and population density can unveil insights into how transportation needs align with residential density. High-density residential areas may show increased reliance on public transportation, leading to concentrated bus trip clusters. On the other hand, lower-density regions might exhibit more scattered trip patterns.
 
 ### Economic Activities and Employment Hubs
+
 Investigating the correlation between bus trip concentrations and major economic activities or employment hubs can shed light on commuter patterns. Areas with prominent business districts or industrial zones may experience higher bus trip concentrations during peak commuting hours, contributing to spatial clusters.
 
 ### Demographic Variations
+
 Analyzing demographic factors such as age groups, income levels, and cultural preferences may provide nuanced insights into bus trip patterns. Different demographic segments may exhibit varying transportation behaviors, influencing the distribution of bus trips across different regions.
 
 ### Urban Planning and Infrastructure Development
+
 Examining the influence of urban planning and infrastructure development on bus trip patterns can highlight the impact of transportation policies and initiatives. Regions with well-planned transportation infrastructure may demonstrate more organized and efficient bus trip distributions.
 
 ### Seasonal and Event-Based Variations
+
 Considering the impact of seasons and major events on bus trip patterns can uncover dynamic changes in spatial distributions. Certain regions may experience fluctuations in bus trip concentrations during holidays, festivals, or major events, reflecting shifts in travel behavior.
 
 ### Technological Advancements and Ride-Sharing Trends
+
 Assessing the role of technological advancements and ride-sharing trends on bus trip patterns can provide insights into the evolving landscape of transportation preferences. The integration of technology-driven solutions may influence how people choose and utilize bus services.
 :::
 
