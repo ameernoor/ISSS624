@@ -696,7 +696,7 @@ The following code plot the comparison map. the map is set on "plot" mode for re
 value_columns <- c("Weekday morning peak", "Weekday evening peak", "Weekend/holiday morning peak", "Weekend/holiday evening peak")
 
 # Set tmap to interactive viewing mode for analysis and plot mode for rendering
-tmap_mode("plot")
+tmap_mode("view")
 
 # Define a function to create each map with a customized legend
 create_map <- function(value_column) {
@@ -769,7 +769,7 @@ The following code plot the comparison map. the map is set on "plot" mode for re
 value_columns <- c("avg_Weekday morning peak", "avg_Weekday evening peak", "avg_Weekend/holiday morning peak", "avg_Weekend/holiday evening peak")
 
 # Set tmap to interactive viewing mode
-tmap_mode("plot")
+tmap_mode("view")
 
 # Define a function to create each map with a customized legend
 create_map <- function(value_column) {
@@ -959,6 +959,7 @@ datatable(lisa_results[["Weekday morning peak"]],
 
 Utilize `tmap` core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at the 95% confidence level are plotted. The following code will fetch the significant Local Moran's I for mapping purpose.
 
+
 ```{r}
 get_sig_lmi_map <- function(lisa_table, title) {
   
@@ -985,7 +986,7 @@ sig_lmi_2 <- get_sig_lmi_map(lisa_results[["Weekday evening peak"]], "Weekday Af
 sig_lmi_3 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Weekend Morning" )
 sig_lmi_4 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Weekend Afternoon" )
 
-tmap_mode('plot')
+tmap_mode('view')
 
 tmap_arrange(
   sig_lmi_1,
@@ -1008,7 +1009,7 @@ tmap_arrange(
 The choropleth maps displaying Local Moran's I reveal that **darker orange** and **darker green** areas signify **outlier regions**. To classify it into low-high or high-low cluster, further analysis is required using LISA. Similarly, the **light green** are indicates either high-high or low-low regions. Notably, the the area around **Tuas and Jurong**is most likelya low-low area based on the previous geovisualization.
 :::
 
-The following panel displays the significant LISA map for each peak time.
+The following code will fetch the significant LISA for mapping purpose.
 ```{r}
 get_sig_lisa_map <- function(lisatable, title) {
   
@@ -1039,32 +1040,34 @@ sig_lisa_3 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "
 sig_lisa_4 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Afternoon at 95% CL" )
 ```
 
+
+The following panel displays the significant LISA map for each peak time.
 ::: panel-tabset
 ### Weekday morning peak
 
 ```{r}
-tmap_mode('plot')
+tmap_mode('view')
 sig_lisa_1
 ```
 
 ### Weekday evening peak
 
 ```{r}
-tmap_mode('plot')
+tmap_mode('view')
 sig_lisa_2
 ```
 
 ### Weekend/holiday morning peak
 
 ```{r}
-tmap_mode('plot')
+tmap_mode('view')
 sig_lisa_3
 ```
 
 ### Weekend/holiday evening peak
 
 ```{r}
-tmap_mode('plot')
+tmap_mode('view')
 sig_lisa_1
 ```
 :::
