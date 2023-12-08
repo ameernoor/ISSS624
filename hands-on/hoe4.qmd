@@ -64,7 +64,6 @@ The [**GWmodel**](https://www.jstatsoft.org/article/view/v063i17) package offers
 
 ## Geospatial Data Wrangling
 
-::: panel-tabset
 ### Importing Geospatial Data
 
 In this practical exercise, we'll be using geospatial data named MP14_SUBZONE_WEB_PL. It's in ESRI shapefile format and represents URA Master Plan 2014's planning subzone boundaries. These geographic boundaries are depicted using polygon features, and the GIS data uses the svy21 projected coordinate system.
@@ -108,7 +107,6 @@ st_bbox(mpsz_svy21) #view extent
 -   The transformation to CRS 3414 and subsequent checking of CRS and bounding box provide important spatial information about the dataset, which is essential in geospatial analyses.
 :::
 
-:::
 
 ## Aspatial Data Wrangling
 
@@ -160,11 +158,11 @@ The output now represents a point feature data frame.
 
 ## Exploratory Data Analysis
 
-### Using Graphs to Explore Data
-
 In this part, you'll discover how to use visual tools from the **ggplot2** package for Exploratory Data Analysis (EDA).
 
-### Exploring Data with Graphs
+::: panel-tabset
+
+### Selling Price Distribution
 
 To understand the distribution of *SELLING_PRICE*, check out the code below. It generates a histogram:
 
@@ -174,6 +172,8 @@ ggplot(data=condo_resale.sf, aes(x=`SELLING_PRICE`)) +
 ```
 
 The graph above shows a right-skewed distribution, indicating more condos were sold at relatively lower prices.
+
+### Log Selling Price Distribution
 
 Statistically, we can normalize the skewed distribution by applying a log transformation. The following code creates a new variable, *LOG_SELLING_PRICE*, using the log transformation on *SELLING_PRICE* with `mutate()` from the **dplyr** package.
 
@@ -246,16 +246,15 @@ ggarrange(AREA_SQM, AGE, PROX_CBD, PROX_CHILDCARE, PROX_ELDERLYCARE,
 
 Finally, let's visualize the geographic distribution of condominium resale prices in Singapore. We'll use the **tmap** package for this.
 
-First, activate the interactive mode of tmap:
-
-```{r echo=TRUE, eval=TRUE}
-tmap_mode("view")
-```
-
-Next, the following code will generate an interactive point symbol map:
-
 ```{r echo=TRUE, eval=FALSE}
-tm_shape(mpsz_svy21)+
+# activate interactive mode
+tmap_mode("view")
+
+# correct the invalid geometry
+fixed_geom <- sf::st_make_valid(mpsz_svy21[mpsz_svy21$REGION_N == "CENTRAL REGION", ])
+
+# create the map
+tm_shape(fixed_geom)+
   tm_polygons() +
 tm_shape(condo_resale.sf) +  
   tm_dots(col = "SELLING_PRICE",
@@ -273,9 +272,7 @@ Before moving on to the next section, switch R display back to `plot` mode using
 ```{r echo=TRUE, eval=TRUE}
 tmap_mode("plot")
 ```
-
-Now you'll have an interactive map displaying condominium resale prices in different areas of Singapore.
-
+:::
 
 ## Building Hedonic Pricing Models for Condos in R
 
@@ -393,8 +390,6 @@ For more customization options, refer to [Tutorial: tbl_regression](https://www.
 
 #### Statistical Assumption Tests
 
-##### Checking for Multicollinearity
-
 In this section, we'll introduce a powerful R package designed for OLS regression - [**olsrr**](https://olsrr.rsquaredacademy.com/). It offers valuable methods for enhancing multiple linear regression models:
 
 - Comprehensive regression output
@@ -406,6 +401,11 @@ In this section, we'll introduce a powerful R package designed for OLS regressio
 - Variable contribution assessment
 - Variable selection procedures
 
+::: panel-tabset
+
+##### Multicollinearity
+
+
 The code chunk below uses the [`ols_vif_tol()`](https://olsrr.rsquaredacademy.com/reference/ols_coll_diag.html) function of the **olsrr** package to test for signs of multicollinearity.
 
 ```{r}
@@ -414,7 +414,7 @@ ols_vif_tol(condo.mlr1)
 
 Since the VIF of the independent variables is less than 10, we can conclude that there are no signs of multicollinearity among the independent variables.
 
-##### Test for Non-Linearity
+##### Non-Linearity
 
 It's essential to test the assumption of linearity and additivity of the relationship between dependent and independent variables in multiple linear regression.
 
@@ -426,7 +426,7 @@ ols_plot_resid_fit(condo.mlr1)
 
 The figure above reveals that most data points scatter around the 0 line, suggesting that the relationships between the dependent variable and independent variables are linear.
 
-##### Test for Normality Assumption
+##### Normality
 
 Finally, the code chunk below uses [`ols_plot_resid_hist()`](https://olsrr.rsquaredacademy.com/reference/ols_plot_resid_hist.html) of the **olsrr** package to perform a normality assumption test.
 
@@ -444,7 +444,7 @@ ols_test_normality(condo.mlr1)
 
 The summary table above shows that the p-values of the four tests are much smaller than the alpha value of 0.05. Therefore, we reject the null hypothesis, indicating there is statistical evidence that the residuals are not normally distributed.
 
-##### Testing for Spatial Autocorrelation
+##### Spatial Autocorrelation
 
 Since our hedonic model uses geographically referenced attributes, visualizing the residuals is crucial.
 
@@ -530,6 +530,7 @@ The Global Moran's I test for residual spatial autocorrelation shows that its p-
 
 Since the Observed Global Moran I = 0.1424418, which is greater than 0, we can infer that the residuals resemble a cluster distribution.
 
+:::
 
 ## Building Hedonic Pricing Models using GWmodel
 
@@ -725,9 +726,11 @@ tmap_mode("plot")
 ```
 
 #### By URA Planning Region
-
 ```{r echo=TRUE, eval=TRUE, fig.height = 6, fig.width = 6, fig.align = "center"}
-tm_shape(mpsz_svy21[mpsz_svy21$REGION_N=="CENTRAL REGION", ])+
+# correct the invalid geometry
+fixed_geom <- sf::st_make_valid(mpsz_svy21[mpsz_svy21$REGION_N == "CENTRAL REGION", ])
+
+tm_shape(fixed_geom[fixed_geom$REGION_N=="CENTRAL REGION", ])+
   tm_polygons()+
 tm_shape(condo_resale.sf.adaptive) + 
   tm_bubbles(col = "Local_R2",
