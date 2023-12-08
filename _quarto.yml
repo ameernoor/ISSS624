@@ -19,7 +19,7 @@ website:
             href: hands-on/hoe2-localautocor.html
           - text: 3 - Flow Data 
             href: hands-on/hoe3.html
-          - text: 4 - Geographically Weighted Regression
+          - text: 4 - Geographically Weighted Regression (GWR)
             href: hands-on/hoe4.html
       - text: In-class Exercise
         menu:
