@@ -160,7 +160,7 @@ mpsz
 ## Geospatial Data Wrangling
 
 ::: panel-tabset
-### Combining Busstop and mpsz
+### 1. Combining Busstop and mpsz
 
 We'll merge the planning subzone codes from the mpsz dataset into the busstop dataset.
 
@@ -183,7 +183,7 @@ datatable(busstop_mpsz)
 -   The note mentions that five bus stops outside Singapore's boundary are excluded as a result of the spatial intersection.
 :::
 
-### Append Planning Subzone Code to Attribute Dataset
+### 2. Append Planning Subzone Code to Attribute Dataset
 
 Now, let's append the planning subzone codes to the `odbus6_9` dataset:
 
@@ -201,7 +201,7 @@ glimpse(od_data)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
-### Checking for Duplicates
+### 3. Checking for Duplicates
 
 Checking for duplicate records is crucial, if duplicates exist, we keep only unique records:
 
@@ -227,7 +227,7 @@ glimpse(od_data)
 :::
 
 
-### Update Destination Subzone Code
+### 4. Update Destination Subzone Code
 
 We'll now complete the dataset with destination subzone codes:
 
@@ -245,7 +245,7 @@ glimpse(od_data)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
-### Re-checking for Duplicates
+### 5. Re-checking for Duplicates
 
 Checking for and removing any remaining duplicates:
 
@@ -270,7 +270,7 @@ glimpse(od_data)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
 :::
 
-### Prepare Data for Visualization
+### 6. Prepare Data for Visualization
 
 Finally, we'll prepare the data for visualisation:
 
@@ -291,7 +291,7 @@ glimpse(od_data)
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, giving a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
-### Export Output for Future Use
+### 7. Export Output for Future Use
 
 Export the output to rds for future usage.
 
@@ -306,7 +306,7 @@ write_rds(od_data, "../data/rds/od_data.rds")
 We'll now create and visualize desire lines using the **stplanr** package.
 
 ::: panel-tabset
-### Removing Intra-zonal Flows
+### 1. Removing Intra-zonal Flows
 
 Intra-zonal flows are not required for our analysis:
 
@@ -318,7 +318,7 @@ od_data1 <- od_data[od_data$ORIGIN_SZ != od_data$DESTIN_SZ,]
 glimpse(od_data1)
 ```
 
-### Creating Desire Lines
+### 2. Creating Desire Lines
 
 Here's how to create desire lines using the `od2line()` function:
 
@@ -339,7 +339,7 @@ glimpse(flowLine)
 ```
 
 
-### Visualising All Desire Lines
+### 3. Visualising All Desire Lines
 Without any filtering, the desire lines are quite messy with various flows entangled.
 ```{r}
 # Enable tmap to automatically check and fix invalid polygons
@@ -366,7 +366,7 @@ tm_shape(mpsz) +
 -   The code snippet creates a thematic map that visually represents the intensity of commuting flows.
 :::
 
-### Visualising Focused Desire Lines
+### 4. Visualising Focused Desire Lines
 Focusing on selected flows can be insightful, especially when data are skewed:
 
 ```{r}
