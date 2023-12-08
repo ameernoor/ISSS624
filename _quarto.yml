@@ -19,6 +19,8 @@ website:
             href: hands-on/hoe2-localautocor.html
           - text: 3 - Flow Data 
             href: hands-on/hoe3.html
+          - text: 4 - Flow Data 
+            href: hands-on/hoe3.html
       - text: In-class Exercise
         menu:
           - text: 1 - Preparing The Data Flow

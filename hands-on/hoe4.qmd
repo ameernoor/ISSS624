@@ -1,0 +1,46 @@
+---
+title: "Hands-on Exercise 4:  Calibrating Hedonic Pricing Model for Private Highrise Property with GWR Method"
+author: "Muhamad Ameer Noor"
+date: "6 December 2023"
+date-modified: "last-modified"
+editor: visual
+format: 
+  html:
+    code-fold: true
+    code-summary: "code chunk"
+    fontsize: 18px
+    number-sections: true
+    number-depth: 2
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
+  message: false
+---
+
+```{r}
+#| code-fold: false
+pacman::p_load(ggplot2, sf)
+```
+
+This code would create a plot showing properties on a map, colored by price, to illustrate the concept of spatial autocorrelation visually. Properties with similar prices would be expected to be near each other, demonstrating the pattern of spatial autocorrelation.
+```{r}
+# Hypothetical dataset of locations with property prices
+property_data <- data.frame(
+  longitude = runif(100, min = -180, max = 180),
+  latitude = runif(100, min = -90, max = 90),
+  price = rnorm(100, mean = 200000, sd = 50000)
+)
+
+# Convert to an sf object
+property_data_sf <- st_as_sf(property_data, coords = c("longitude", "latitude"), crs = 4326)
+
+# Generate a plot
+ggplot(data = property_data_sf) +
+  geom_sf(aes(color = price)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_minimal() +
+  labs(title = "Hypothetical Spatial Distribution of Property Prices",
+       color = "Price")
+```
+
