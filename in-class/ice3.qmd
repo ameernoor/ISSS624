@@ -19,7 +19,6 @@ execute:
 
 ![Illustration](../images/ice3.png)
 
-
 # Overview
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}

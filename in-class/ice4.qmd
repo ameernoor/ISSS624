@@ -1,0 +1,256 @@
+---
+title: "In-class Exercise 4 - Geospatial Data Science and Spatial Interaction Model with R"
+author: "Muhamad Ameer Noor"
+date: "9 December 2023"
+date-modified: "last-modified"
+editor: visual
+format: 
+  html:
+    code-fold: true
+    code-summary: "code chunk"
+    fontsize: 17px
+    number-sections: true
+    number-depth: 3
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
+---
+
+![Illustration](../images/ice4.png)
+
+# Geospatial Data Science with R
+
+## Overview
+
+In this exercise, we are going to do the following:
+- Performing geocoding using data downloaded from data.gov.sg
+- Calibrating Geographically Weighted Poisson Regression
+
+## Getting Started
+
+```{r}
+pacman::p_load(tidyverse, sf, httr, tmap)
+```
+::: {.callout-note collapse="true" title="Packages Explanations"}
+- [tidyverse](https://www.tidyverse.org/): A collection of R packages designed for data science that makes it easier to import, tidy, transform, visualize, and model data.
+
+- [sf](https://r-spatial.github.io/sf/): An R package that simplifies handling and manipulating geospatial data, providing simple features access for geographic data operations.
+
+- [httr](https://cran.r-project.org/web/packages/httr/index.html): A user-friendly package to make working with HTTP requests easier, providing useful tools for interacting with APIs and web services directly from R.
+
+- [tmap](https://cran.r-project.org/web/packages/tmap/): An R package for creating thematic maps that can be static or interactive, offering a structured and comprehensive approach to visualizing spatial data.
+:::
+
+## Geocoding using SLA API
+
+```{r}
+url <- "https://www.onemap.gov.sg/api/common/elastic/search"
+
+csv <- read_csv("../data/aspatial/Generalinformationofschools.csv")
+postcodes <- csv$postal_code
+
+found <- data.frame()
+not_found <- data.frame()
+
+for(postcode in postcodes){
+  query <-list('searchVal' = postcode, 'returnGeom'='Y', 'getAddrDetails'='Y', 'pageNum' = '1')
+  res  <- GET(url, query=query)
+  
+  if((content(res)$found)!=0)
+    found<-rbind(found, data.frame(content(res))[4:13])
+  else {
+  not_found = data.frame(postcode)
+  }
+} 
+```
+First, let's check the Resulting Variables
+```{r}
+url
+```
+
+```{r}
+glimpse(csv)
+```
+```{r}
+glimpse(postcodes)
+```
+
+```{r}
+glimpse(found)
+```
+
+```{r}
+glimpse(not_found)
+```
+
+Next, we combine both found and not_found into a single tibble dataframe.
+```{r}
+#| eval: false
+#| message: false
+merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
+
+# manually add the Zhenghua Secondary School data
+merged[merged$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LATITUDE"] <- 1.3887
+merged[merged$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LONGITUDE"] <- 103.7652
+
+write.csv(merged, file = "../data/aspatial/schools.csv")
+write.csv(not_found, file = "../data/aspatial/not_found.csv")
+
+# check the output
+glimpse(merged)
+```
+### Importing and tidying schools data
+```{r}
+# re-import the correct dataset as schools
+schools <- read_csv("../data/aspatial/schools.csv")
+
+schools <- schools %>%
+  rename(latitude = "results.LATITUDE",
+         longitude = "results.LONGITUDE")%>%
+  select(postal_code, school_name, latitude, longitude)
+
+# check the output
+glimpse(schools)
+```
+
+### Converting an aspatial data into sf tibble data.frame
+```{r}
+schools_sf <- st_as_sf(schools,
+                       coords = c("longitude", "latitude"),
+                       crs = 4326) %>%
+  st_transform(crs = 3414)
+
+# check the output
+glimpse(schools_sf)
+```
+
+### Import the Subzone Data
+```{r}
+mpsz <- read_rds("../data/rds/mpsz.rds")
+
+# check the output
+mpsz
+```
+
+
+### Create Interactive Map 
+```{r}
+tmap_mode("view")
+tm_shape(schools_sf) +
+  tm_dots() +
+  tm_view(set.zoom.limits = c(11,14))
+
+# stop the interactive layer
+tmap_mode("plot")
+```
+
+## Preparing
+
+Count the number of schools within each planning subzone by using appropriate sf function
+```{r}
+mpsz$SCHOOL_COUNT <- lengths(
+  st_intersects(
+    mpsz, schools_sf))
+
+# check the result
+summary(mpsz$SCHOOL_COUNT)
+```
+
+add code chunk here later!
+#business_sf <- read()
+
+# check the output
+#summary(mpsz$RETAIL_COUNT)
+
+
+add code chunk here later!
+tmap_options(check.and.fix = TRUE)
+## for plotting the boundary map
+tm_shape(mpsz) +
+  tm_polygons() +
+## for plotting the data
+tm_shape(retails_sf) +
+  tm_dots()
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+note that for plotting layers of map, the polygons must always come first
+:::
+
+## data integration and wrangling
+add code chunk here later!
+flow_data <- flow_data %>% left_join(mpsz_tidy, by = c("DESTIN_SZ", "SUBZONE_C"))
+
+### Checking variables with zero values
+Since poisson regression is working with the log data, the zero value needs to be removed because log 0 will cause error
+
+# Spatial Interaction Model (SIM)
+## Overview
+
+## Getting Started
+```{r}
+pacman::p_load(tmap, sf, performance, AER, MASS, ggpubr, tidyverse)
+```
+
+## The Data
+add code chunk here later!
+flow_data <- read_rds("../data/rds/flow_data_tidy.rds")
+check the output
+glimpse(flow_data)
+
+
+
+
+for inter zonal and intra zonal
+add code chunk here later!
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
+  0, flow_data$MORNING_PEAK)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
+  0.000001, 1)
+inter_zonal_flow <- flow_data %>%
+  filter(FlowNoIntra > 0)
+inter_zonal_flow <- inter_zonal_flow %>%
+  rename(TRIPS = MORNING_PEAK,
+         DIST = dist)
+
+
+
+### Origin (Production) constrained SIM
+add code chunk here later!
+orcSIM_Poisson <- glm(formula = TRIPS ~
+                       ORIGIN_SZ +
+                       log(SCHOOL_COUNT) +
+                       log(RETAIL_COUNT) +
+                       log(DIST) -1,
+                     family = poisson(link = "log")
+                     data = inter_zonal_flow,
+                     na.action = na.exclude)
+summary(orcSIM_Poisson)
+
+
+### Goodness-of-Fit
+add code chunk here later!
+CalcRSquared <- function(observed, estimated){}
+
+
+
+
+### Doubly constrained
+add code chunk here later!
+dbcSIM_Poisson <- glm(formula = TRIPS ~
+                       ORIGIN_SZ +
+                       log(SCHOOL_COUNT) +
+                       log(RETAIL_COUNT) +
+                       log(DIST),
+                     family = poisson(link = "log")
+                     data = inter_zonal_flow,
+                     na.action = na.exclude)
+summary(dbcSIM_Poisson)
+
+## Model comparison
+
+## Fitting a Negative Binomial Regression
+
+
