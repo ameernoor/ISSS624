@@ -26,11 +26,14 @@ execute:
 In this exercise, we are going to do the following:
 - Performing geocoding using data downloaded from data.gov.sg
 - Calibrating Geographically Weighted Poisson Regression
+- perform point-in-polygon count analysis
+- append the propulsiveness and attractiveness variables onto a flow data.
+
 
 ## Getting Started
 
 ```{r}
-pacman::p_load(tidyverse, sf, httr, tmap)
+pacman::p_load(tidyverse, sf, httr, tmap, dplyr)
 ```
 ::: {.callout-note collapse="true" title="Packages Explanations"}
 - [tidyverse](https://www.tidyverse.org/): A collection of R packages designed for data science that makes it easier to import, tidy, transform, visualize, and model data.
@@ -42,8 +45,12 @@ pacman::p_load(tidyverse, sf, httr, tmap)
 - [tmap](https://cran.r-project.org/web/packages/tmap/): An R package for creating thematic maps that can be static or interactive, offering a structured and comprehensive approach to visualizing spatial data.
 :::
 
-## Geocoding using SLA API
+### Geocoding using SLA API
+Geocoding is the conversion of an address or postal code into geographic coordinates, typically latitude and longitude. The Singapore Land Authority offers the [OneMap API](https://www.onemap.gov.sg/apidocs/), specifically the [Search](https://www.onemap.gov.sg/apidocs/apidocs) API, which retrieves latitude, longitude, and x,y coordinates for a given address or postal code.
 
+To perform geocoding using the [SLA OneMap API](https://www.onemap.gov.sg/docs/#onemap-rest-apis), the provided code, written in R, reads input data from a CSV file using the *read_csv* function from the **readr** package. The **httr** package's HTTP call functions are then used to send individual records to the OneMap geocoding server.
+
+The geocoding process creates two data frames: `found` for successfully geocoded records and `not_found` for those that failed. The `found` data table is joined with the initial CSV data table using a unique identifier (POSTAL) and saved as a new CSV file named `found`.
 ```{r}
 url <- "https://www.onemap.gov.sg/api/common/elastic/search"
 
@@ -64,25 +71,43 @@ for(postcode in postcodes){
   }
 } 
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, creating a data frame.
+-   A `for` loop in **base** R iterates over each postcode in `postcodes`.
+-   [GET](https://httr.r-lib.org/reference/GET.html) from **httr** package sends an HTTP GET request to a specified URL. Here, it is used to query a web API with specific parameters for each postcode.
+-   [content](https://httr.r-lib.org/reference/content.html) from **httr** package extracts content from a response object returned by `GET`. It's used to extract data from the API response.
+-   [rbind](https://www.rdocumentation.org/packages/SparkR/versions/3.1.2/topics/rbind) from **base** R combines data frames by rows. In this code, it's used to append new rows to `found` or `not_found`.
+-   The code checks if each postcode has corresponding data in the API response (`found`) or not (`not_found`), and constructs two separate data frames accordingly.
+:::
+
 First, let's check the Resulting Variables
+::: panel-tabset
+#### url
 ```{r}
 url
 ```
 
+#### csv
 ```{r}
 glimpse(csv)
 ```
+
+#### postcodes
 ```{r}
 glimpse(postcodes)
 ```
 
+#### found
 ```{r}
 glimpse(found)
 ```
 
+#### not_found
 ```{r}
 glimpse(not_found)
 ```
+:::
+
 
 Next, we combine both found and not_found into a single tibble dataframe.
 ```{r}
@@ -100,21 +125,40 @@ write.csv(not_found, file = "../data/aspatial/not_found.csv")
 # check the output
 glimpse(merged)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [merge](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/merge) from **base** R combines two data frames by matching rows based on specified columns. In this code, `csv` and `found` are merged using `postal_code` from `csv` and `results.POSTAL` from `found`, with the `all = TRUE` option to include all rows from both data frames.
+-   The manual addition of data for "ZHENGHUA SECONDARY SCHOOL" is performed using base R's subsetting and assignment operations.
+-   [write.csv](https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/write.table) from **base** R writes a data frame to a CSV file.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure and contents.
+:::
+
+
 ### Importing and tidying schools data
+In this sub-section, you will import *schools.csv* into R environment and at the same time tidying the data by selecting only the necessary fields as well as rename some fields.
+
 ```{r}
 # re-import the correct dataset as schools
 schools <- read_csv("../data/aspatial/schools.csv")
 
 schools <- schools %>%
   rename(latitude = "results.LATITUDE",
-         longitude = "results.LONGITUDE")%>%
-  select(postal_code, school_name, latitude, longitude)
+         longitude = "results.LONGITUDE")
+
+schools <- schools %>%
+    select(`postal_code`, `school_name`, `latitude`, `longitude`)
 
 # check the output
 glimpse(schools)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, creating a data frame.
+-   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the names of specific columns in a data frame for clarity or convenience. Here, it renames `results.LATITUDE` to `latitude` and `results.LONGITUDE` to `longitude`.
+-   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to subset specific columns from the data frame, retaining only the `postal_code`, `school_name`, `latitude`, and `longitude` columns.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+:::
 
 ### Converting an aspatial data into sf tibble data.frame
+Next, you will convert schools tibble data.frame data into a simple feature tibble data.frame called *schools_sf* by using values in latitude and longitude fields.
 ```{r}
 schools_sf <- st_as_sf(schools,
                        coords = c("longitude", "latitude"),
@@ -124,15 +168,40 @@ schools_sf <- st_as_sf(schools,
 # check the output
 glimpse(schools_sf)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_as_sf](https://r-spatial.github.io/sf/reference/st_as_sf.html) from **sf** package converts a data frame to a simple features (sf) object, specifying the coordinates for spatial data. In this code, `longitude` and `latitude` columns are used for coordinates.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of the sf object. Here, it converts CRS to 3414.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the sf object, giving a quick look at its structure, including geometry type and the first few entries in each column.
+:::
 
-### Import the Subzone Data
+### Plotting a point simple feature layer
+To ensure that *schools* sf tibble data.frame has been projected and converted correctly, you can plot the schools point data for visual inspection.
+
+First, import *MPSZ-2019* shapefile into R as sf tibble data.frame and name it *mpsz*.
 ```{r}
-mpsz <- read_rds("../data/rds/mpsz.rds")
+mpsz <- st_read(dsn = "../data/geospatial/",
+                layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
 
 # check the output
 mpsz
 ```
 
+Next, create a point symbol map showing the location of schools with OSM as the background map.
+```{r}
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(schools_sf) +
+  tm_dots()
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_options](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_options) from **tmap** package sets options for tmap functions. In this case, it's set to automatically check and fix invalid polygons in spatial data.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It is used twice in this code: first for the `mpsz` dataset and then for `schools_sf`.
+-   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) from **tmap** package adds a layer of polygons to the map, in this case, for the `mpsz` data.
+-   [tm_dots](https://rdrr.io/cran/tmap/man/tm_symbols.html) from **tmap** package adds a layer of dots to the map, here representing the `schools_sf` data.
+-   This code snippet creates a thematic map that combines polygons from `mpsz` and dots representing schools from `schools_sf`.
+:::
 
 ### Create Interactive Map 
 ```{r}
@@ -141,116 +210,441 @@ tm_shape(schools_sf) +
   tm_dots() +
   tm_view(set.zoom.limits = c(11,14))
 
-# stop the interactive layer
+# turn off the interactive layer setting for next codes
 tmap_mode("plot")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. Initially, it's set to `"view"` for interactive maps.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares the spatial data (here `schools_sf`) for plotting.
+-   [tm_dots](https://rdrr.io/cran/tmap/man/tm_symbols.html) from **tmap** package adds a layer of dots to represent spatial points on the map.
+-   [tm_view](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_view) from **tmap** package customizes the interactive map view, including setting zoom limits.
+-   The code snippet creates an interactive map displaying schools as dots.
+-   Finally, `tmap_mode("plot")` switches back to static plotting mode, stopping the interactive layer.
+:::
 
-## Preparing
-
-Count the number of schools within each planning subzone by using appropriate sf function
+### Performing point-in-polygon count process
+Next, we will count the number of schools located inside the planning subzones.
 ```{r}
-mpsz$SCHOOL_COUNT <- lengths(
+mpsz$`SCHOOL_COUNT`<- lengths(
   st_intersects(
     mpsz, schools_sf))
 
-# check the result
-summary(mpsz$SCHOOL_COUNT)
+# check the summary statistics of the derived variabled
+summary(mpsz$`SCHOOL_COUNT`)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_intersects](https://cran.r-project.org/web/packages/sf/sf.pdf) from **sf** package is used to find the intersection between two spatial objects, here `mpsz` and `schools_sf`. It returns a list indicating which geometries from `schools_sf` intersect with each geometry in `mpsz`.
+-   [lengths](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) from **base** R calculates the lengths of the elements in a list, in this case, the number of schools intersecting with each polygon in `mpsz`.
+-   The assignment operation (`mpsz$SCHOOL_COUNT <-`) creates a new column in the `mpsz` data frame, storing the count of schools intersecting with each area.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the `SCHOOL_COUNT` variable, typically giving minimum, maximum, mean, and other useful statistics.
+:::
 
-add code chunk here later!
-#business_sf <- read()
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The summary statistics above reveals that there are excessive 0 values in SCHOOL_COUNT field. If `log()` is going to use to transform this field, additional step is required to ensure that all 0 will be replaced with a value between 0 and 1 but not 0 neither 1.
+:::
 
-# check the output
-#summary(mpsz$RETAIL_COUNT)
+## Data Integration and Final Touch-up
+### Count Number of Business Points in each Planning Subzone.
+```{r}
+business_sf <- st_read(dsn = "../data/geospatial",
+                      layer = "Business")
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, the function is reading the "Business" layer from the data source located at `"../data/geospatial"`, converting it into an `sf` (simple features) object suitable for spatial analysis in R.
+:::
 
-
-add code chunk here later!
+```{r}
 tmap_options(check.and.fix = TRUE)
-## for plotting the boundary map
 tm_shape(mpsz) +
   tm_polygons() +
-## for plotting the data
-tm_shape(retails_sf) +
+tm_shape(business_sf) +
   tm_dots()
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_options](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_options) from **tmap** package sets options for tmap functions. Here, it's configured to automatically check and fix invalid polygons in spatial data.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used twice in this code: first for the `mpsz` dataset and then for `business_sf`.
+-   [tm_polygons](https://rdrr.io/cran/tmap/man/tm_polygons.html) from **tmap** package adds a layer of polygons to the map, representing the `mpsz` data.
+-   [tm_dots](https://rdrr.io/cran/tmap/man/tm_symbols.html) from **tmap** package adds a layer of dots to the map, here representing the `business_sf` data.
+-   This code snippet creates a thematic map that combines polygonal representations of `mpsz` and dots representing business locations from `business_sf`.
+:::
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
 note that for plotting layers of map, the polygons must always come first
 :::
 
-## data integration and wrangling
-add code chunk here later!
-flow_data <- flow_data %>% left_join(mpsz_tidy, by = c("DESTIN_SZ", "SUBZONE_C"))
-
-### Checking variables with zero values
-Since poisson regression is working with the log data, the zero value needs to be removed because log 0 will cause error
-
-# Spatial Interaction Model (SIM)
-## Overview
-
-## Getting Started
 ```{r}
-pacman::p_load(tmap, sf, performance, AER, MASS, ggpubr, tidyverse)
+mpsz$`BUSINESS_COUNT`<- lengths(
+  st_intersects(
+    mpsz, business_sf))
+
+# check the summary statistics of the new variable
+summary(mpsz$`BUSINESS_COUNT`)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_intersects](https://cran.r-project.org/web/packages/sf/sf.pdf) from **sf** package is used to find the intersections between two spatial objects, in this case, `mpsz` and `business_sf`. It determines which geometries from `business_sf` intersect with each geometry in `mpsz` and returns a list indicating these intersections.
+-   [lengths](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) from **base** R calculates the lengths of the elements in a list. Here, it's used to count the number of business locations intersecting with each area in `mpsz`.
+-   The assignment operation (`mpsz$BUSINESS_COUNT <-`) adds a new column to the `mpsz` data frame, which stores the count of business locations intersecting with each area.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the `BUSINESS_COUNT` variable, giving a statistical overview including minimum, maximum, mean, and other useful metrics.
+:::
+
+### Append School and Business Counts
+Next, import the `flow_data.rds` from Hands-on Exercise 3.
+```{r}
+flow_data <- read_rds("../data/rds/flow_data_tidy.rds")
+
+# check the output
+glimpse(flow_data)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_rds](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS) from **base** R reads an R object stored in RDS format and restores it. In this code, it's used to load the `flow_data` object from an RDS file located at `"../data/rds/flow_data_tidy.rds"`.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+This is an sf tibble data.frame and the features are polylines linking the centroid of origins and destination planning subzone.
+
+Next, append *SCHOOL_COUNT* and *BUSINESS_COUNT* into flow_data sf tibble data.frame.
+
+```{r}
+mpsz_tidy <- mpsz %>%
+  select(SUBZONE_C, SCHOOL_COUNT, BUSINESS_COUNT) %>%
+  st_drop_geometry()
+
+# check the output
+glimpse(mpsz_tidy)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_drop_geometry](https://r-spatial.github.io/sf/reference/st_geometry.html) from **sf** package is used to remove the geometry column from a spatial object, converting it into a regular data frame.
+-   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package subsets specific columns in a data frame. In this case, it retains `SUBZONE_C`, `SCHOOL_COUNT`, and `BUSINESS_COUNT`.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+:::
+
+Next, append SCHOOL_COUNT and BUSINESS_COUNT fields from mpsz_tidy data.frame into flow_data sf tibble data.frame
+
+```{r}
+flow_data <- flow_data %>%
+  left_join(mpsz_tidy,
+            by = c("DESTIN_SZ" = "SUBZONE_C")) %>%
+  rename(TRIPS = MORNING_PEAK, DIST = dist)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [left_join](https://dplyr.tidyverse.org/reference/mutate-joins.html) from **dplyr** package merges two data frames based on matching values in their columns. Here, `flow_data` is joined with `mpsz_tidy` using the `DESTIN_SZ` column from `flow_data` and `SUBZONE_C` from `mpsz_tidy`. This function retains all rows from `flow_data` and adds matching rows from `mpsz_tidy`.
+-   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the names of specific columns in a data frame for clarity or convenience. In this code, `MORNING_PEAK` is renamed to `TRIPS` and `dist` to `DIST`.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Note that unique join field is DESTIN_SZ and SUBZONE_C. Destination is chosen as the unique field as it represents the attracting zone in a morning peak trips.
+:::
+
+### Checking for variables with zero values
+Since Poisson Regression is based of log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables.
+`Summary()` of `Base` R is used to compute the summary statistics of all variables in *wd_od* data frame.
+
+```{r}
+summary(flow_data)
 ```
 
+The print report above reveals that variables *ORIGIN_AGE7_12*, *ORIGIN_AGE13_24*, *ORIGIN_AGE25_64*, *DESTIN_AGE7_12*, *DESTIN_AGE13_24*, *DESTIN_AGE25_64* consist of 0 values. To prepare the data for poisson regression, replae zero values to 0.99
+
+```{r}
+# Check if there are any zero values in SCHOOL_COUNT and BUSINESS_COUNT
+if (any(flow_data$SCHOOL_COUNT == 0)) {
+  flow_data$SCHOOL_COUNT <- ifelse(flow_data$SCHOOL_COUNT == 0, 0.99, flow_data$SCHOOL_COUNT)
+}
+
+if (any(flow_data$BUSINESS_COUNT == 0)) {
+  flow_data$BUSINESS_COUNT <- ifelse(flow_data$BUSINESS_COUNT == 0, 0.99, flow_data$BUSINESS_COUNT)
+}
+
+# run summary to check:
+summary(flow_data)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [any](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/any) from **base** R checks if any of the values in a given vector meet a specified condition, here checking for zero values in `SCHOOL_COUNT` and `BUSINESS_COUNT`.
+-   [ifelse](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/ifelse) from **base** R applies a conditional test to each element of a vector, returning one value if the condition is true and another if it's false. In this code, it's used to replace zero values in `SCHOOL_COUNT` and `BUSINESS_COUNT` with 0.99.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of an object's contents, typically offering minimum, maximum, median, mean, and other useful statistics. Here, it's used to check the updated values in `flow_data`.
+:::
+
+export the data as rds for future usage.
+```{r}
+write_rds(flow_data, "../data/rds/flow_data_tidy_update.rds")
+```
+
+# Calibrating Spatial Interaction Models with R
+## Overview
+We will continue our journey of calibrating Spatial Interaction Models by using propulsiveness and attractiveness variables prepared in earlier in-class exercise.
+
+## Getting Started
+firstly, import the libraries
+```{r}
+pacman::p_load(tmap, sf, performance, AER, MASS, ggpubr, tidyverse, DT, knitr)
+```
+
+::: {.callout-note collapse="true" title="Packages Explanations"}
+- [tmap](https://cran.r-project.org/web/packages/tmap/): This package is used for creating thematic maps in R. It allows for the visualization of spatial data and supports both static and interactive mapping.
+
+- [sf](https://r-spatial.github.io/sf/): Stands for "simple features" and is an R package that provides standardized support for spatial data manipulation. It integrates well with the `tidyverse` suite of data science tools.
+
+- [performance](https://cran.r-project.org/web/packages/performance/index.html): Provides tools for checking and assessing the quality and performance of statistical models, including regression models and mixed-effect models.
+
+- [AER](https://cran.r-project.org/web/packages/AER/index.html): Short for "Applied Econometrics with R", this package includes functions and data sets for the book of the same name, which is useful for econometric analysis.
+
+- [MASS](https://cran.r-project.org/web/packages/MASS/index.html): The package supplies functions and datasets to support the book "Modern Applied Statistics with S" by Venables and Ripley, including a variety of statistical methods such as linear and quadratic discriminant function analysis, and robust multivariate statistics.
+
+- [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html): Provides a simple interface for creating publication-ready plots using an extension of `ggplot2`, with additional functions for commonly needed statistics and plots.
+
+- [tidyverse](https://www.tidyverse.org/): A collection of R packages designed for data science tasks that make it easy to import, tidy, transform, and visualize data in a coherent data analysis workflow.
+
+- [knitr](https://www.rdocumentation.org/packages/knitr/versions/1.45) for creating html tables
+:::
+
 ## The Data
-add code chunk here later!
-flow_data <- read_rds("../data/rds/flow_data_tidy.rds")
-check the output
+import the data from previous processes.
+```{r}
+flow_data <- read_rds("../data/rds/flow_data_tidy_update.rds")
+# check the output
 glimpse(flow_data)
+```
+::: {.notebox .lightbulb data-latex="lightbulb"}
+this sf tibble data.frame includes two additional fields namely: *SCHOOL_COUNT* and *BUSINESS_COUNT*. Both of them will be used as attractiveness variables when calibrating origin constrained SIM.
+:::
 
+check first five columns and rows of *flow_data*
+```{r}
+kable(head(flow_data[, 1:5], n = 5))
+```
 
+::: {.callout-note collapse="true" title="Functions"}
+-   [head](https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/head) from **base** R retrieves the first `n` rows of a data frame or matrix. Here, it's used to get the first 5 rows of `flow_data`, considering only the first 5 columns.
+-   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates a simple table from a data frame or matrix. This function is used to display the selected subset of `flow_data` as a markdown table.
+:::
 
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Notice that this data.frame include intra-zonal flow. The next part will remove it
+:::
 
-for inter zonal and intra zonal
-add code chunk here later!
+### Preparing inter-zonal flow data
+
+In general, we will calibrate separate Spatial Interaction Models for inter- and intra-zonal flows. In this hands-on exercise, we will focus our attention on inter-zonal flow. Hence, we need to exclude the intra-zonal flow from *flow_data*.
+
+First, two new columns called *FlowNoIntra* and *offset* will be created by using the code chunk below. All intra-zonal flow will be given a value of 0 or else the original flow values will be inserted. Then, inter-zonal flow will be selected from flow_data and save into a new output data.frame called *inter_zonal_flow* 
+
+```{r}
 flow_data$FlowNoIntra <- ifelse(
-  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
-  0, flow_data$MORNING_PEAK)
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0, flow_data$TRIPS)
 flow_data$offset <- ifelse(
-  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
   0.000001, 1)
+
 inter_zonal_flow <- flow_data %>%
   filter(FlowNoIntra > 0)
-inter_zonal_flow <- inter_zonal_flow %>%
-  rename(TRIPS = MORNING_PEAK,
-         DIST = dist)
+```
 
 
+## Calibrating Spatial Interaction Models
 
-### Origin (Production) constrained SIM
-add code chunk here later!
-orcSIM_Poisson <- glm(formula = TRIPS ~
-                       ORIGIN_SZ +
-                       log(SCHOOL_COUNT) +
-                       log(RETAIL_COUNT) +
-                       log(DIST) -1,
-                     family = poisson(link = "log")
-                     data = inter_zonal_flow,
-                     na.action = na.exclude)
+In this section, we will focus on calibrating an origin constrained SIM and a doubly constrained by using *flow_data* prepared. It will complement materials from Hands-on Exercise 3.
+
+### Origin- (Production-) constrained Model
+
+Code chunk below shows the calibration of the model by using [`glm()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) of R and *flow_data*.
+
+```{r}
+#| eval: false
+orcSIM_Poisson <- glm(formula = TRIPS ~ 
+                ORIGIN_SZ +
+                log(SCHOOL_COUNT.x) +
+                log(BUSINESS_COUNT) +
+                log(DIST) - 1,
+              family = poisson(link = "log"),
+              data = inter_zonal_flow,
+              na.action = na.exclude)
 summary(orcSIM_Poisson)
+```
+::: callout-tip
+-   For origin-constrained model, only explanatory variables representing the attractiveness at the destinations will be used.
+-   All the explanatory variables including distance will be log transformed.
+-   *ORIGIN_SZ* is used to model 𝜇~𝑖~ . It must be in categorical data type.
+-   It is important to note that -1 is added in the equation after the distance variable. The -1 serves the purpose of removing the intercept that by default, glm will insert into the model.
+:::
 
+```{r}
+#| echo: false
+orcSIM_Poisson <- glm(formula = TRIPS ~ 
+                ORIGIN_SZ +
+                log(SCHOOL_COUNT.x) +
+                log(BUSINESS_COUNT) +
+                log(DIST) - 1,
+              family = poisson(link = "log"),
+              data = inter_zonal_flow,
+              na.action = na.exclude)
+summary(orcSIM_Poisson)
+```
 
-### Goodness-of-Fit
-add code chunk here later!
-CalcRSquared <- function(observed, estimated){}
+::: callout-tip
+-   the ⍺~1~ and ⍺~2~ of *SCHOOL_COUNT* and *BUSINESS_COUNT* are 0.4755516 and 0.1796905 respectively.
 
+-   𝛽, the distance decay parameter is -1.6929522
 
+-   there are a series of parameters which are the vector of 𝜇~𝑖~ values associated with the origin constraints.
+:::
 
+### Goodness of fit
 
-### Doubly constrained
-add code chunk here later!
-dbcSIM_Poisson <- glm(formula = TRIPS ~
-                       ORIGIN_SZ +
-                       log(SCHOOL_COUNT) +
-                       log(RETAIL_COUNT) +
-                       log(DIST),
-                     family = poisson(link = "log")
-                     data = inter_zonal_flow,
-                     na.action = na.exclude)
+In statistical modelling, the next question we would like to answer is how well the proportion of variance in the dependent variable (i.e. TRIPS) that can be explained by the explanatory variables.
+
+In order to provide answer to this question, R-squared statistics will be used. However, R-squared is not an output of `glm()`. Hence we will write a function called `CalcRSquared` by using the code chunk below.
+
+```{r}
+CalcRSquared <- function(observed, estimated){
+  r <- cor(observed, estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+Now, we can examine how the constraints hold for destinations this time.
+
+```{r}
+CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)
+```
+
+With reference to the R-Squared above, we can conclude that the model accounts for about 44% of the variation of flows in the systems. Not bad, but not brilliant either.
+
+### Doubly constrained model
+
+In this section, we will fit a doubly constrained SIM
+
+```{r}
+#| eval: false
+dbcSIM_Poisson <- glm(formula = TRIPS ~ 
+                ORIGIN_SZ + 
+                DESTIN_SZ +
+                log(DIST),
+              family = poisson(link = "log"),
+              data = inter_zonal_flow,
+              na.action = na.exclude)
 summary(dbcSIM_Poisson)
+```
+
+::: callout-important
+It is important to note that there is a slight change of the code chunk. -1 is removed which means that an intercept will appear in the model again. The -1 for removing the intercept only works with one factor level but in double-constrained model we have two factor levels, namely: origins and destinations.
+:::
+
+```{r}
+#| echo: false
+dbcSIM_Poisson <- glm(formula = TRIPS ~ 
+                ORIGIN_SZ + 
+                DESTIN_SZ +
+                log(DIST),
+              family = poisson(link = "log"),
+              data = inter_zonal_flow,
+              na.action = na.exclude)
+summary(dbcSIM_Poisson)
+```
+
+Next, let us examine how well the proportion of variance in the dependent variable (i.e. TRIPS) that can be explained by the explanatory variables. Using the R-Squared function written earlier, compute the R-Squared of the Doubly-constrined Model.
+
+```{r}
+CalcRSquared(dbcSIM_Poisson$data$TRIPS,
+             dbcSIM_Poisson$fitted.values)
+```
+
+Notice that there is a relatively greater improvement in the R-Squared value.
 
 ## Model comparison
 
-## Fitting a Negative Binomial Regression
+### Statistical measures
 
+Another useful model performance measure for continuous dependent variable is [Root Mean Squared Error](https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e). In this sub-section, you will learn how to use [`compare_performance()`](https://easystats.github.io/performance/reference/compare_performance.html) of [**performance**](https://easystats.github.io/performance/index.html) package
 
+First of all, create a list called *model_list* by using the code chunk below.
+
+```{r}
+model_list <- list(
+  Origin_Constrained = orcSIM_Poisson,
+  Doubly_Constrained = dbcSIM_Poisson)
+```
+
+Next, compute the RMSE of all the models in *model_list* file by using the code chunk below.
+
+```{r}
+compare_performance(model_list,
+                    metrics = "RMSE")
+```
+
+The print above reveals that doubly constrained SIM is the best model among the two SIMs because it has the smallest RMSE value of 1906.694.
+
+### Visualising fitted values
+
+In this section, visualise the observed values and the fitted values.
+
+Firstly we will extract the fitted values from Origin-constrained Model by using the code chunk below.
+
+```{r}
+df <- as.data.frame(orcSIM_Poisson$fitted.values) %>%
+  round(digits = 0)
+```
+
+Next, append the fitted values into *inter_zonal_flow* data frame by using the code chunk below.
+
+```{r}
+inter_zonal_flow <- inter_zonal_flow %>%
+  cbind(df) %>%
+  rename(orcTRIPS = "orcSIM_Poisson.fitted.values")
+```
+
+::: callout-tip
+Notice that `rename()` is used to rename the field name and the `$` in the original field name has been replaced with an `.`. This is because R replaced `$` with `.` during the `cbind()`.
+:::
+
+Repeat the same step for Doubly Constrained Model (i.e. dbcSIM_Poisson)
+
+```{r}
+df <- as.data.frame(dbcSIM_Poisson$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+inter_zonal_flow <- inter_zonal_flow %>%
+  cbind(df) %>%
+  rename(dbcTRIPS = "dbcSIM_Poisson.fitted.values")
+```
+
+Next, two scatterplots will be created by using [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) and other appropriate functions of [**ggplot2**](https://ggplot2.tidyverse.org/) package.
+
+```{r}
+#| fig-height: 8
+orc_p <- ggplot(data = inter_zonal_flow,
+                aes(x = orcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,150000),
+                  ylim=c(0,150000))
+
+dbc_p <- ggplot(data = inter_zonal_flow,
+                aes(x = dbcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  coord_cartesian(xlim=c(0,150000),
+                  ylim=c(0,150000))
+```
+
+Now, all the graphs will be put into a single visual for better comparison by using the code chunk below.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 7
+ggarrange(orc_p, dbc_p,
+          ncol = 2,
+          nrow = 1)
+```
+
+::: callout-note
+### Quiz Answer
+From the figure, the left graph shows the relationship between the observed trips (TRIPS) and the estimated trips from the Origin constrained model (orcTRIPS). The dispersion of points and the less pronounced trend line suggest that the model does not predict the observed trips as accurately. The right graph, showing the relationship between observed trips (TRIPS) and the estimated trips from the Doubly Constrained Model (dbcTRIPS), displays a much tighter alignment of points along the trend line, indicating a more accurate prediction of the observed trips.
+
+The follow-up action would be to further investigate the Doubly Constrained Model since it appears to be more effective at predicting trip patterns. This could involve examining the underlying assumptions of the model, the parameters used, and possibly applying it to another set of data for validation purposes. It would also be prudent to look into the reasons why the Origin constrained model performs less accurately to understand the limitations or potential areas for model improvement.
+:::
