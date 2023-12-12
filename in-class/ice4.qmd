@@ -439,7 +439,10 @@ flow_data$offset <- ifelse(
 inter_zonal_flow <- flow_data %>%
   filter(FlowNoIntra > 0)
 ```
-
+::: {.callout-note collapse="true" title="Functions"}
+-   [ifelse](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/ifelse) from **base** R applies a conditional test to each element of a vector. In this code, it is used twice: firstly, to create the `FlowNoIntra` column in `flow_data`, where the value is set to 0 if the origin and destination subzones are the same, otherwise it's set to the value of `TRIPS`; secondly, to create the `offset` column, assigning a very small number (0.000001) if the origin and destination subzones are the same, otherwise 1.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to retain rows based on a specified condition. Here, it filters `flow_data` to keep rows where `FlowNoIntra` is greater than 0, effectively selecting rows where the flow is not within the same subzone (inter-zonal flow).
+:::
 
 ## Calibrating Spatial Interaction Models
 
@@ -450,7 +453,6 @@ In this section, we will focus on calibrating an origin constrained SIM and a do
 Code chunk below shows the calibration of the model by using [`glm()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) of R and *flow_data*.
 
 ```{r}
-#| eval: false
 orcSIM_Poisson <- glm(formula = TRIPS ~ 
                 ORIGIN_SZ +
                 log(SCHOOL_COUNT.x) +
@@ -480,6 +482,13 @@ orcSIM_Poisson <- glm(formula = TRIPS ~
               na.action = na.exclude)
 summary(orcSIM_Poisson)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** package fits generalized linear models. In this code, a Poisson regression model is specified with the `family = poisson(link = "log")` argument. The formula `TRIPS ~ ORIGIN_SZ + log(SCHOOL_COUNT.x) + log(BUSINESS_COUNT) + log(DIST) - 1` defines the dependent variable (`TRIPS`) and the independent variables (`ORIGIN_SZ`, logarithm of `SCHOOL_COUNT.x`, `BUSINESS_COUNT`, and `DIST`), with `-1` indicating no intercept in the model.
+-   The `data` argument specifies `inter_zonal_flow` as the dataset used for the model.
+-   `na.action = na.exclude` specifies how missing values (NAs) should be treated in the analysis.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the fitted model `orcSIM_Poisson`, including coefficients, statistical significance, and other diagnostic measures.
+:::
+
 
 ::: callout-tip
 -   the ⍺~1~ and ⍺~2~ of *SCHOOL_COUNT* and *BUSINESS_COUNT* are 0.4755516 and 0.1796905 respectively.
@@ -502,12 +511,22 @@ CalcRSquared <- function(observed, estimated){
   R2
 }
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [cor](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/cor) from **stats** package calculates the correlation coefficient between two vectors. In this user-defined function `CalcRSquared`, it is used to find the correlation (`r`) between `observed` and `estimated` values.
+-   The function `CalcRSquared` computes the square of the correlation coefficient (`R2`), which is a measure of the proportion of variance in the observed data that is predictable from the estimated data.
+-   This custom function is designed to return the value of `R2`, providing a simple way to calculate the coefficient of determination (R-squared) for a set of observed and estimated values.
+:::
 
 Now, we can examine how the constraints hold for destinations this time.
 
 ```{r}
 CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   The custom function `CalcRSquared`, defined earlier, is used here to calculate the coefficient of determination (R-squared). This statistical measure indicates how well the estimated values (`orcSIM_Poisson$fitted.values`) approximate the actual, observed values (`orcSIM_Poisson$data$TRIPS`).
+-   In this code, `orcSIM_Poisson$data$TRIPS` refers to the actual observed values of trips, and `orcSIM_Poisson$fitted.values` refers to the values estimated by the `orcSIM_Poisson` generalized linear model.
+-   The function call `CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)` computes the R-squared value, which quantifies the proportion of variance in the observed data that can be explained by the model's estimated values.
+:::
 
 With reference to the R-Squared above, we can conclude that the model accounts for about 44% of the variation of flows in the systems. Not bad, but not brilliant either.
 
@@ -516,7 +535,6 @@ With reference to the R-Squared above, we can conclude that the model accounts f
 In this section, we will fit a doubly constrained SIM
 
 ```{r}
-#| eval: false
 dbcSIM_Poisson <- glm(formula = TRIPS ~ 
                 ORIGIN_SZ + 
                 DESTIN_SZ +
@@ -526,6 +544,13 @@ dbcSIM_Poisson <- glm(formula = TRIPS ~
               na.action = na.exclude)
 summary(dbcSIM_Poisson)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** package fits generalized linear models. In this code, a Poisson regression model is specified with `family = poisson(link = "log")`. The formula `TRIPS ~ ORIGIN_SZ + DESTIN_SZ + log(DIST)` defines the dependent variable (`TRIPS`) and the independent variables (`ORIGIN_SZ`, `DESTIN_SZ`, and logarithm of `DIST`).
+-   The `data` argument specifies `inter_zonal_flow` as the dataset used for the model.
+-   `na.action = na.exclude` indicates how missing values (NAs) should be handled in the model fitting process.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a comprehensive summary of the fitted model `dbcSIM_Poisson`, including the model coefficients, their statistical significance, and other diagnostic measures.
+:::
+
 
 ::: callout-important
 It is important to note that there is a slight change of the code chunk. -1 is removed which means that an intercept will appear in the model again. The -1 for removing the intercept only works with one factor level but in double-constrained model we have two factor levels, namely: origins and destinations.
@@ -542,6 +567,14 @@ dbcSIM_Poisson <- glm(formula = TRIPS ~
               na.action = na.exclude)
 summary(dbcSIM_Poisson)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** package is used to fit generalized linear models. In this code, a Poisson regression model is specified using the formula `TRIPS ~ ORIGIN_SZ + DESTIN_SZ + log(DIST)`, with `family = poisson(link = "log")`. This sets up a model where `TRIPS` is the dependent variable, and `ORIGIN_SZ`, `DESTIN_SZ`, and the logarithm of `DIST` are independent variables.
+-   `data = inter_zonal_flow` specifies that the model should be fitted using the `inter_zonal_flow` dataset.
+-   `na.action = na.exclude` instructs the model to exclude cases with missing values (NAs) in the model fitting process.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a detailed summary of the fitted model `dbcSIM_Poisson`. This includes information about the model coefficients, their statistical significance, residuals, and other diagnostic measures.
+-   The `#| echo: false` directive at the start indicates that this code chunk is executed but not displayed in the output when rendered in a document like an R Markdown report.
+:::
+
 
 Next, let us examine how well the proportion of variance in the dependent variable (i.e. TRIPS) that can be explained by the explanatory variables. Using the R-Squared function written earlier, compute the R-Squared of the Doubly-constrined Model.
 
@@ -549,8 +582,15 @@ Next, let us examine how well the proportion of variance in the dependent variab
 CalcRSquared(dbcSIM_Poisson$data$TRIPS,
              dbcSIM_Poisson$fitted.values)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   The custom function `CalcRSquared`, defined earlier, is used here to calculate the coefficient of determination (R-squared). This statistical measure indicates how well the estimated values (`dbcSIM_Poisson$fitted.values`) approximate the actual, observed values (`dbcSIM_Poisson$data$TRIPS`).
+-   In this code, `dbcSIM_Poisson$data$TRIPS` refers to the actual observed values of trips, and `dbcSIM_Poisson$fitted.values` refers to the values estimated by the `dbcSIM_Poisson` generalized linear model.
+-   The function call `CalcRSquared(dbcSIM_Poisson$data$TRIPS, dbcSIM_Poisson$fitted.values)` computes the R-squared value, which quantifies the proportion of variance in the observed data that can be explained by the model's estimated values.
+:::
 
+::: {.notebox .lightbulb data-latex="lightbulb"}
 Notice that there is a relatively greater improvement in the R-Squared value.
+:::
 
 ## Model comparison
 
@@ -565,6 +605,10 @@ model_list <- list(
   Origin_Constrained = orcSIM_Poisson,
   Doubly_Constrained = dbcSIM_Poisson)
 ```
+
+::: {.callout-note collapse="true" title="Functions"}
+[list](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/list) from **base** R is a generic function to create lists. In this code, `model_list` is created to store different model objects: `Origin_Constrained` stores the `orcSIM_Poisson` model, and `Doubly_Constrained` stores the `dbcSIM_Poisson` model.
+:::
 
 Next, compute the RMSE of all the models in *model_list* file by using the code chunk below.
 
@@ -593,9 +637,9 @@ inter_zonal_flow <- inter_zonal_flow %>%
   cbind(df) %>%
   rename(orcTRIPS = "orcSIM_Poisson.fitted.values")
 ```
-
-::: callout-tip
-Notice that `rename()` is used to rename the field name and the `$` in the original field name has been replaced with an `.`. This is because R replaced `$` with `.` during the `cbind()`.
+::: {.callout-note collapse="true" title="Functions"}
+-   [cbind](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cbind) from **base** R combines data frames or matrices by columns. In this code, it's used to add the columns from `df` to `inter_zonal_flow`.
+-   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the name of a specific column in a data frame. Here, the column named `orcSIM_Poisson.fitted.values` in the merged data frame is renamed to `orcTRIPS`. Notice that `rename()` is used to rename the field name and the `$` in the original field name has been replaced with an `.`. This is because R replaced `$` with `.` during the `cbind()`.
 :::
 
 Repeat the same step for Doubly Constrained Model (i.e. dbcSIM_Poisson)
@@ -611,10 +655,11 @@ inter_zonal_flow <- inter_zonal_flow %>%
   rename(dbcTRIPS = "dbcSIM_Poisson.fitted.values")
 ```
 
-Next, two scatterplots will be created by using [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) and other appropriate functions of [**ggplot2**](https://ggplot2.tidyverse.org/) package.
+Next, two scatterplots will be created by using [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) and other appropriate functions of [**ggplot2**](https://ggplot2.tidyverse.org/) package. And be put into a single visual for better comparison.
 
 ```{r}
-#| fig-height: 8
+#| fig-width: 12
+#| fig-height: 7
 orc_p <- ggplot(data = inter_zonal_flow,
                 aes(x = orcTRIPS,
                     y = TRIPS)) +
@@ -630,17 +675,18 @@ dbc_p <- ggplot(data = inter_zonal_flow,
   geom_smooth(method = lm) +
   coord_cartesian(xlim=c(0,150000),
                   ylim=c(0,150000))
-```
 
-Now, all the graphs will be put into a single visual for better comparison by using the code chunk below.
-
-```{r}
-#| fig-width: 12
-#| fig-height: 7
 ggarrange(orc_p, dbc_p,
           ncol = 2,
           nrow = 1)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [ggplot](https://ggplot2.tidyverse.org/reference/ggplot.html) from **ggplot2** package creates a new ggplot graph, specifying its aesthetic mappings. In this code, `ggplot` is used twice to create two plots (`orc_p` and `dbc_p`), each with different x-axis variables (`orcTRIPS` for `orc_p`, `dbcTRIPS` for `dbc_p`) but the same y-axis variable (`TRIPS`).
+-   [geom_point](https://ggplot2.tidyverse.org/reference/geom_point.html) from **ggplot2** package adds a scatterplot layer to the ggplot.
+-   [geom_smooth](https://ggplot2.tidyverse.org/reference/geom_smooth.html) from **ggplot2** package adds a smoothed line to the plot, here using a linear model (`lm` method) for fitting.
+-   [coord_cartesian](https://ggplot2.tidyverse.org/reference/coord_cartesian.html) from **ggplot2** package sets the limits for the x and y axes without changing the scale. Both plots have their axes limited to the range of 0 to 150,000.
+-   The code snippets create two plots comparing the fitted values from two different models (`orcSIM_Poisson` and `dbcSIM_Poisson`) against observed trips (`TRIPS`), with scatter plots and linear regression lines.
+:::
 
 ::: callout-note
 ### Quiz Answer
