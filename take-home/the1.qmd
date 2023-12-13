@@ -830,21 +830,21 @@ at a glance, using the average trips per bus stop shows slightly different insig
 
 # Local Indicators of Spatial Association analysis
 
-In this section, we will employ Local Indicators of Spatial Association (LISA) statistics to explore the presence of clusters or outliers in the total number of trips generated at the hexagon layer. Specifically, we will utilize Moran's I statistic to detect spatial patterns such as clustering or dispersion of total trips.
+In this segment, we'll utilize Local Indicators of Spatial Association (LISA) metrics to investigate whether clusters or anomalies exist in the overall number of trips generated within the hexagon layer. More precisely, we'll employ Moran's I statistic to identify spatial patterns, including the presence of clusters or dispersion in the total trip counts.
 
 ## Creating a Spatial Matrix Based on Distance
 
-Before delving into global/local spatial autocorrelation statistics, we need to create a spatial weights matrix for our study area. This matrix defines the neighbors of hexagonal spatial units based on their distances. Here are some considerations:
+Before we delve into the intricacies of global and local spatial autocorrelation statistics, a crucial preliminary step involves the creation of a spatial weights matrix tailored to our study area. This matrix essentially delineates the relationships between hexagonal spatial units based on their respective distances. In establishing this matrix, it's imperative to bear in mind a few considerations.
 
--   Each feature should have at least one neighbor, and no feature should be a neighbor with all other features.
+Firstly, it is essential to ensure that each feature has at least one neighbor, and conversely, no feature is designated as a neighbor to all other features. This ensures a meaningful and diverse representation of spatial relationships.
 
--   For skewed data, each feature should ideally have at least 8 neighbors (12 is used here).
+Furthermore, for datasets exhibiting skewed distribution, a recommended guideline is to assign each feature a minimum of eight neighbors, a criterion we've slightly exceeded by opting for 12 neighbors in this context. This ensures a more robust and comprehensive understanding of spatial connectivity within the data.
 
-Given the sparse distribution of bus stops in certain regions (e.g., central catchment areas, military training areas, and airports), distance-based methods are favored over contiguity methods.
+Given the peculiarities of our study area, characterized by regions with a sparse distribution of bus stops, particularly in zones lacking significant residential or business presence, the preference leans towards employing distance-based methods over contiguity methods. This strategic choice aligns with the spatial reality of the data, allowing for a more nuanced exploration of spatial relationships while considering the unique characteristics of the geographical context.
 
-**Adaptive Distance-Based (Fixed Number of Neighbors)** method is chosen over **Fixed-Distance Threshold:**. This method is chosen due to the right-skewed nature of our data. In this method, Each hexagon is guaranteed at least ***n***neighbors, facilitating later statistical significance testing.
+We opt for the Adaptive Distance-Based (Fixed Number of Neighbors) approach instead of the Fixed-Distance Threshold method, a decision prompted by the right-skewed distribution inherent in our dataset. In this chosen method, each hexagon is assured of having a minimum of ***n*** neighbors, a critical prerequisite for subsequent statistical significance testing.
 
-We will set each hexagon to have 12 neighbors using the provided R code. The process involves using `st_knn` to obtain a list of neighbors, and then `st_weights` to generate row-standardized spatial weights.
+To implement this, we set each hexagon to be associated with precisely 12 neighbors, a configuration achieved through the application of provided R code. The process involves utilizing the `st_knn` function to acquire a comprehensive list of neighbors for each hexagon and subsequently employing `st_weights` to generate spatial weights that are row-standardized. This meticulous procedure ensures a standardized and well-defined spatial relationship framework, laying the groundwork for robust statistical analyses.
 
 ```{r}
 wm_all <- odb10_final %>% 
@@ -866,11 +866,11 @@ kable(head(wm_all))
 -   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates simple tables from a data frame for markdown format output.
 :::
 
-## Examining Global Spatial Association Globally with Global Moran’s I
+## Examining Global Spatial Association Globally with Global Moran's I
 
-Global spatial association evaluates the overall spatial pattern of a variable, in this case, the total number of trips across the entire study area. It provides a single metric summarizing the extent to which similar values cluster together or disperse across the geographic space.
+Assessing global spatial correlation involves scrutinizing the comprehensive spatial arrangement of a specific variable, such as the aggregated count of trips throughout the entire study region. This analysis furnishes a solitary metric that encapsulates how closely akin values aggregate or scatter across the geographic expanse.
 
-Compute Global Moran's I for each peak time trips generated at the hexagon level, utilizing simulated data to avoid assumptions of normality and randomness. The number of simulations is set to 99+1 = 100.
+Calculate the Global Moran's I statistic for peak time trip counts at the hexagonal level, employing simulated data to sidestep assumptions of normal distribution and randomness. The simulation count is established at 99+1, totaling 100 simulations, ensuring a robust evaluation of spatial relationships without reliance on normality or random distribution assumptions.
 
 ```{r}
 # Set the seed to ensure reproducibility
@@ -918,9 +918,9 @@ For all four time intervals, since the p-value for global Moran's I is smaller t
 
 ## Assessing Local Autocorrelation Spatial Association
 
-Local spatial association provides a more detailed examination of spatial patterns at the local level, identifying specific areas with strong or weak spatial association. Local Moran's I categorizes regions as high-high, low-low, high-low, or low-high, indicating clustering or outlier behavior.
+Delving into local spatial relationships offers a nuanced exploration of spatial configurations at a granular level, pinpointing particular zones with pronounced or diminished spatial connections. The Local Moran's I method classifies areas into distinct categories such as high-high, low-low, high-low, or low-high, delineating patterns of clustering or outlier behavior within specific regions.
 
-Compute Local Indicators of Spatial Association (LISA) for passenger trips generated by origin at the hex level. The function `local_moran` from the `sfdep` package is utilized, automatically computing neighbor lists and weights using simulated data. The results are then unnested for further analysis and displayed in an interactive datatable format.
+To analyze passenger trip patterns originating at the hex level, we employ the Local Indicators of Spatial Association (LISA) through the `local_moran` function sourced from the `sfdep` package. This function automatically computes neighbor lists and weights, leveraging simulated data to enhance accuracy. The outcomes are then deconstructed for in-depth analysis and presented in an interactive datatable format, allowing for a comprehensive examination of the intricacies within the spatial relationships of passenger trips.
 
 ```{r}
 # Create a function to perform local Moran's I analysis
@@ -968,9 +968,9 @@ datatable(lisa_results[["Weekday morning peak"]],
 -   The `for` loop in base R iteratively applies the `get_lisa` function to each value column.
 :::
 
-## Significant Local Moran’s I Results at α 5% 
+## Significant Local Moran's I Results at α 5%
 
-Utilize `tmap` core functions to construct choropleth maps displaying the Local Moran's I field and p-value field for all four time intervals. Only significant values of Local Moran's I at α 5% are plotted. The following code will fetch the significant Local Moran's I for mapping purpose.
+Leverage the fundamental functionalities of the `tmap` package to create choropleth maps illustrating the Local Moran's I field and p-value field across all four time intervals. Only noteworthy values of Local Moran's I at a significance level of α 5% are visualized. The provided code retrieves the pertinent Local Moran's I values for the explicit purpose of generating maps.
 
 ```{r}
 get_sig_lmi_map <- function(lisa_table, title) {
@@ -1023,7 +1023,8 @@ The choropleth maps displaying Local Moran's I reveal that **darker orange** and
 :::
 
 ## LISA Map at α 5%
-To go deeper on the analysis, the following code will fetch the significant LISA for mapping purpose.
+
+For a more in-depth analysis, the subsequent code retrieves the meaningful Local Indicators of Spatial Association (LISA) for the specific purpose of creating maps.
 
 ```{r}
 get_sig_lisa_map <- function(lisatable, title) {
@@ -1055,7 +1056,7 @@ sig_lisa_3 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "
 sig_lisa_4 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Afternoon at 95% CL" )
 ```
 
-The following panel displays the significant LISA map for each peak time.
+In the ensuing panel, you'll find a display featuring the noteworthy Local Indicators of Spatial Association (LISA) map corresponding to each peak time.
 
 ::: panel-tabset
 ### Weekday morning peak
@@ -1087,7 +1088,7 @@ sig_lisa_1
 ```
 :::
 
-The choropleth maps above show significant clusters and outliers for passenger trips generated by origin at each hexagon, using α 5%.
+The preceding choropleth maps illustrate notable groupings and exceptional instances regarding passenger trips originating from each hexagon, applying a significance level of α 5%.
 
 **Cluster Interpretation:**
 
@@ -1103,25 +1104,32 @@ The choropleth maps above show significant clusters and outliers for passenger t
 ```{=html}
 <span style="color: red;">Red regions (High-High clusters):</span> These regions represent clusters of higher activity, where bus stops experience a higher number of total trips and are surrounded by other locations with similarly high trip counts. This implies spatial clustering of higher activity zones.<br>
 ```
+
 ## Findings and Future Improvements
 
 ::: panel-tabset
 ### General Concentration
 
-The spatial distribution reveals higher concentrations of total bus trips in the residential regions of the East, North, and West, in contrast to lower concentrations in the Southern part of Singapore. Notable high-activity clusters are associated with major transportation interchanges such as Ang Mo Kio, Bedok, Clementi, Hougang, Toa Payoh, Woodlands, etc.
+The geographical arrangement unveils elevated concentrations of overall bus trips in the residential sectors situated in the East, North, and West, juxtaposed with diminished concentrations in the Southern sector of Singapore. Prominent clusters of heightened activity align with significant transportation hubs like Ang Mo Kio, Bedok, Clementi, Hougang, Toa Payoh, Woodlands, and more.
 
 ### Weekends vs. Weekdays
 
-Certain hexagonal areas, particularly along Bukit Timah and Woodlands Checkpoint, exhibit distinctive patterns during weekends. These areas transition between high-low outliers and high clusters, suggesting dynamic changes in bus trip patterns during different days of the week.
+Specific hexagonal zones, notably in the vicinity of Bukit Timah and Woodlands Checkpoint, display unique trends on weekends. These areas fluctuate between instances of high-low outliers and elevated clusters, indicating dynamic shifts in bus trip patterns across varying days of the week.
 
 ### High and Low Clusters
+**High Clusters:**
+Within the North, East, and West regions, particularly in residential zones, there is a discernible prevalence of elevated concentrations of bus trips. These areas are indicative of heightened commuting activities and increased local engagements, reflecting a probable dependence on public transportation for daily travel.
 
--   **High Clusters:** Regions in the North, East, and West, primarily residential, show higher concentrations of bus trips. These areas are likely characterized by increased commuting and local activities.
--   **Low Clusters:** The western parts of Singapore, mainly comprising industrial zones exhibit lower concentrations of bus trips. This pattern suggests a lower reliance on public transportation in these industrial areas which might be caused by lower population density or alternative mode of transport.
+**Low Clusters:**
+Conversely, the western sectors of Singapore, predominantly consisting of industrial areas, demonstrate diminished concentrations of bus trips. This pattern hints at a lower reliance on public transportation within these industrial zones, potentially influenced by factors such as lower population density or the prevalence of alternative modes of transport. The observed lower bus trip concentrations in these regions align with a distinctive transportation landscape characterized by different travel patterns and demands.
 
 ### Borders
+**Clusters of Low Passenger Trips:**
+Examining the Western and Southern perimeters of Singapore, we discern notable concentrations of low passenger trips. Specifically, areas along these borders exhibit a distinct pattern of reduced public transportation usage. This phenomenon suggests a potential lower demand for bus services in these regions, indicating varying transportation preferences or alternative modes of commuting among residents.
 
-Clusters of low passenger trips are observed along the Western and Southern borders of Singapore. Notable outliers, such as Jurong port, Pioneer Sector, and Tuas, indicate areas that serve as gateways for nearby migrant workers and tourists. These regions might have unique transportation needs, contributing to the observed patterns.
+**Noteworthy Outliers and Unique Transportation Needs:**
+Within this context, noteworthy outliers such as Jurong Port, Pioneer Sector, and Tuas stand out, marking key gateways that play a crucial role in accommodating nearby migrant workers and tourists. These specific regions may harbor unique transportation requirements, contributing significantly to the distinctive spatial patterns observed. The presence of outliers indicates a deviation from the general trend, emphasizing the importance of understanding the specific dynamics influencing transportation demand in these particular locales.
+
 
 ### Mode of Transport Influence
 
