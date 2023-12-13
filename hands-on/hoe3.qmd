@@ -38,10 +38,10 @@ Learning Objectives:
 
 5.  Visualize passenger volume between origin and destination bus stops using the desire lines data.
 
-
 ## Getting Started
 
 We'll employ various R packages which will be loading using pacman on the following code
+
 ```{r}
 #pacman::p_load' ensures all specified packages are installed and loaded
 pacman::p_load(tmap, sf, DT, stplanr, performance,
@@ -49,19 +49,19 @@ pacman::p_load(tmap, sf, DT, stplanr, performance,
 ```
 
 ::: {.callout-note collapse="true" title="Library Descriptions"}
-- [tmap](https://cran.r-project.org/web/packages/tmap/): A comprehensive package for creating thematic maps that are static, interactive, or animated, specializing in visualizing geospatial data.
+-   [tmap](https://cran.r-project.org/web/packages/tmap/): A comprehensive package for creating thematic maps that are static, interactive, or animated, specializing in visualizing geospatial data.
 
-- [sf](https://r-spatial.github.io/sf/): An R package that provides simple features access for handling and manipulating geospatial data, enabling easy and straightforward operations on geographic data.
+-   [sf](https://r-spatial.github.io/sf/): An R package that provides simple features access for handling and manipulating geospatial data, enabling easy and straightforward operations on geographic data.
 
-- [DT](https://rstudio.github.io/DT/): This package is an R interface to the DataTables library, and it allows for the creation of interactive tables in R Markdown documents and Shiny applications.
+-   [DT](https://rstudio.github.io/DT/): This package is an R interface to the DataTables library, and it allows for the creation of interactive tables in R Markdown documents and Shiny applications.
 
-- [stplanr](https://cran.r-project.org/web/packages/stplanr/index.html): Designed for sustainable transport planning with R, this package assists in working with spatial data on transport systems, including the creation of desire lines, route networks, and more.
+-   [stplanr](https://cran.r-project.org/web/packages/stplanr/index.html): Designed for sustainable transport planning with R, this package assists in working with spatial data on transport systems, including the creation of desire lines, route networks, and more.
 
-- [performance](https://cran.r-project.org/web/packages/performance/index.html): This package is used for checking the performance of statistical models, including diagnostics for regression models, making it easier to assess model quality and fit.
+-   [performance](https://cran.r-project.org/web/packages/performance/index.html): This package is used for checking the performance of statistical models, including diagnostics for regression models, making it easier to assess model quality and fit.
 
-- [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html): Provides a convenient interface to `ggplot2`, especially for creating publication-ready plots with minimal amounts of code adjustments.
+-   [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html): Provides a convenient interface to `ggplot2`, especially for creating publication-ready plots with minimal amounts of code adjustments.
 
-- [tidyverse](https://www.tidyverse.org/): A collection of R packages designed for data science that makes it easier to import, tidy, transform, visualize, and model data.
+-   [tidyverse](https://www.tidyverse.org/): A collection of R packages designed for data science that makes it easier to import, tidy, transform, visualize, and model data.
 :::
 
 ## Preparing the Flow Data
@@ -80,6 +80,7 @@ odbus202308$TIME_PER_HOUR <- as.numeric(odbus202308$TIME_PER_HOUR)
 # display the summary of the dataset
 glimpse(odbus202308)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package is used to read a CSV file into R, converting it to a data frame.
 -   [data.frame](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame) from **base** R converts the list (from `lapply`) into a data frame.
@@ -125,7 +126,6 @@ The RDS format in R is a specialized file format used for storing single R objec
 Using the RDS format is beneficial because it allows for fast and efficient storage and retrieval of R objects, making it ideal for situations where you need to save an object and reload it later in another session without any loss of information. The functions `write_rds` and `read_rds` (or `writeRDS` and `readRDS` in base R) are used for saving to and reading from this format, respectively. RDS is especially useful for large datasets or complex objects where preservation of structure is crucial.
 :::
 
-
 ## Working with Geospatial Data
 
 We'll use two geospatial datasets:
@@ -151,6 +151,7 @@ write_rds(mpsz, "../data/rds/mpsz.rds")
 # show the output
 mpsz
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package imports spatial data into R, specifying the data source (`dsn`) and layer.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of spatial data, here to CRS 3414.
@@ -175,6 +176,7 @@ busstop_mpsz <- st_intersection(busstop, mpsz) %>%
 # Viewing the combined data
 datatable(busstop_mpsz)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_intersection](https://r-spatial.github.io/sf/reference/geos_binary_ops.html) from **sf** package is used to find the intersection of two spatial objects, here `busstop` and `mpsz`. It returns the areas that are common to both spatial objects.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to keep only specific columns (`BUS_STOP_N`, `SUBZONE_C`) in the resulting data frame.
@@ -195,6 +197,7 @@ od_data <- left_join(odbus6_9, busstop_mpsz, by = c("ORIGIN_PT_CODE" = "BUS_STOP
 # check the data
 glimpse(od_data)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [left_join](https://dplyr.tidyverse.org/reference/mutate-joins.html) from **dplyr** package merges two data frames based on matching values in their columns. The `left_join` function specifically keeps all rows from the left data frame and adds matching rows from the right data frame. If there is no match, the right side will contain `NA`.
 -   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the names of columns in a data frame for clarity or convenience. In this case, it's used to rename `ORIGIN_PT_CODE` to `ORIGIN_BS`, `SUBZONE_C` to `ORIGIN_SZ`, and `DESTINATION_PT_CODE` to `DESTIN_BS`.
@@ -218,6 +221,7 @@ od_data <- unique(od_data)
 # check the data
 glimpse(od_data)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [group_by_all](https://dplyr.tidyverse.org/reference/group_by_all.html) from **dplyr** package groups a data frame by all of its variables, creating groups based on every column present.
 -   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to subset rows that meet a certain condition. Here, it retains rows where the number of rows in a group is greater than one, effectively identifying duplicates.
@@ -225,7 +229,6 @@ glimpse(od_data)
 -   [unique](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unique) from **base** R package is used to remove duplicate rows from a data frame, keeping only unique records.
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
 :::
-
 
 ### 4. Update Destination Subzone Code
 
@@ -239,6 +242,7 @@ od_data <- left_join(od_data, busstop_mpsz, by = c("DESTIN_BS" = "BUS_STOP_N")) 
 # check the data
 glimpse(od_data)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [left_join](https://dplyr.tidyverse.org/reference/mutate-joins.html) from **dplyr** package merges two data frames based on matching values in their columns. The `left_join` function specifically keeps all rows from the left data frame and adds matching rows from the right data frame. If there is no match, the right side will contain `NA`.
 -   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the names of columns in a data frame for clarity or convenience. In this case, it's used to rename `ORIGIN_PT_CODE` to `ORIGIN_BS`, `SUBZONE_C` to `ORIGIN_SZ`, and `DESTINATION_PT_CODE` to `DESTIN_BS`.
@@ -262,6 +266,7 @@ od_data <- unique(od_data)
 # Check the data
 glimpse(od_data)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [group_by_all](https://dplyr.tidyverse.org/reference/group_by_all.html) from **dplyr** package groups a data frame by all of its variables, creating groups based on every column present.
 -   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to subset rows that meet a certain condition. Here, it retains rows where the number of rows in a group is greater than one, effectively identifying duplicates.
@@ -284,6 +289,7 @@ od_data <- od_data %>%
 # check the final data
 glimpse(od_data)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [drop_na](https://tidyr.tidyverse.org/reference/drop_na.html) from **tidyr** package is used to remove rows with missing values (`NA`) in the data frame.
 -   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package is used to create groups in the data frame for summarization, here grouping by `ORIGIN_SZ` and `DESTIN_SZ`.
@@ -299,7 +305,6 @@ Export the output to rds for future usage.
 write_rds(od_data, "../data/rds/od_data.rds")
 ```
 :::
-
 
 ## Visualising Spatial Interaction
 
@@ -325,7 +330,7 @@ Here's how to create desire lines using the `od2line()` function:
 ::: {.callout-note collapse="true" title="What is Desire Lines?"}
 In the context of transport planning, desire lines are like the paths people would naturally prefer to take when going from one place to another. Think of them as the routes you would choose if you could walk or travel in a straight line, without any obstacles.
 
-Imagine a park where there's a paved path, but people consistently walk across the grass to get from one side to the other. The worn-down grassy trail is the desire line – it shows where people naturally want to walk, even if it's not the officially designated path.
+Imagine a park where there's a paved path, but people consistently walk across the grass to get from one side to the other. The worn-down grassy trail is the desire line -- it shows where people naturally want to walk, even if it's not the officially designated path.
 
 In transport planning, understanding these desire lines helps city planners decide where to put roads, sidewalks, or public transportation routes. It's about making sure the infrastructure fits the way people actually move around, making travel more efficient and convenient for everyone.
 :::
@@ -338,9 +343,10 @@ glimpse(flowLine)
 # check the output
 ```
 
-
 ### 3. Visualising All Desire Lines
+
 Without any filtering, the desire lines are quite messy with various flows entangled.
+
 ```{r}
 # Enable tmap to automatically check and fix invalid polygons
 tmap_options(check.and.fix = TRUE)
@@ -367,6 +373,7 @@ tm_shape(mpsz) +
 :::
 
 ### 4. Visualising Focused Desire Lines
+
 Focusing on selected flows can be insightful, especially when data are skewed:
 
 ```{r}
@@ -387,5 +394,4 @@ flowLine %>%
 -   [tm_lines](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_lines) from **tmap** package adds a layer of lines to the map, with properties (like width, color, and transparency) set based on the `MORNING_PEAK` variable. The `style` is set to "quantile", with a specific scale and number of breaks (`n`) for line width, and the color is set to orange.
 -   This code snippet creates a thematic map that visually represents only the significant commuting flows based on the specified threshold for `MORNING_PEAK`.
 :::
-
 :::

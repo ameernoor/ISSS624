@@ -1,0 +1,23 @@
+---
+title: "Take-home 2 - Applied Spatial Interaction Models: A case study of Singapore public bus commuter flows"
+author: "Muhamad Ameer Noor"
+date: "15 December 2023"
+date-modified: "last-modified"
+
+editor: visual
+format: 
+  html:
+    self_contained: false
+    code-fold: true
+    code-summary: "code chunk"
+    fontsize: 17px
+    number-sections: true
+    number-depth: 2
+execute:
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live (be evaluated)
+  warning: false # don't display warnings
+  message: false
+---
+
+![Illustration](../images/the2.png)

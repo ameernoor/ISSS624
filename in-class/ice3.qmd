@@ -91,7 +91,6 @@ Output of *dist* is a matrix object class of R that does not have any column hea
 Create list of the headers
 
 ```{r}
-#| eval: false
 sz_names <- mpsz$SUBZONE_C
 
 # check the output
@@ -101,7 +100,6 @@ sz_names
 attach `SUBZONE_C` to row and column for distance matrix matching ahead
 
 ```{r}
-#| eval: false
 colnames(dist) <- paste0(sz_names)
 rownames(dist) <- paste0(sz_names)
 ```
@@ -111,7 +109,6 @@ rownames(dist) <- paste0(sz_names)
 Next, pivot the distance matrix into a long table by using the row and column subzone codes using this code.
 
 ```{r}
-#| eval: false
 distPair <- melt(dist) %>%
   rename(dist = value)
 head(distPair, 10)
@@ -128,7 +125,6 @@ In this section, we are going to append a constant value to replace the intra-zo
 First, we will select and find out the minimum value of the distance by using `summary()`.
 
 ```{r}
-#| eval: false
 distPair %>%
   filter(dist > 0) %>%
   summary()
@@ -137,7 +133,6 @@ distPair %>%
 The constant distant selected for intra-zones must be below the minimum distance (173.8). 50m is picked as the fix distance to be put into intra-zones distance.
 
 ```{r}
-#| eval: false
 distPair$dist <- ifelse(distPair$dist == 0,
                         50, distPair$dist)
 
@@ -155,7 +150,6 @@ notice that the minimum value has change (i.e. 0 within-distance has changed to 
 The code chunk below is used to rename the origin and destination fields.
 
 ```{r}
-#| eval: false
 distPair <- distPair %>%
   rename(orig = Var1,
          dest = Var2)
@@ -164,7 +158,6 @@ distPair <- distPair %>%
 Lastly, the code chunk below is used to save the dataframe for future use.
 
 ```{r}
-#| eval: false
 write_rds(distPair, "../data/rds/distPair.rds") 
 ```
 
@@ -173,14 +166,12 @@ write_rds(distPair, "../data/rds/distPair.rds")
 The code chunk below is used import *od_data* save in Chapter 15 into R environment.
 
 ```{r}
-#| eval: false
 od_data <- read_rds("../data/rds/od_data.rds")
 ```
 
 Next, we will compute the total passenger trip between and within planning subzones by using the code chunk below. The output is all *flow_data*.
 
 ```{r}
-#| eval: false
 flow_data <- od_data %>%
   group_by(ORIGIN_SZ, DESTIN_SZ) %>% 
   summarize(TRIPS = sum(MORNING_PEAK)) 
@@ -189,7 +180,6 @@ flow_data <- od_data %>%
 Use the code chunk below to display flow_data dataframe.
 
 ```{r}
-#| eval: false
 head(flow_data, 10)
 ```
 
@@ -198,7 +188,6 @@ head(flow_data, 10)
 Code chunk below is used to add three new fields in `flow_data` dataframe.
 
 ```{r}
-#| eval: false
 flow_data$FlowNoIntra <- ifelse(
   flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
   0, flow_data$TRIPS)
@@ -212,7 +201,6 @@ flow_data$offset <- ifelse(
 Before we can join *flow_data* and *distPair*, we need to convert data value type of *ORIGIN_SZ* and *DESTIN_SZ* fields of flow_data dataframe into factor data type.
 
 ```{r}
-#| eval: false
 flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
 flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
 ```
@@ -220,7 +208,6 @@ flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
 Now, `left_join()` of **dplyr** will be used to *flow_data* dataframe and *distPair* dataframe. The output is called *flow_data1*.
 
 ```{r}
-#| eval: false
 flow_data1 <- flow_data %>%
   left_join (distPair,
              by = c("ORIGIN_SZ" = "orig",
@@ -235,7 +222,6 @@ print(flow_data1)
 ## Importing population data
 
 ```{r}
-#| eval: false
 pop <- read_csv("../data/aspatial/pop.csv")
 
 # check the output
@@ -245,7 +231,6 @@ pop
 ## Geospatial data wrangling
 
 ```{r}
-#| eval: false
 pop <- pop %>%
   left_join(mpsz,
             by = c("PA" = "PLN_AREA_N",
@@ -265,7 +250,6 @@ this is the useful trick of how to merge two table that has different reference 
 ## Preparing origin & destination attribute
 
 ```{r}
-#| eval: false
 # Preparing origin attribute
 flow_data1 <- flow_data1 %>%
   left_join(pop,
@@ -285,6 +269,8 @@ flow_data1 <- flow_data1 %>%
          DESTIN_AGE25_64 = AGE25_64) %>%
   select(-c(PA, SZ_NAME))
 
+# check the output
+glimpse(flow_data1)
 ```
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
@@ -294,8 +280,11 @@ Instead of doing simple join, this join use origin subzone code and destination 
 We will called the output data file *SIM_data*. it is in rds data file format.
 
 ```{r}
-#| eval: false
-write_rds(flow_data1, "../data/rds/SIM_data")
+glimpse(flow_data1)
+```
+
+```{r}
+write_rds(flow_data1, "../data/rds/SIM_data.rds")
 ```
 
 # Calibrating Spatial Interaction Models

@@ -35,6 +35,8 @@ website:
         menu:
           - text: 1 - Geospatial Analytics for Public Goods
             href: take-home/the1.html
+          - text: 2 - Applied Spatial Interaction Models
+            href: take-home/the.html
     right:
       - href: index.qmd
         text: Home
