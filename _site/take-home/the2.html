@@ -589,6 +589,33 @@ metadata
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Tutorial on Fetching the Data">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tutorial on Fetching the Data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>Click this <a href="https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html">link</a>, and click the <code>Request for API Access</code> <img src="../images/tutorial1.jpg" class="img-fluid"></p></li>
+<li><p>Fill in the required form <img src="../images/tutorial2.jpg" class="img-fluid"></p></li>
+<li><p>Check email for confirmation. The <code>API Account Key</code> will be required for later step. <img src="../images/tutorial3.jpg" class="img-fluid"></p></li>
+<li><p>The user guide from LTA <a href="https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf">here</a> will explains how to make API calls. The user guide also provide the link required for various kind of dataset, keep the link for future use. <img src="../images/tutorial4.jpg" class="img-fluid"></p></li>
+<li><p><em>The following step assume usage of desktop apps version of <code>Postman</code> to make the API call</em>. Firstly, go to <a href="https://www.postman.com/">Postman</a> and click on the logo of the OS system that you are using. <img src="../images/tutorial5.jpg" class="img-fluid"></p></li>
+<li><p><em>The following step is for Windows User, adjust accordingly if you use other OS</em>. Click on the dowload button, install the apps, and launch it. <img src="../images/tutorial6.png" class="img-fluid"></p></li>
+<li><p>In the apps, copy-paste the url from step 4, and make sure that the option is set to <code>GET</code>. In this case where the data is monthly, you need to add a parameter of the month data that you want to download in the format of YYYYMM (202308 shown in the example). The parameter is under <code>Params</code> section. <img src="../images/tutorial7.png" class="img-fluid"></p></li>
+<li><p>Next, go to <code>Headers</code> section and add AccountKey which value can be obtained from step 3. Click the blue <code>Send</code> button. <img src="../images/tutorial8.png" class="img-fluid"></p></li>
+<li><p>Click the link that will come out on the bottom of the apps, it will be opened in a new tab. <img src="../images/tutorial9.png" class="img-fluid"></p></li>
+<li><p>In this last step, click <code>Send and Download</code> in the new tab. You can choose where to put the data and the download will start. <img src="../images/tutorial10.jpg" class="img-fluid"></p></li>
+</ol>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>Two geospatial data in <code>shp</code> format are used in this project, as shown in the following panel:</p>
@@ -602,7 +629,7 @@ metadata
 <li><p>Columns/Fields in the dataset includes BUS_STOP_N, BUS_ROOF_N, LOC_DESC, and geometry.</p></li>
 </ul>
 <div class="callout callout-style-default callout-note callout-titled" title="metadata">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -611,7 +638,7 @@ metadata
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>BUS_STOP_N: The unique identifier for each bus stop.</li>
@@ -626,7 +653,7 @@ metadata
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm">hexagon</a> layer of 375m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="why hexagon?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -635,7 +662,7 @@ why hexagon?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><p><strong><em>Uniform Distances Everywhere</em></strong>: Think of hexagons as honeycomb cells. Each cell (hexagon) touches its neighbors at the same distance from its center. It’s like standing in the middle of a room and being the same distance from every wall, making it easier to measure and compare things.</p></li>
