@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -62,6 +96,8 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -151,8 +187,8 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">1 - Geospatial Analytics for Public Goods</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../take-home/the.html" rel="" target="">
- <span class="dropdown-text">2 - Applied Spatial Interaction Models</span></a>
+    <a class="dropdown-item" href="../take-home/the2.html" rel="" target="">
+ <span class="dropdown-text">2 - Applied Spatial Interaction Models (WIP)</span></a>
   </li>  
     </ul>
   </li>
@@ -164,11 +200,6 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/muhamad-ameer-noor/" rel="" target=""><i class="bi bi-linkedin" role="img" aria-label="Linkedin">
-</i> 
- <span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/ameernoor" rel="" target=""><i class="bi bi-github" role="img" aria-label="Github">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -189,7 +220,14 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2</span> References</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -235,8 +273,406 @@ ul.task-list li input[type="checkbox"] {
 <figcaption class="figure-caption">Illustration</figcaption>
 </figure>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="overview" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">The Scene</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">The Objective</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">The Method</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false">The Data</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p>Understanding why city residents wake up early to travel from home to work and assessing the consequences of discontinuing a public bus service along a specific route are key challenges faced by transport operators and urban managers in the realm of urban mobility. Traditionally, answering such questions relied on expensive, time-consuming commuter surveys. However, these surveys not only demanded considerable resources but also yielded data that took a substantial amount of time to clean and analyze, often rendering it outdated by the time reports were ready.</p>
+<p>In today’s digital era, urban infrastructures, including public buses and mass rapid transits, are becoming increasingly digital. The proliferation of technologies like GPS on vehicles and SMART cards for public transport users generates vast geospatial data sets, offering insights into movement patterns over time and space. Despite this wealth of data, planners struggle to effectively leverage and transform it into valuable information, impacting the return on investment in data collection and management.</p>
+<p>To address this gap, this exercise conducts a case study showcasing the potential of Geographic Information System and Spatial Data Analysis (GDSA). By integrating data from various sources, this approach aims to build spatial interaction models that unveil the factors influencing urban mobility patterns in the context of public bus transit.</p>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<p>This task aims to achieve specific goals, focusing on General Geospatial Data Science and Spatial Interaction Modeling.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">General Geospatial Data Science:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Spatial Interaction Modeling:</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>For the General Geospatial Data Science, the aim is to do the following: - Create a detailed hexagon map (375m distance from center to edges) representing Traffic Analysis Zones (TAZ). - Various time will have different pattern of traffic flow. For this study, the focus is on the period of <strong><em>weekday morning peak from 6am to 9am</em></strong>. - Develop an Origin-Destination (O-D) matrix illustrating commuter flows during the chosen time interval. - Visualize passenger trip flows using geospatial methods, analyzing the observed spatial patterns. - Gather relevant data, both spatial and aspatial, from publicly available sources. - Generate a distance matrix based on the earlier derived hexagon data.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="is 375m a magical number?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+is 375m a magical number?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Studies have found that people are usually willing to walk approximately 750 meters to get to public transportation. A more specific comfortable walking distance that takes into account the local weather and how cities are laid out.</p>
+<p>When planning city maps and deciding where to place public transport stops, we use hexagons to represent areas on the map. Why hexagons? They fit together perfectly without wasting any space, which makes them great for dividing the map into zones. To match the 750-meter walking distance, each hexagon is sized so that the distance from the center to any edge is half that distance, which is 375 meters. This ensures that anyone within the hexagon is no more than a 750-meter walk away from the center, where a public transport stop would be ideally located. This method is a smart way to make sure that everyone has easy access to transport within a reasonable walking distance.</p>
+<p><em>summarized from: <a href="https://www.jstor.org/stable/26202654">Daniels &amp; Mulley</a>, <a href="https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e">Dhuri</a>, <a href="https://www.kontur.io/blog/h3-hexagonal-grid/">Sekste &amp; Kazakov</a>, and in-class explanation from <a href="https://faculty.smu.edu.sg/profile/kam-tin-seong-486">Prof Kam Tin Seong</a></em></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="what is Traffic Analysis Zones (TAZ)?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+what is Traffic Analysis Zones (TAZ)?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A Traffic Analysis Zone (TAZ) is a way of dividing a city into smaller areas for transportation planning. Each TAZ has some information about the people and places in it, such as how many people live there, how many cars they have, and where they work or go to school. These information help planners understand how people travel and what kind of transportation they need.</p>
+<p>Some key points about TAZs are: - The size and shape of a TAZ can vary depending on the location and the purpose of the study. For example, a TAZ in a downtown area might be smaller and more regular than a TAZ in a rural area. - The choice of a TAZ system is very important because it affects the accuracy and usefulness of the transportation models. A good TAZ system should reflect the reality of the travel patterns and demands in the city. - TAZs are not fixed and can be changed or updated over time to reflect new data or changes in the city. However, changing TAZs can also cause some problems, such as losing historical data or making comparisons difficult.</p>
+<p><em>Summarized from: <a href="https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf">Miller, 2021</a></em></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="what is Origin-Destination (O-D) matrix?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+what is Origin-Destination (O-D) matrix?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>An Origin-Destination (O-D) matrix is a way of showing how many trips are made from one place to another in a given area. For example, an O-D matrix can tell us how many people travel from their home to their work, or from their hotel to a tourist attraction, or from one city to another. An O-D matrix can help us understand the travel patterns and demands of people, and plan for better transportation systems.</p>
+<p>An O-D matrix usually looks like a table, where the rows represent the origins (where the trips start) and the columns represent the destinations (where the trips end). Each cell in the table shows the number of trips between a specific origin and destination. Sometimes, the table can also include other information, such as the mode of transportation (car, bus, bike, etc.), the time of the day, or the purpose of the trip.</p>
+<p>Here is an example of a simple O-D matrix for a city with four zones (A, B, C, and D):</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>0</td>
+<td>10</td>
+<td>5</td>
+<td>15</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>20</td>
+<td>0</td>
+<td>10</td>
+<td>10</td>
+<td>40</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>10</td>
+<td>15</td>
+<td>0</td>
+<td>5</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>0</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td>Total</td>
+<td>35</td>
+<td>30</td>
+<td>20</td>
+<td>30</td>
+<td>115</td>
+</tr>
+</tbody>
+</table>
+<p>This table tells us that there are 115 trips in total in the city, and that the most common origin-destination pair is A-D, with 15 trips. It also tells us that no one travels within the same zone (the diagonal cells are zero).</p>
+<p>An O-D matrix can be created from different sources of data, such as surveys, GPS, mobile phones, or social media. Depending on the data source, the level of detail and accuracy of the O-D matrix can vary. For example, a survey might ask people to report their exact home and work locations, while a GPS device might only record the coordinates of the start and end points of a trip. Therefore, different methods and techniques are needed to process and analyze the data, and to convert them into a meaningful O-D matrix.</p>
+<p><em>Summarized From: <a href="https://isprs-archives.copernicus.org/articles/XLIII-B4-2020/449/2020/isprs-archives-XLIII-B4-2020-449-2020.pdf">Coşkun, et al., 2020</a></em></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="what is trip flows?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+what is trip flows?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Trip flows are the movements of people or things from one place to another in a given area. For example, trip flows can show how many people travel from their home to their work, or from one city to another, or from one country to another. Trip flows can help us understand the patterns and reasons of these movements, and how they affect the environment, the economy, and the society.</p>
+<p><em>Summarized from: <a href="https://doi.org/10.1007/978-3-030-55462-0_7">Tao Ran, 2021</a></em></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="spatial vs aspatial data">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+spatial vs aspatial data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Spatial data is data that has a geographic or spatial component, meaning that it is related to a specific location on the Earth’s surface. For example, the coordinates of a city, the shape of a lake, or the population density of a region are all spatial data. Spatial data can be represented using maps, graphs, or statistics, and can be analyzed using Geographic Information Systems (GIS).</p>
+<p>Aspatial data is data that does not have a direct connection to a specific location. For example, the name of a person, the color of a car, or the price of a product are all aspatial data. Aspatial data can be represented using tables, charts, or text, and can be analyzed using various methods such as arithmetic, logic, or statistics.</p>
+<p>The main difference between spatial and aspatial data is that spatial data can show the spatial relationships and patterns of the data, such as distance, direction, or proximity, while aspatial data cannot. Spatial data can also be combined with aspatial data to provide more information and insights. For example, a map of a city can show both the spatial data (the location and shape of the buildings) and the aspatial data (the name and use of the buildings).</p>
+<p><em>Summarized from: <a href="https://cengel.github.io/R-spatial/intro.html">Cengel</a></em></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="what is distance matrix?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+what is distance matrix?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A distance matrix is a way of showing how far away different places are from each other in a given area. For example, a distance matrix can tell us how many kilometers or minutes it takes to travel from one city to another by car, bus, or bike. Applying geospatial analytics on distance matrix can help us understand the patterns and reasons of these movements, and how they affect the environment, the economy, and the society. <em>dive deeper at (ArcGIS)[https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/distance-analysis.htm]</em></p>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>For the General Spatial Interaction Model, the aim is to do the following: - Adjust spatial interaction models to identify factors influencing urban commuting during the specified time. - Present modeling results using suitable geovisualization and graphical methods. - Interpret the outcomes to gain insights into the factors impacting commuting flows in the urban landscape during the selected time frame.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="what is spatial interaction model?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+what is spatial interaction model?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A spatial interaction model is a way of describing how people or things move from one place to another in a given area. For example, a spatial interaction model can show how many people commute from their home to their work, or how many goods are traded between different cities or countries. A spatial interaction model can help us understand the patterns and reasons of these movements, and how they affect the environment, the economy, and the society.</p>
+<p>One of the most common spatial interaction models is the gravity model, which is based on an analogy to the physical law of gravity. The gravity model assumes that the movement between two places is proportional to their size (such as population or income) and inversely proportional to their distance. The gravity model can be written as:</p>
+<p><span class="math display">\[T_{ij} = k \frac{v_i^{\lambda} w_j^{\alpha}}{d_{ij}^{\beta}}\]</span></p>
+<p>where <span class="math inline">\(T_{ij}\)</span> is the movement from place <span class="math inline">\(i\)</span> to place <span class="math inline">\(j\)</span>, <span class="math inline">\(v_i\)</span> is the propulsiveness factor from the origin(<span class="math inline">\(i\)</span>) place,<span class="math inline">\(w_j\)</span> is the attractiveness factor from the destination (<span class="math inline">\(j\)</span>), and <span class="math inline">\(d_{ij}\)</span> is the distance between the two places. <span class="math inline">\(k\)</span> is a constant model parameter, while <span class="math inline">\(\lambda\)</span>, <span class="math inline">\(\alpha\)</span>, and <span class="math inline">\(\beta\)</span> are parameters that measures the effect of their respective variables.</p>
+<p>There are other types of spatial interaction models, such as the potential model and retail model, which have different assumptions and formulations. These models can be used to explain different kinds of movements, such as migration, tourism, or disease spread.</p>
+<p>References: <a href="https://isss624-ay2023-24nov.netlify.app/lesson/lesson03/lesson03-sim#/title-slide">Kam Tin Seong</a> and <a href="https://cran.r-project.org/web/packages/simodels/vignettes/simodels.html.">Spatial interaction models with R</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<p>The spatial interaction models being used in this task are the variants of <strong>Gravity Model</strong> including <strong>Unconstrained</strong>, <strong>Origin Constrained</strong>, <strong>Destination Constrained</strong>, and <strong>Doubly Constraint</strong>. The models’ performance will be compared to see which one is more appropriate to use in the modelling.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="What is Unconstrained Gravity Model?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is Unconstrained Gravity Model?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The Unconstrained Gravity Model is a simple form of the gravity model where the principle of conservation is ignored. This means that the interaction between two locations is not limited by the total number of interactions at the origin or destination. In this model, the interaction between two locations is a constant scaling factor, independent of all origins and destinations.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="What is Origin Constrained Gravity Model?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is Origin Constrained Gravity Model?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The Origin/Production Constrained Gravity Model, also known as the production constrained model, includes origin-specific balancing factors that act as constraints. These constraints ensure that the estimated rows of the flow data matrix sum to the observed row totals. In other words, the total number of interactions originating from a location is fixed, and the model distributes these interactions across various destinations.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="What is Destination Constrained Gravity Model?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is Destination Constrained Gravity Model?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The Destination/Attraction Constrained Gravity Model, also known as the attraction constrained model, includes destination-specific balancing factors that act as constraints. These constraints ensure that the estimated columns of the flow data matrix sum to the observed column totals. This means that the total number of interactions attracted to a location is fixed, and the model distributes these interactions across various origins.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="What is Doubly Constrained Gravity Model?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is Doubly Constrained Gravity Model?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The Doubly Constrained Gravity Model includes both origin and destination-specific balancing factors that act as constraints. These constraints ensure that the estimated rows and columns of the flow data matrix sum to the observed row and column totals. In other words, both the total number of interactions originating from a location and attracted to a location are fixed.</p>
+</div>
+</div>
+</div>
+<p>To dive deeper on these models, explanation can be found on research by <a href="https://researchrepository.wvu.edu/rri-web-book/16/">Haynes &amp; Fotheringham, 1985</a> and class materials by <a href="https://r4gdsa.netlify.app/chap16">Prof Kam Tin Seong</a></p>
+</div>
+<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<p>the content of the following panel explained what aspatial and geospatial data are used in this project.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Aspatial</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Geospatial</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p>Monthly <strong><em>Passenger Volume by Origin Destination Bus Stops:</em></strong></p>
+<ul>
+<li><p>October 2023 Period</p></li>
+<li><p>downloaded from <a href="https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html">LTA DataMall - Dynamic Dataset</a> via <a href="https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf">API</a></p></li>
+<li><p><code>csv</code> format.</p></li>
+<li><p>Columns/Fields in the dataset includes YEAR_MONTH, DAY_TYPE, TIME_PER_HOUR, PT_TYPE, ORIGIN_PT_CODE, DESTINATION_PT_CODE, and TOTAL_TRIPS.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="metadata">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+metadata
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>YEAR_MONTH: Represent year and Month in which the data is collected. Since it is a monthly data frame, only one unique value exist in each data frame.</p></li>
+<li><p>DAY_TYPE: Represent type of the day which classified as <em>weekdays</em> or <em>weekends/holidays</em>.</p></li>
+<li><p>TIME_PER_HOUR: Hour which the passenger trip is based on, in intervals from 0 to 23 hours.</p></li>
+<li><p>PT_TYPE: Type of public transport, Since it is bus data sets, only one unique value exist in each data frame (i.e.&nbsp;<em>bus</em>)</p></li>
+<li><p>ORIGIN_PT_CODE: ID of origin bus stop</p></li>
+<li><p>DESTINATION_PT_CODE: ID of destination bus stop</p></li>
+<li><p>TOTAL_TRIPS: Number of trips which represent passenger volumes</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>Two geospatial data in <code>shp</code> format are used in this project, as shown in the following panel:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Bus Stop Location</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Hexagon</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<ul>
+<li><p>provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.</p></li>
+<li><p>downloaded from <a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall - Static Dataset</a></p></li>
+<li><p>Columns/Fields in the dataset includes BUS_STOP_N, BUS_ROOF_N, LOC_DESC, and geometry.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="metadata">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+metadata
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>BUS_STOP_N: The unique identifier for each bus stop.</li>
+<li>BUS_ROOF_N: The identifier for the bus route or roof associated with the bus stop.</li>
+<li>LOC_DESC: Location description providing additional information about the bus stop’s surroundings.</li>
+<li>geometry: The spatial information representing the location of each bus stop as a point in the SVY21 projected coordinate reference system.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm">hexagon</a> layer of 375m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="why hexagon?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+why hexagon?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong><em>Uniform Distances Everywhere</em></strong>: Think of hexagons as honeycomb cells. Each cell (hexagon) touches its neighbors at the same distance from its center. It’s like standing in the middle of a room and being the same distance from every wall, making it easier to measure and compare things.</p></li>
+<li><p><strong><em>Outlier-Free Shape</em></strong>: Hexagons are like well-rounded polygons without any pointy tips. Sharp corners can create odd spots in data, but hexagons smoothly cover space without sticking out anywhere. This helps prevent weird data spikes that don’t fit the pattern.</p></li>
+<li><p><strong><em>Consistent Spatial Relationships</em></strong>: Imagine a beehive where every hexagon is surrounded by others in the same pattern. This regular pattern is great for analyzing data because you can expect the same relationships everywhere, making the data predictable and easier to work with.</p></li>
+<li><p><strong><em>Ideal for Non-Perpendicular Features</em></strong>: Real-world features like rivers and roads twist and turn. Squares can be awkward for mapping these, but hexagons, which are more circular, can follow their flow better. This way, a hexagon-based map can mimic the real world more closely than a checkerboard of squares.</p></li>
+</ul>
+<p>Summarized from: <a href="https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e">Dhuri</a>, and <a href="https://www.kontur.io/blog/h3-hexagonal-grid/">Sekste &amp; Kazakov</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="references" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> References</h1>
+<p>Cengel. <a href="https://cengel.github.io/R-spatial/intro.html">Introduction to spatial data in R</a></p>
+<p>Coşkun, et al.&nbsp;(2020). <a href="https://isprs-archives.copernicus.org/articles/XLIII-B4-2020/449/2020/isprs-archives-XLIII-B4-2020-449-2020.pdf">Performance Matters on Identification of Origin-Destination Matrix on Geospatial Big Data</a></p>
+<p>Daniels &amp; Mulley. <a href="https://www.jstor.org/stable/26202654">Explaining walking distance to public transport: The dominance of public transport supply</a></p>
+<p>Haynes &amp; Fotheringham (1985). <a href="https://researchrepository.wvu.edu/rri-web-book/16/">Gravity and Spatial Interaction Models</a></p>
+<p>Kam Tin Seong. <a href="https://r4gdsa.netlify.app/chap16">16 Calbirating Spatial Interaction Models with R</a></p>
+<p>Miller (2021). <a href="https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf">TRAFFIC ANALYSIS ZONE DEFINITION: ISSUES &amp; GUIDANCE</a></p>
+<p>R. <a href="https://cran.r-project.org/web/packages/simodels/vignettes/simodels.html.">Spatial interaction models with R</a></p>
+<p>Sekste and Kazakov. <a href="https://www.kontur.io/blog/h3-hexagonal-grid/">“H3 hexagonal grid: Why we use it for data analysis and visualization”</a>.</p>
+<p>Sid Dhuri (2020). <a href="https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e">“Spatial Data Analysis With Hexagonal Grids”</a></p>
+<p>Tao Ran (2021). <a href="https://doi.org/10.1007/978-3-030-55462-0_7">Big Spatial Flow Data Analytics. In: Werner, M., Chiang, YY. (eds) Handbook of Big Geospatial Data</a></p>
+<p>Land Transport Authority. <a href="https://datamall.lta.gov.sg/content/datamall/en.html">Land Transport Data Mall</a></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

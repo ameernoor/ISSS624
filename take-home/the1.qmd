@@ -57,7 +57,7 @@ Monthly ***Passenger Volume by Origin Destination Bus Stops:***
 
 -   August, September and October 2023 Period
 
--   downloaded from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) via [API](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf)
+-   downloaded from [LTA DataMall - Dynamic Dataset](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) via [API](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf)
 
 -   `csv` format.
 
@@ -67,7 +67,7 @@ Monthly ***Passenger Volume by Origin Destination Bus Stops:***
 
 Two geospatial data in `shp` format are used in this project, which includes:
 
--   *Bus Stop Location* from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html). It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
+-   *Bus Stop Location* from [LTA DataMall - Static Dataset](https://datamall.lta.gov.sg/content/datamall/en/static-data.html). It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
 
 -   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 500m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.
 

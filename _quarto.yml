@@ -35,24 +35,21 @@ website:
         menu:
           - text: 1 - Geospatial Analytics for Public Goods
             href: take-home/the1.html
-          - text: 2 - Applied Spatial Interaction Models
-            href: take-home/the.html
+          - text: 2 - Applied Spatial Interaction Models (WIP)
+            href: take-home/the2.html
     right:
       - href: index.qmd
         text: Home
       - icon: linkedin
         href: https://www.linkedin.com/in/muhamad-ameer-noor/
         aria-label: Linkedin
-      - icon: github
-        href: https://github.com/ameernoor
-        aria-label: Github
       - icon: book
         href: https://scholar.google.com/citations?user=TS_ilSMAAAAJ&hl=en&oi=ao
         aria-label: Google Scholar      
 
 format:
   html:
-    theme: cerulean
+    theme: lux
     css: styles.css
     toc: true
 

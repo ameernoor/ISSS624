@@ -1,0 +1,1262 @@
+---
+title: "Take-home 1 - Geospatial Analytics for Public Goods"
+author: "Muhamad Ameer Noor"
+date: "2 December 2023"
+date-modified: "last-modified"
+
+editor: visual
+format: 
+  html:
+    self_contained: false
+    code-fold: true
+    code-summary: "code chunk"
+    fontsize: 17px
+    number-sections: true
+    number-depth: 2
+execute:
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live (be evaluated)
+  warning: false # don't display warnings
+  message: false
+---
+
+
+![Illustration](../images/the1.png)
+
+# Overview
+
+::: panel-tabset
+## The Scene
+
+As cities upgrade to digital systems, like smart buses and GPS, a lot of data is created about how people move around. This data is super useful for understanding patterns in both space (where) and time (when). For example, on public buses, smart cards and GPS devices collect information about routes and how many people are riding. This data holds clues about how people behave in the city, and understanding these patterns can help manage the city better and give an edge to transportation providers.
+
+But, often, this valuable data is only used for basic things like tracking and mapping using Geographic Information System (GIS) applications. This is because regular GIS tools struggle to fully analyze and model this kind of complex spatial and time-related data.
+
+In this exercise, we're going to focus on bus trips during specific peak hours:
+
+| Peak hour period             | Bus tap on time |
+|------------------------------|-----------------|
+| Weekday morning peak         | 6am to 9am      |
+| Weekday afternoon peak       | 5pm to 8pm      |
+| Weekend/holiday morning peak | 11am to 2pm     |
+| Weekend/holiday evening peak | 4pm to 7pm      |
+
+To better understand these movement patterns and behaviors, we're going to use something called Exploratory Spatial Data Analysis (ESDA). It's like a powerful tool that helps us tackle complex challenges in society. In this project, we're going to use specific methods Local Indicators of Spatial Association ([LISA](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x)) that will help us dig deep into the data and uncover valuable insights.
+
+::: {.callout-note collapse="true" title="What is LISA?"}
+Local Indicators of Spatial Association (LISA) statistics serve two primary purposes. Firstly, they act as indicators of local pockets of nonstationarity, or hotspots. Secondly, they are used to assess the influence of individual locations on the magnitude of a global statistic. In simpler terms, LISA helps in identifying specific areas (like hotspots) that differ significantly from their surrounding areas and evaluates how these individual areas contribute to the overall pattern observed in a larger region.
+:::
+
+## The Data
+
+the content of the following panel explained what aspatial and geospatial data are used in this project.
+
+::: panel-tabset
+### Aspatial
+
+Monthly ***Passenger Volume by Origin Destination Bus Stops:***
+
+-   August, September and October 2023 Period
+
+-   downloaded from [LTA DataMall - Dynamic Dataset](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) via [API](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf)
+
+-   `csv` format.
+
+-   Columns/Fields in the dataset includes YEAR_MONTH, DAY_TYPE, TIME_PER_HOUR, PT_TYPE, ORIGIN_PT_CODE, DESTINATION_PT_CODE, and TOTAL_TRIPS.
+
+### Geospatial
+
+Two geospatial data in `shp` format are used in this project, which includes:
+
+-   *Bus Stop Location* from [LTA DataMall - Static Dataset](https://datamall.lta.gov.sg/content/datamall/en/static-data.html). It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
+
+-   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 500m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.
+
+::: {.callout-note collapse="true" title="why hexagon?"}
+-   ***Uniform Distances Everywhere***: Think of hexagons as honeycomb cells. Each cell (hexagon) touches its neighbors at the same distance from its center. It's like standing in the middle of a room and being the same distance from every wall, making it easier to measure and compare things.
+
+-   ***Outlier-Free Shape***: Hexagons are like well-rounded polygons without any pointy tips. Sharp corners can create odd spots in data, but hexagons smoothly cover space without sticking out anywhere. This helps prevent weird data spikes that don't fit the pattern.
+
+-   ***Consistent Spatial Relationships***: Imagine a beehive where every hexagon is surrounded by others in the same pattern. This regular pattern is great for analyzing data because you can expect the same relationships everywhere, making the data predictable and easier to work with.
+
+-   ***Ideal for Non-Perpendicular Features***: Real-world features like rivers and roads twist and turn. Squares can be awkward for mapping these, but hexagons, which are more circular, can follow their flow better. This way, a hexagon-based map can mimic the real world more closely than a checkerboard of squares.
+
+Summarized from: [Dhuri](https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e), and [Sekste & Kazakov](https://www.kontur.io/blog/h3-hexagonal-grid/).
+:::
+:::
+:::
+
+# Preparation
+
+Before starting with the analysis, we have to load the library (and install it if it does not exist in the environment yet) and import the data. This section also contains minor checking and setup of the data.
+
+## Import Library
+
+
+```{r}
+#| code-fold: false
+pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT)
+```
+
+
+Explanations for the imported library:
+
+-   [tmap](https://cran.r-project.org/web/packages/tmap/) for visualizing geospatial
+
+-   [sf](https://r-spatial.github.io/sf/) for handling geospatial data
+
+-   [tidyverse](https://www.tidyverse.org/) for handling aspatial data
+
+-   [sfdep](https://sfdep.josiahparry.com/) for computing spatial weights, global and local spatial autocorrelation statistics, and
+
+-   [knitr](https://www.rdocumentation.org/packages/knitr/versions/1.45) for creating html tables
+
+-   [Hmisc](https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1) for summary statistics
+
+-   [mapview](https://cran.r-project.org/web/packages/mapview/index.html) for interactive map backgrouds
+
+-   [DT](https://rstudio.github.io/DT/) library to create interactive html tables
+
+## Import and Setup the Data
+
+### Aspatial
+
+the following code will import all the origin destination bus data and check a sample dataframe. The process involved:
+
+1.  import the csv file using `read_csv` function from [readr](https://www.rdocumentation.org/packages/readr/versions/2.1.4) package
+
+2.  using [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package, transform georeference data type into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
+
+3.  using [describe](https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1/topics/describe) from **hmisc** package, display the summary statistics of the dataset.
+
+::: panel-tabset
+#### August 2023
+
+
+```{r}
+# Load each csv file
+odb8 <- read_csv("../data/aspatial/origin_destination_bus_202308.csv.gz")
+
+# change georeference data type into factors
+odb8 <- odb8 %>%
+  mutate(
+    ORIGIN_PT_CODE = as.factor(ORIGIN_PT_CODE),
+    DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
+  )
+
+# check the dataframe
+describe(odb8)
+```
+
+
+#### September 2023
+
+
+```{r}
+# Load each csv file
+odb9 <- read_csv("../data/aspatial/origin_destination_bus_202309.csv.gz")
+
+# change georeference data type into factors
+odb9 <- odb9 %>%
+  mutate(
+    ORIGIN_PT_CODE = as.factor(ORIGIN_PT_CODE),
+    DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
+  )
+
+
+# check the dataframe
+describe(odb9)
+```
+
+
+#### October 2023
+
+
+```{r}
+# Load each csv file
+odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
+
+# change georeference data type into factors
+odb10 <- odb10 %>%
+  mutate(
+    ORIGIN_PT_CODE = as.factor(ORIGIN_PT_CODE),
+    DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
+  )
+
+# check the dataframe
+describe(odb10)
+```
+
+:::
+
+***Explanations for each field in the data can be found in the following metadata.***
+
+::: {.callout-note collapse="true" title="metadata"}
+-   YEAR_MONTH: Represent year and Month in which the data is collected. Since it is a monthly data frame, only one unique value exist in each data frame.
+
+-   DAY_TYPE: Represent type of the day which classified as *weekdays* or *weekends/holidays*.
+
+-   TIME_PER_HOUR: Hour which the passenger trip is based on, in intervals from 0 to 23 hours.
+
+-   PT_TYPE: Type of public transport, Since it is bus data sets, only one unique value exist in each data frame (i.e. *bus*)
+
+-   ORIGIN_PT_CODE: ID of origin bus stop
+
+-   DESTINATION_PT_CODE: ID of destination bus stop
+
+-   TOTAL_TRIPS: Number of trips which represent passenger volumes
+:::
+
+### Geospatial
+
+the following panel show the import process for the bus stop geospatial data. The geospatial layer of the data shows ***point*** location of bus stops across Singapore.
+
+::: panel-tabset
+#### Import and Check the Data
+
+The geospatial data is imported using [st_read](https://r-spatial.github.io/sf/reference/st_read.html) function from **sf** package. As previously done, while reading the data, categorical data that can serve as reference are converted into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing. The imported dataset is then checked using [glimpse]() function from **dplyr** package that shows the columns, a glimpse of the values and the data type.
+
+
+```{r}
+#| code-fold: false
+busstop <- st_read(
+    dsn = "../data/geospatial",
+    layer = "BusStop"
+  ) %>%
+  mutate(
+    BUS_STOP_N = as.factor(BUS_STOP_N),
+    BUS_ROOF_N = as.factor(BUS_ROOF_N),
+    LOC_DESC = as.factor(LOC_DESC)
+  )
+
+# check the output
+glimpse(busstop)
+```
+
+
+##### Check the unique values
+
+To see more of the data characteristics, the following panel will show the number of distinct values in each column. it use [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) function from **dplyr** package.
+
+::: panel-tabset
+###### BUS_STOP_N
+
+count of unique/distinct values are:
+
+
+```{r}
+n_distinct(busstop$BUS_STOP_N)
+```
+
+
+###### BUS_ROOF_N
+
+count of unique/distinct values are:
+
+
+```{r}
+n_distinct(busstop$BUS_ROOF_N)
+```
+
+
+###### LOC_DESC
+
+count of unique/distinct values are:
+
+
+```{r}
+n_distinct(busstop$LOC_DESC)
+```
+
+
+###### geometry
+
+count of unique/distinct values are:
+
+
+```{r}
+n_distinct(busstop$geometry)
+```
+
+:::
+
+***Explanations for each field in the data can be found in the following metadata.***
+
+::: {.callout-note collapse="true" title="metadata"}
+-   BUS_STOP_N: The unique identifier for each bus stop.
+-   BUS_ROOF_N: The identifier for the bus route or roof associated with the bus stop.
+-   LOC_DESC: Location description providing additional information about the bus stop's surroundings.
+-   geometry: The spatial information representing the location of each bus stop as a point in the SVY21 projected coordinate reference system.
+:::
+
+#### Setup EPSG Code, CRS and Prepare the data for joining
+
+To ensure that geospatial data from different sources can be processed together, both have to be projected using similar coordinate systems and be assigned the correct EPSG code based on CRS. The [st_crs](https://r-spatial.github.io/sf/reference/st_crs.html) function is used to check for ESPG Code and Coordinate System of both geospatial files. For Singapore, the coordinate system is *SVY21* with *EPSG 3414* (source: [epsg.io](https://epsg.io/?q=Singapore)). The following code chunk output shows how the CRS was initially not *3414*, then corrected using [st_set_crs](https://www.rdocumentation.org/packages/sf/versions/1.0-14/topics/st_crs). Both function are from **sf** package. Simultaneously, the dataframe is also prepared for joining process. It involve standardization of the data type to [factor](https://r4ds.hadley.nz/factors) and using [tolower](https://search.r-project.org/CRAN/refmans/textTools/html/str_tolower.html) function from **base R** package.
+
+**Current CRS of busstop dataset:**
+
+
+```{r}
+# Check the current Coordinate Reference System (CRS) of the busstop dataset
+print(st_crs(busstop))
+```
+
+
+**Assign new EPSG code**
+
+
+```{r}
+#| code-fold: false
+# Assign a new EPSG code (Spatial Reference ID)
+busstop <- st_set_crs(
+   busstop, 
+   3414
+) %>%
+# Rename the bus stop origin column for easier joining with the main dataframe
+mutate(
+   ORIGIN_PT_CODE = as.factor(BUS_STOP_N)
+) %>%
+select(
+   ORIGIN_PT_CODE, 
+   LOC_DESC,
+   geometry
+) %>%
+# Change all column names to lowercase for consistency
+rename_with(
+   tolower, everything()
+)
+```
+
+
+**Confirm the updated EPSG code after the assignment**
+
+
+```{r}
+print(st_crs(busstop))
+```
+
+:::
+
+# Data Wrangling
+
+Following the initial preparation, this section will do further data checking and processing before the analysis.
+
+## Check for Duplicates
+
+In this step, we inspect the dataset for duplicate entries. This precautionary step is crucial to avoid the inadvertent repetition of records, which could lead to the overcounting of passenger trips. By identifying and addressing duplicates at this stage, we ensure the accuracy and reliability of our analysis, laying the groundwork for more precise and trustworthy results in the subsequent analytical processes. Checking for duplicates is a fundamental practice that contributes to the integrity of the data and the overall robustness of the geospatial analysis.
+
+::: panel-tabset
+### Aspatial - Origin Destination Bus
+
+the following code is used to check duplicates and show how many duplicates exist in each *odb*.
+
+
+```{r}
+# Count the number of rows in each dataframe with duplicates
+count_duplicate_rows <- function(df, df_name) {
+  df %>%
+    group_by_all() %>%
+    filter(n() > 1) %>%
+    ungroup() %>%
+    summarise(df_name = df_name, row_count = n())
+}
+
+# Apply the function to each dataframe
+duplicate1 <- count_duplicate_rows(odb8, "odb8")
+duplicate2 <- count_duplicate_rows(odb9, "odb9")
+duplicate3 <- count_duplicate_rows(odb10, "odb10")
+
+# Combine the results
+all_duplicates <- bind_rows(duplicate1, duplicate2, duplicate3)
+
+# Print the counts
+print(all_duplicates)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [group_by_all](https://dplyr.tidyverse.org/reference/group_by_all.html) from **dplyr** package to group a data frame by all of its variables. Essentially, it creates groups based on every column present in the data frame.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset a data frame, retaining all rows that satisfy your conditions. To be retained, the row must produce a value of TRUE for all conditions.
+-   [ungroup](https://dplyr.tidyverse.org/articles/grouping.html) from **dplyr** package to remove grouping information from a data frame. When you have a grouped data frame (created using functions like group_by), ungroup will return it to its original, ungrouped state. This is useful when you've finished performing grouped operations (like summarization) and want to perform operations that don't require the data to be grouped, or to prevent accidental misinterpretation or errors in subsequent data manipulations that are not intended to be group-wise operations.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset a data frame, retaining all rows that satisfy your conditions. To be retained, the row must produce a value of TRUE for all conditions.
+-   [summarise](https://r-spatial.github.io/sf/reference/tidyverse.html) from **sf** package used to compute summary statistics or aggregate values for groups of data. When used on spatial data frames (such as those handled by sf), summarise can perform operations like calculating the mean, maximum, or sum of a particular variable for each group. This function is often used in combination with group_by to define the groups for which the summary statistics will be calculated. The result is a simplified representation of the data, focusing on key aggregated metrics.
+-   [bind_rows](https://dplyr.tidyverse.org/reference/bind_rows.html) from **dplyr** package to to combine two or more data frames by rows. It stacks the data frames on top of each other, effectively appending the rows of the second data frame to the first, the third to the combined first and second, and so on. This function is particularly useful when you have multiple data frames with the same variables and you want to create a single, combined data frame. It's important that the columns in the data frames are compatible, either having the same names and types, or being able to be coerced into the same type.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The result shows that there are no duplicated data in the origin destination bus dataset. Note that the checking was based on a very loose criteria of duplicate, in which duplicated rows need to have the same value across all columns.
+:::
+
+### Geospatial - Bus Stop
+
+The following codes
+
+
+```{r}
+# Subset rows where origin_pt_code has duplicates
+duplicates <- busstop[duplicated(busstop$origin_pt_code) | duplicated(busstop$origin_pt_code, fromLast = TRUE), ]
+
+# Display the rows with duplicate origin_pt_code
+kable(head(duplicates, n=32))
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from the **base R** package is used to identify duplicate elements in a vector or rows in a data frame. It returns a logical vector indicating which elements or rows are duplicates of elements or rows with smaller indices.
+-   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates simple tables from a data frame, matrix, or other table-like structures. The function provides a user-friendly way to display tables in a markdown format.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The result shows that there are some duplicated data in the geospatial bus stop dataset. This might interfere with the joining data process and generated double count on later on. Note that the checking was based on the origin_pt_code field only, because it will be the basis of reference for joining the dataset later on. At a glance, the table above also show that, the ***duplicated code are actually located near each other***. Therefore, removing the duplicates can be considered safe as the remaining *bus stop code* can represent the deleted one.
+:::
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced.
+
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+busstop <- busstop[!duplicated(busstop$origin_pt_code) | duplicated(busstop$origin_pt_code, fromLast = TRUE), ]
+
+# Display the resulting dataset
+glimpse(busstop)
+```
+
+:::
+
+## Categorical Peak Time Variable
+
+on the interest of analyzing the peak time, the following code will assign new column that categorize peak time, filter data that is not on peak time, and show a sample of the output.
+
+
+```{r}
+# Function to categorize and aggregate trips
+categorize_and_aggregate <- function(odb) {
+  odb <- odb %>%
+    # Categorize trips under periods based on day and timeframe
+    mutate(period = case_when(
+      DAY_TYPE == "WEEKDAY" & TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9 ~ "Weekday morning peak",
+      DAY_TYPE == "WEEKDAY" & TIME_PER_HOUR >= 17 & TIME_PER_HOUR <= 20 ~ "Weekday evening peak",
+      DAY_TYPE == "WEEKENDS/HOLIDAY" & TIME_PER_HOUR >= 11 & TIME_PER_HOUR <= 14 ~ "Weekend/holiday morning peak",
+      DAY_TYPE == "WEEKENDS/HOLIDAY" & TIME_PER_HOUR >= 16 & TIME_PER_HOUR <= 19 ~ "Weekend/holiday evening peak",
+      TRUE ~ "non-peak"
+    )) %>%
+    # Only retain needed periods for analysis
+    filter(period != "non-peak") %>%
+    # Compute the number of trips per origin bus stop per month for each period
+    group_by(YEAR_MONTH, period, ORIGIN_PT_CODE) %>%
+    summarise(num_trips = sum(TOTAL_TRIPS)) %>%
+    # Change all column names to lowercase
+    rename_with(tolower, everything()) %>%
+    ungroup()
+
+  return(odb)
+}
+
+# Apply the function to each dataset
+odb8 <- categorize_and_aggregate(odb8)
+odb9 <- categorize_and_aggregate(odb9)
+odb10 <- categorize_and_aggregate(odb10)
+
+# sample the result
+glimpse(odb10)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package adds new variables or transforms existing ones. It's often used in conjunction with functions like `case_when` for conditional transformation.
+-   [case_when](https://dplyr.tidyverse.org/reference/case_when.html) from **dplyr** package is a vectorized form of multiple `if_else` statements, allowing for different computations or transformations based on specified conditions.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset rows based on specified conditions.
+-   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package to group data by specified columns, useful for performing grouped operations like summarization.
+-   [summarise](https://dplyr.tidyverse.org/reference/summarise.html) (or `summarize`) from **dplyr** package to calculate aggregate values for each group created by `group_by`.
+-   [rename_with](https://dtplyr.tidyverse.org/reference/group_by.dtplyr_step.html) from **dplyr** package to rename columns based on a function, such as converting names to lowercase.
+-   [ungroup](https://dplyr.tidyverse.org/reference/ungroup.html) from **dplyr** package to remove the grouping structure from a data frame.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its contents.
+:::
+
+## Choosing the Month
+
+In order to decide which month is better to perform LISA or whether analyzing all month separately will yield interesting result, it is a good step to check the data distribution of each month. By comparing the data distribution for each month, we can make an educated guess whether the LISA result for each month would be starkly different or just similar.
+
+
+```{r}
+# Combine odb8, odb9, and odb10 into one dataframe
+combined_data <- bind_rows(
+  mutate(odb8, month = "odb8"),
+  mutate(odb9, month = "odb9"),
+  mutate(odb10, month = "odb10")
+)
+
+# Create a standard vertical box plot
+bus_boxplot <- combined_data %>%
+  ggplot(aes(x = period, y = num_trips, fill = period)) + # Assigning aesthetics for x and y axes, and fill color based on period
+  geom_boxplot() + # Adding the box plot layer
+  facet_wrap(~month, scales = 'free_x') + # Faceting by month, with free scales for x axis
+  labs(
+    title = "Distribution of Trips across Peak Periods",
+    subtitle = "Comparison across different months",
+    x = "Period",
+    y = "Number of Trips"
+  ) +
+  theme_minimal() + # Using a minimal theme for a cleaner look
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank()) # Removing x-axis category labels and label  
+bus_boxplot
+
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [bind_rows](https://dplyr.tidyverse.org/reference/bind_rows.html) from **dplyr** package combines data frames by rows, stacking them on top of each other.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package adds new variables or modifies existing ones in a data frame.
+-   [ggplot](https://ggplot2.tidyverse.org/reference/ggplot.html) from **ggplot2** package creates a new ggplot graph, specifying its aesthetic mappings.
+-   [geom_boxplot](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) from **ggplot2** package adds a boxplot layer to the ggplot.
+-   [facet_wrap](https://ggplot2.tidyverse.org/reference/facet_wrap.html) from **ggplot2** package creates a facetted plot, splitting the data by one or more variables.
+-   [labs](https://ggplot2.tidyverse.org/reference/labs.html) from **ggplot2** package modifies plot labels, including title and axis labels.
+-   [theme_minimal](https://ggplot2.tidyverse.org/reference/ggtheme.html) from **ggplot2** package applies a minimalistic theme to the plot.
+-   [theme](https://ggplot2.tidyverse.org/reference/theme.html) and [element_blank](https://ggplot2.tidyverse.org/reference/element.html) from **ggplot2** package customize aspects of the plot's theme, such as removing axis text and titles.
+:::
+
+The box plot to show the data distribution was not too helpful as it shows that all peak time across months has extreme outliers. Therefore, the next code chunk modify the boxplot by log-transforming the number of trips.
+
+
+```{r}
+# Create a modified vertical box plot
+bus_boxplot <- combined_data %>%
+  ggplot(aes(x = period, y = log(num_trips), fill = period)) + # Modified aesthetics with log-transformed y-axis
+  geom_boxplot() + # Adding the box plot layer
+  facet_wrap(~month, scales = 'free_x') + # Faceting by month, with free scales for x axis
+  labs(
+    title = "Distribution of Log-Transformed Trips",
+    subtitle = "Comparison across different months",
+    y = "Log(Number of Trips)"
+  ) +
+  theme_minimal() + # Using a minimal theme for a cleaner look
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank()) # Removing x-axis category labels and label
+
+bus_boxplot
+```
+
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The log-transformed box plot show that **the distribution of each peak periods across months is quite similar**. In general, number of trips in the weekday peaks are typically higher than weekend/holiday peak. The similarity also extend to extreme outliers. For example, the green box plot (*Weekday morning peak*) always have a single point extreme outlier on the top of the box plot. Based on this observation, it can be inferred that performing LISA on one of month is most likely enough to discover the pattern. The month October, as the latest data available, is chosen for the next processes.
+:::
+
+## Extract Trip Numbers Into Wide Form of Peak Period Categories
+
+Pivoting data into a wide format before merging aspatial and geospatial datasets is beneficial for streamlined analysis. It helps organize information by transforming rows into columns, making it easier to align and combine trip count data across various peak periods. This wide format simplifies subsequent data integration steps, facilitating a more efficient join between datasets based on common identifiers or keys.
+
+
+```{r}
+# Extract data from odb10 and store as a separate dataframe
+odb10_wide <- odb10 %>%
+  # Pivot the data wider, treating each row as a bus stop code with peak period trips as columns
+  pivot_wider(
+    names_from = period,
+    values_from = num_trips
+  ) %>%
+  select(2:6)
+
+
+# check the output
+DT::datatable(odb10_wide,
+              options = list(pageLength = 8),
+              rownames = FALSE)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [pivot_wider](https://tidyr.tidyverse.org/reference/pivot_wider.html) from **tidyr** package reshapes data from a 'long' format to a 'wider' format, spreading key-value pairs across multiple columns.
+-   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to subset specific columns from a data frame.
+-   [datatable](https://rstudio.github.io/DT/) from **DT** package creates an interactive table (data table) widget, offering functionalities like pagination. The `options` parameter allows customization of the table, such as setting the number of rows to display per page (`pageLength`).
+:::
+
+## Join Aspatial and Geospatial Data
+
+To retain the geospatial property, use `left_join` by using *busstop* as the main dataframe and *bus stop code* as the reference.
+
+
+```{r}
+odb10_sf <- left_join(busstop, odb10_wide, by = "origin_pt_code")
+
+glimpse(odb10_sf)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [left_join](https://dplyr.tidyverse.org/reference/join.html) from **dplyr** package merges two data frames together based on matching values in their columns. Specifically, `left_join` keeps all rows from the left data frame and adds matching rows from the right data frame. If there is no match, the right side will contain `NA`.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, giving a quick overview of its structure, including column types and the first few entries in each column.
+:::
+
+## Creating Hexagon Spatial Grid
+
+*odb10_sf* represents a spatial point dataframe, which might not be optimal for spatial autocorrelation analysis where the definition of 'areas' requires the representation of spatial entities as polygons instead of individual points. To address this, the subsequent code sections transform these bus stops into a grid of hexagons.
+
+::: panel-tabset
+### 1. Generate Hexagon Grid
+
+This code utilizes the `st_make_grid` function to create a hexagon grid based on the specified parameters. The resulting hexagon grid is then converted into a spatial dataframe (`st_sf()`) to maintain its geospatial properties. The `rowid_to_column` function is employed to assign a unique identifier (*hex_id*) to each hexagon, facilitating subsequent analyses or referencing.
+
+*Output: Spatial Polygons with Hexagonal Geometry and Hex_id Identification*
+
+
+```{r}
+odb10_hex <- st_make_grid(
+    odb10_sf,
+    cellsize = 500,
+    square = FALSE
+  ) %>%
+  st_sf() %>%
+  rowid_to_column("hex_id")
+
+# check the output
+glimpse(odb10_hex)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_make_grid](https://r-spatial.github.io/sf/reference/st_make_grid.html) from **sf** package creates a grid over a spatial object. In this code, it is used to generate a hexagonal grid over the `odb10_sf` spatial data, with each cell having a size of 500 units.
+-   [st_sf](https://r-spatial.github.io/sf/reference/st_sf.html) from **sf** package converts the grid into an `sf` (simple features) object, which is a standard format for handling spatial data in R.
+-   [rowid_to_column](https://tibble.tidyverse.org/reference/rownames.html) from **tibble** package adds a new column to a data frame that contains a unique identifier for each row.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure and contents.
+:::
+
+### 2. Generate Attribute Dataframe using Hexagon Identifiers
+
+Given that each hexagonal area may encompass multiple bus stops, the *hex_id* serves as the primary key for aggregation. The subsequent procedures outline how to organize attributes based on *hex_id*:
+
+-   Utilize the `st_join()` function with `join = st_within` to associate bus stop points with hexagon areas.
+-   The `st_set_geometry(NULL)` argument eliminates the geospatial layer, focusing on attribute aggregation.
+-   Employ `group_by()` to obtain a unique `hex_id` for each row.
+-   Utilize `summarise()` to calculate the aggregate count of bus stops and trips per peak period within each hexagon area.
+-   Replace all `NA` values with 0 using `replace(is.na(.), 0)`.
+
+*Output: Attribute Dataframe, with Hex_id as the Primary Key*
+
+
+```{r}
+odb10_stops <- st_join(
+  odb10_sf, 
+  odb10_hex, 
+  join = st_within
+) %>%
+  st_set_geometry(NULL) %>%
+  group_by(hex_id) %>%
+  summarise(
+    n_busstops = n(),
+    busstops_code = str_c(origin_pt_code, collapse = ","),
+    loc_desc = str_c(loc_desc, collapse = ","),
+    `Weekday morning peak` = sum(`Weekday morning peak`, na.rm = TRUE),
+    `Weekday evening peak` = sum(`Weekday evening peak`, na.rm = TRUE),
+    `Weekend/holiday morning peak` = sum(`Weekend/holiday morning peak`, na.rm = TRUE),
+    `Weekend/holiday evening peak` = sum(`Weekend/holiday evening peak`, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(across(where(is.numeric), ~ replace_na(., 0)),
+         across(where(is.character), ~ replace_na(., "")))
+
+# check the output
+glimpse(odb10_stops)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_join](https://r-spatial.github.io/sf/reference/st_join.html) from **sf** package spatially joins two `sf` objects. `st_within` as the join method checks if geometries of the first object are within those of the second.
+-   [st_set_geometry](https://r-spatial.github.io/sf/reference/st_geometry.html) from **sf** package is used to remove or set the geometry column in an `sf` object.
+-   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package to group the data by specified columns, allowing for grouped summaries.
+-   [summarise](https://dplyr.tidyverse.org/reference/summarise.html) from **dplyr** package calculates summary statistics for each group.
+-   [str_c](https://stringr.tidyverse.org/reference/str_c.html) from **stringr** package concatenates character vectors.
+-   [ungroup](https://dtplyr.tidyverse.org/reference/group_by.dtplyr_step.html) from **dplyr** package removes grouping.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) and [across](https://dplyr.tidyverse.org/reference/across.html) from **dplyr** package modify columns, applying functions across selected columns.
+-   [replace_na](https://tidyr.tidyverse.org/reference/replace_na.html) from **tidyr** package replaces `NA` values with specified values.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame.
+:::
+
+### 3. Join the grid and attribute dataframe
+
+-   Use `left_join` to combine the new **odb10_stops** attribute dataframe with the existing **odb10_hex** hexagon geospatial layer, linking them by *hex_id* to integrate attributes into the spatial polygon dataframe.
+-   Employ `filter` to exclude hexagons without bus stops.
+
+*Output: Spatial Polygon Dataframe*
+
+
+```{r}
+odb10_complete <- odb10_hex %>%
+  left_join(odb10_stops,
+            by = "hex_id"
+  ) %>%
+  replace(is.na(.), 0)
+
+odb10_final <- filter(odb10_complete,
+                       n_busstops > 0)
+
+# check the output
+glimpse(odb10_final)
+```
+
+:::
+
+# Making Sense of the Data (GeoVisualization and Analysis)
+
+In this section, several geovisualization will be shown to analyze the distribution and general patterns of bus stops and trips in the dataset.
+
+## Distribution of Bus Stop
+
+Understanding the spatial distribution of bus stops in Singapore is crucial for deciphering the accessibility and connectivity of public transportation. The "Distribution of Bus Stops" map provides a visual representation of the number of bus stops across different regions.
+
+
+```{r}
+# Plot the hexagon grid based on n_busstops
+tmap_mode("view")
+busstop_map = tm_shape(odb10_final)+
+  tm_fill(
+    col = "n_busstops",
+    palette = "Blues",
+    style = "cont",
+    title = "Number of Bus Stops",
+    id = "loc_desc",
+    showNA = FALSE,
+    alpha = 0.6,
+    popup.format = list(
+      grid_id = list(format = "f", digits = 0)
+    )
+  )+
+  tm_borders(col = "grey40", lwd = 0.7)
+busstop_map
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode of tmap to either plot static maps (`"plot"`) or create interactive maps (`"view"`).
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares the spatial data for plotting.
+-   [tm_fill](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_fill) from **tmap** package fills polygons (like the hexagons in the grid) with colors based on a specified variable.
+-   [tm_borders](https://www.rdocumentation.org/packages/tmap/versions/0.7/topics/tm_borders) from **tmap** package adds borders around the polygons.
+-   The `popup.format` within `tm_fill` allows customization of the format of the values shown in the interactive popups.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+From the map, we can infer that the central region, likely encompassing the Central Business District (CBD) and surrounding residential areas, which are known to be highly populated and active, has a higher number of bus stops. This correlates with the need for robust public transportation in densely populated areas to support the daily commute of residents and workers. Lighter shades are observed towards the periphery of the island, suggesting fewer bus stops, which could correspond to less urbanized or industrial areas, like the Western and North-Eastern regions where the population density is lower. The map reflects Singapore's urban planning and transportation strategy, which aims to provide accessibility and connectivity, particularly in high-density regions where demand for public transit is greatest.
+:::
+
+## Distribution of Trips Across Peak Hours
+
+find the ideal breaks for plotting the trips using `summary`
+
+
+```{r}
+summary(odb10_final)
+```
+
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The summary result confirmed that the trips data is right-skewed and contains extreme outliers. This knowledge is then used to customize the break in the comparison map.
+:::
+
+The following code plot the comparison map. the map is set on "plot" mode for rendering, but was set on "view" mode for analysis.
+
+
+```{r}
+# Define the columns for which we want to find the global min and max
+value_columns <- c("Weekday morning peak", "Weekday evening peak", "Weekend/holiday morning peak", "Weekend/holiday evening peak")
+
+# Set tmap to interactive viewing mode for analysis and plot mode for rendering
+tmap_mode("view")
+
+# Define a function to create each map with a customized legend
+create_map <- function(value_column) {
+  tm_shape(odb10_final) +
+    tm_fill(
+      col = value_column,
+      palette = "-RdBu",
+      style = "fixed",
+      title = value_column,
+      id = "loc_desc",
+      showNA = FALSE,
+      alpha = 0.6,
+      breaks = c(0, 500, 1000, 2000, 3000, 5000, 10000, 50000, 100000, 300000, 550000)
+    ) +
+    tm_borders(col = "grey40", lwd = 0.7) +
+    tm_layout(
+      legend.position = c("right", "bottom"), # Adjust legend position
+      legend.frame = TRUE,
+      legend.width = 0.15, # Adjust the width of the legend
+      legend.height = 0.5  # Adjust the height of the legend
+    )
+}
+
+# Apply the function to each value column and store the maps
+map_list <- lapply(value_columns, create_map)
+
+# Combine the maps into a 2x2 grid
+combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_list[[4]], ncol = 2, nrow = 2)
+
+# Show the combined map
+combined_map
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. Here, `"plot"` mode is chosen for static map plotting.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting.
+-   [tm_fill](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_fill) from **tmap** package fills polygons with colors based on specified variables, with options for color palette, style, and legend customization.
+-   [tm_borders](https://www.rdocumentation.org/packages/tmap/versions/0.7/topics/tm_borders) from **tmap** package adds borders to the polygons.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) from **tmap** package adjusts the layout of the map, including legend positioning and dimensions.
+-   [tmap_arrange](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_arrange) from **tmap** package arranges multiple `tmap` objects into a grid layout.
+-   [lapply](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lapply) from **base** R applies a function over a list or vector.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+Using the same classification scaling for all maps, it clearly shows that weekdays trips volume is higher in general than weekend/holiday. Nevertheless, at a glance, the crowded area are more or less the same across all days and time. This confirmed the previous finding on bus stops in which the area with most traffics are likely to encompassing the Central Business District (CBD) and surrounding residential areas, which are known to be highly populated and active the area of Singapore. At the same time, it also reflects Singapore's urban planning and transportation strategy, in which the busiest area with potential high traffics are supported by more bus stops.
+:::
+
+## Distribution of Average Trips per Bus Stop
+
+The next distribution will see which bus stop is the busiest on average, in terms of number of trips per bus stop. To do that, firstly the following code will generate new columns of trip per bus stop for each hexagon.
+
+
+```{r}
+# Create a new dataframe with transformed columns
+odb10_final_avg <- odb10_final %>%
+  mutate(across(all_of(value_columns), ~ .x / n_busstops, .names = "avg_{.col}"))
+# check the summary for determining break points
+summary(odb10_final_avg)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new columns to a data frame or modify existing ones.
+-   [across](https://dplyr.tidyverse.org/reference/across.html) from **dplyr** package applies a function to a selection of columns, in this case, transforming specified columns by dividing each by `n_busstops`.
+-   [all_of](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used within `across` for selecting columns based on a character vector of column names.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the object's contents, typically giving minimum, maximum, mean, and other useful statistics.
+:::
+
+The following code plot the comparison map. the map is set on "plot" mode for rendering, but was set on "view" mode for analysis.
+
+
+```{r}
+# Define the columns for which we want to find the global min and max
+value_columns <- c("avg_Weekday morning peak", "avg_Weekday evening peak", "avg_Weekend/holiday morning peak", "avg_Weekend/holiday evening peak")
+
+# Set tmap to interactive viewing mode
+tmap_mode("view")
+
+# Define a function to create each map with a customized legend
+create_map <- function(value_column) {
+  tm_shape(odb10_final_avg) +
+    tm_fill(
+      col = value_column,
+      palette = "-RdBu",
+      style = "fixed",
+      title = value_column,
+      id = "loc_desc",
+      showNA = FALSE,
+      alpha = 0.6,
+      breaks = c(0, 100, 200, 300, 400, 500, 750, 1000, 1500, 5000, 10000, 50000, 140000)
+    ) +
+    tm_borders(col = "grey40", lwd = 0.7) +
+    tm_layout(
+      legend.position = c("right", "bottom"), # Adjust legend position
+      legend.frame = TRUE,
+      legend.width = 0.15, # Adjust the width of the legend
+      legend.height = 0.5  # Adjust the height of the legend
+    )
+}
+
+# Apply the function to each value column and store the maps
+map_list <- lapply(value_columns, create_map)
+
+# Combine the maps into a 2x2 grid
+combined_map <- tmap_arrange(map_list[[1]], map_list[[2]], map_list[[3]], map_list[[4]], ncol = 2, nrow = 2)
+
+# Show the combined map
+combined_map
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. `"plot"` mode is used for static map plotting.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting.
+-   [tm_fill](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_fill) from **tmap** package fills polygons with colors based on specified variables, allowing for customized legends and color palettes.
+-   [tm_borders](https://www.rdocumentation.org/packages/tmap/versions/0.7/topics/tm_borders) from **tmap** package adds borders to the polygons.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) from **tmap** package adjusts the layout of the map, including legend position and dimensions.
+-   [lapply](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lapply) from **base** R applies a function over a list or vector.
+-   [tmap_arrange](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_arrange) from **tmap** package arranges multiple `tmap` objects into a grid layout.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+at a glance, using the average trips per bus stop shows slightly different insight. Comparatively to the total trips, average number of trips shows that the area around **Jurong**, **Woodlands**, and bus stops in **Johor** (part of Malaysia) is actually busier than what total trips suggest. In the context of transport policy, this might be the first lead to expand the number of bus stops in the particular area to cater for more commuters.
+:::
+
+# Local Indicators of Spatial Association analysis
+
+In this segment, we'll utilize Local Indicators of Spatial Association (LISA) metrics to investigate whether clusters or anomalies exist in the overall number of trips generated within the hexagon layer. More precisely, we'll employ Moran's I statistic to identify spatial patterns, including the presence of clusters or dispersion in the total trip counts.
+
+## Creating a Spatial Matrix Based on Distance
+
+Before we delve into the intricacies of global and local spatial autocorrelation statistics, a crucial preliminary step involves the creation of a spatial weights matrix tailored to our study area. This matrix essentially delineates the relationships between hexagonal spatial units based on their respective distances. In establishing this matrix, it's imperative to bear in mind a few considerations.
+
+Firstly, it is essential to ensure that each feature has at least one neighbor, and conversely, no feature is designated as a neighbor to all other features. This ensures a meaningful and diverse representation of spatial relationships.
+
+Furthermore, for datasets exhibiting skewed distribution, a recommended guideline is to assign each feature a minimum of eight neighbors, a criterion we've slightly exceeded by opting for 12 neighbors in this context. This ensures a more robust and comprehensive understanding of spatial connectivity within the data.
+
+Given the peculiarities of our study area, characterized by regions with a sparse distribution of bus stops, particularly in zones lacking significant residential or business presence, the preference leans towards employing distance-based methods over contiguity methods. This strategic choice aligns with the spatial reality of the data, allowing for a more nuanced exploration of spatial relationships while considering the unique characteristics of the geographical context.
+
+We opt for the Adaptive Distance-Based (Fixed Number of Neighbors) approach instead of the Fixed-Distance Threshold method, a decision prompted by the right-skewed distribution inherent in our dataset. In this chosen method, each hexagon is assured of having a minimum of ***n*** neighbors, a critical prerequisite for subsequent statistical significance testing.
+
+To implement this, we set each hexagon to be associated with precisely 12 neighbors, a configuration achieved through the application of provided R code. The process involves utilizing the `st_knn` function to acquire a comprehensive list of neighbors for each hexagon and subsequently employing `st_weights` to generate spatial weights that are row-standardized. This meticulous procedure ensures a standardized and well-defined spatial relationship framework, laying the groundwork for robust statistical analyses.
+
+
+```{r}
+wm_all <- odb10_final %>% 
+  mutate(
+    nb = st_knn(geometry, k = 12),
+    wt = st_weights(nb, style = 'W'),
+    .before = 1
+  )
+
+# check the output
+kable(head(wm_all))
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new columns to a data frame or modify existing ones.
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data. Here, it is used to find the nearest 12 neighbors for each geometry in `odb10_final`.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** computes spatial weights. The `style = 'W'` argument specifies the type of weights to be calculated.
+-   The `.before = 1` argument in `mutate` specifies that the new columns should be added at the beginning of the data frame.
+-   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates simple tables from a data frame for markdown format output.
+:::
+
+## Examining Global Spatial Association Globally with Global Moran's I
+
+Assessing global spatial correlation involves scrutinizing the comprehensive spatial arrangement of a specific variable, such as the aggregated count of trips throughout the entire study region. This analysis furnishes a solitary metric that encapsulates how closely akin values aggregate or scatter across the geographic expanse.
+
+Calculate the Global Moran's I statistic for peak time trip counts at the hexagonal level, employing simulated data to sidestep assumptions of normal distribution and randomness. The simulation count is established at 99+1, totaling 100 simulations, ensuring a robust evaluation of spatial relationships without reliance on normality or random distribution assumptions.
+
+
+```{r}
+# Set the seed to ensure reproducibility
+set.seed(1234)
+
+# define the value_columns
+value_columns <- c("Weekday morning peak", "Weekday evening peak", "Weekend/holiday morning peak", "Weekend/holiday evening peak")
+
+# Create a function to perform global Moran's I test
+perform_global_moran <- function(data, value_column, k) {
+  # Compute spatial weights
+  nb <- st_knn(data$geometry, k = k)
+  wt <- st_weights(nb, style = 'W')
+
+  # Perform global Moran's I test
+  moran_result <- global_moran_perm(data[[value_column]], nb, wt, nsim = 99)
+  
+  # Include the value_column in the result
+  result <- list(
+    value_column = value_column,
+    moran_result = moran_result
+  )
+  
+  return(result)
+}
+
+# Apply the function for each time interval
+results <- lapply(value_columns, function(vc) perform_global_moran(wm_all, vc, k = 12))
+
+# Print the results
+print(results)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [set.seed](https://r-coder.com/set-seed-r/#google_vignette) from **base** R package is used to set the seed of R's random number generator, ensuring reproducibility of results.
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data, used here to create spatial weights.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** package calculates spatial weights. The `style = 'W'` argument specifies the type of weights.
+-   [global_moran_perm](https://rdrr.io/cran/sfdep/man/global_moran_perm.html) from **fpdep** package performs a permutation test for global Moran's I, a measure of spatial autocorrelation.
+-   [lapply](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lapply) from **base R** applies a function over a list or vector.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+For all four time intervals, since the p-value for global Moran's I is smaller than 0.05, we can reject the null hypothesis that the spatial patterns are random. Moreover, as the Moran's I statistics are greater than 0, we can infer that the spatial distribution exhibits signs of clustering for all four time intervals, consistent with the choropleth maps plotted earlier.
+:::
+
+## Assessing Local Autocorrelation Spatial Association
+
+Delving into local spatial relationships offers a nuanced exploration of spatial configurations at a granular level, pinpointing particular zones with pronounced or diminished spatial connections. The Local Moran's I method classifies areas into distinct categories such as high-high, low-low, high-low, or low-high, delineating patterns of clustering or outlier behavior within specific regions.
+
+To analyze passenger trip patterns originating at the hex level, we employ the Local Indicators of Spatial Association (LISA) through the `local_moran` function sourced from the `sfdep` package. This function automatically computes neighbor lists and weights, leveraging simulated data to enhance accuracy. The outcomes are then deconstructed for in-depth analysis and presented in an interactive datatable format, allowing for a comprehensive examination of the intricacies within the spatial relationships of passenger trips.
+
+
+```{r}
+# Create a function to perform local Moran's I analysis
+get_lisa <- function(wm, value_column, k) {
+  # Compute spatial weights
+  nb <- st_knn(wm$geometry, k = k)
+  wt <- st_weights(nb, style = 'W')
+
+  # Perform local Moran's I analysis and create a new data frame
+  result <- wm %>% 
+    mutate(
+      local_moran = local_moran(.data[[value_column]], nb, wt, nsim = 99),
+      .before = 1
+    ) %>%
+    unnest(local_moran)
+  
+  return(result)
+}
+
+# Initialize a list to store results for each value_column
+lisa_results <- list()
+
+# Apply the function for each time interval and store results in the list
+for (vc in value_columns) {
+  lisa_results[[vc]] <- get_lisa(wm_all, vc, k = 12)
+  
+  # Remove columns that don't belong to the specific time interval
+  unwanted_columns <- setdiff(value_columns, vc)
+  lisa_results[[vc]] <- lisa_results[[vc]][, !(names(lisa_results[[vc]]) %in% unwanted_columns)]
+}
+
+# show sample output in an interactive table
+datatable(lisa_results[["Weekday morning peak"]], 
+          class = 'cell-border stripe', 
+          options = list(pageLength = 5))
+
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_knn](https://sfdep.josiahparry.com/reference/st_knn) from **sfdep** package computes k-nearest neighbors for spatial data, used here for spatial weights calculation.
+-   [st_weights](https://rdrr.io/cran/sfdep/man/st_weights.html) from **sfdep** package creates spatial weights with the specified style (`'W'`).
+-   [local_moran](https://rdrr.io/cran/sfdep/man/local_moran.html) from **sfdep** package performs local Moran's I analysis, a measure of local spatial autocorrelation.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) and [unnest](https://tidyr.tidyverse.org/reference/unnest.html) from **dplyr** and **tidyr** respectively, are used to modify and expand nested data within a data frame.
+-   [datatable](https://rstudio.github.io/DT/) from **DT** package creates an interactive table widget.
+-   The `for` loop in base R iteratively applies the `get_lisa` function to each value column.
+:::
+
+## Significant Local Moran's I Results at α 5%
+
+Leverage the fundamental functionalities of the `tmap` package to create choropleth maps illustrating the Local Moran's I field and p-value field across all four time intervals. Only noteworthy values of Local Moran's I at a significance level of α 5% are visualized. The provided code retrieves the pertinent Local Moran's I values for the explicit purpose of generating maps.
+
+
+```{r}
+get_sig_lmi_map <- function(lisa_table, title) {
+  
+  sig_lisa_table <- lisa_table %>%
+    filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisa_table) +
+    tm_polygons() +
+    tm_borders(alpha = 0.5) +
+    tm_shape(sig_lisa_table) +
+    tm_fill("ii") + 
+    tm_borders(alpha = 0.4) +
+    tm_layout(
+      main.title = title,
+      main.title.size = 1.3
+    )
+  
+  return(result)
+  
+}
+
+sig_lmi_1 <- get_sig_lmi_map(lisa_results[["Weekday morning peak"]], "Weekday Morning" )
+sig_lmi_2 <- get_sig_lmi_map(lisa_results[["Weekday evening peak"]], "Weekday Afternoon" )
+sig_lmi_3 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Weekend Morning" )
+sig_lmi_4 <- get_sig_lmi_map(lisa_results[["Weekend/holiday morning peak"]], "Weekend Afternoon" )
+
+tmap_mode('view')
+
+tmap_arrange(
+  sig_lmi_1,
+  sig_lmi_2,
+  sig_lmi_3,
+  sig_lmi_4,
+  asp = 2,
+  nrow = 2,
+  ncol = 2
+)
+```
+
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package to subset rows based on a condition, here filtering for statistically significant local Moran's I results.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape), [tm_polygons](https://rdrr.io/cran/tmap/man/tm_polygons.html), [tm_borders](https://www.rdocumentation.org/packages/tmap/versions/0.7/topics/tm_borders), [tm_fill](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_fill), and [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) from **tmap** package are used to create and customize thematic maps.
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) sets the tmap mode, here `'plot'` is for static maps.
+-   [tmap_arrange](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_arrange) arranges multiple `tmap` objects in a grid layout.
+:::
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+The choropleth maps displaying Local Moran's I reveal that **darker orange** and **darker green** areas signify **outlier regions**. To classify it into low-high or high-low cluster, further analysis is required using LISA. Similarly, the **light green** are indicates either high-high or low-low regions. Notably, the the area around **Tuas and Jurong** is most likely a low-low area based on the previous geovisualization.
+:::
+
+## LISA Map at α 5%
+
+For a more in-depth analysis, the subsequent code retrieves the meaningful Local Indicators of Spatial Association (LISA) for the specific purpose of creating maps.
+
+
+```{r}
+get_sig_lisa_map <- function(lisatable, title) {
+  
+  sig_lisatable <- lisatable  %>%
+  filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisatable) +
+    tm_polygons(alpha = 0.5) +
+    tm_borders(alpha = 0.5) +
+    
+    tm_shape(sig_lisatable) +
+    tm_fill("median",
+            id = "loc_desc",
+            palette = c("blue", "lightcoral", "lightblue", "red"),
+            alpha= 0.7) + 
+    tm_borders(alpha = 0.4) +
+    tm_layout(main.title = title,
+              main.title.size = 1.5,
+              legend.position = c("left", "top"))
+    
+  return(result)
+  
+}
+
+sig_lisa_1 <- get_sig_lisa_map(lisa_results[["Weekday morning peak"]],"LISA categories generated on Weekday Morning at 95% CL" )
+sig_lisa_2 <- get_sig_lisa_map(lisa_results[["Weekday evening peak"]], "LISA categories generated on Weekday Afternoon at 95% CL" )
+sig_lisa_3 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Morning at 95% CL" )
+sig_lisa_4 <- get_sig_lisa_map(lisa_results[["Weekend/holiday morning peak"]], "LISA categories generated on Weekend Afternoon at 95% CL" )
+```
+
+
+In the ensuing panel, you'll find a display featuring the noteworthy Local Indicators of Spatial Association (LISA) map corresponding to each peak time.
+
+::: panel-tabset
+### Weekday morning peak
+
+
+```{r}
+tmap_mode('plot')
+sig_lisa_1
+```
+
+
+### Weekday evening peak
+
+
+```{r}
+tmap_mode('plot')
+sig_lisa_2
+```
+
+
+### Weekend/holiday morning peak
+
+
+```{r}
+tmap_mode('plot')
+sig_lisa_3
+```
+
+
+### Weekend/holiday evening peak
+
+
+```{r}
+tmap_mode('plot')
+sig_lisa_1
+```
+
+:::
+
+The preceding choropleth maps illustrate notable groupings and exceptional instances regarding passenger trips originating from each hexagon, applying a significance level of α 5%.
+
+**Cluster Interpretation:**
+
+
+```{=html}
+<span style="color: blue;">Blue regions (Low-Low Clusters):</span> These areas signify locations where the number of total trips at bus stops is relatively low and is surrounded by other locations with similarly low trip counts. This indicates spatial clustering of lower activity.<br>
+```
+
+```{=html}
+<span style="color: lightblue;">Light Blue regions (Low-High outliers):</span> In these regions, bus stops experience a lower number of total trips compared to their neighbors, suggesting an outlier pattern where specific locations have lower activity amidst areas with higher trip counts.<br>
+```
+
+```{=html}
+<span style="color: lightcoral;">Light Coral regions (High-Low outliers):</span> High-Low regions denote areas where bus stops have a higher number of total trips compared to their neighbors, standing out as outliers with higher activity within regions of lower overall trip counts.<br>
+```
+
+```{=html}
+<span style="color: red;">Red regions (High-High clusters):</span> These regions represent clusters of higher activity, where bus stops experience a higher number of total trips and are surrounded by other locations with similarly high trip counts. This implies spatial clustering of higher activity zones.<br>
+```
+
+
+## Findings and Future Improvements
+
+::: panel-tabset
+### General Concentration
+
+The geographical arrangement unveils elevated concentrations of overall bus trips in the residential sectors situated in the East, North, and West, juxtaposed with diminished concentrations in the Southern sector of Singapore. Prominent clusters of heightened activity align with significant transportation hubs like Ang Mo Kio, Bedok, Clementi, Hougang, Toa Payoh, Woodlands, and more.
+
+### Weekends vs. Weekdays
+
+Specific hexagonal zones, notably in the vicinity of Bukit Timah and Woodlands Checkpoint, display unique trends on weekends. These areas fluctuate between instances of high-low outliers and elevated clusters, indicating dynamic shifts in bus trip patterns across varying days of the week.
+
+### High and Low Clusters
+**High Clusters:**
+Within the North, East, and West regions, particularly in residential zones, there is a discernible prevalence of elevated concentrations of bus trips. These areas are indicative of heightened commuting activities and increased local engagements, reflecting a probable dependence on public transportation for daily travel.
+
+**Low Clusters:**
+Conversely, the western sectors of Singapore, predominantly consisting of industrial areas, demonstrate diminished concentrations of bus trips. This pattern hints at a lower reliance on public transportation within these industrial zones, potentially influenced by factors such as lower population density or the prevalence of alternative modes of transport. The observed lower bus trip concentrations in these regions align with a distinctive transportation landscape characterized by different travel patterns and demands.
+
+### Borders
+**Clusters of Low Passenger Trips:**
+Examining the Western and Southern perimeters of Singapore, we discern notable concentrations of low passenger trips. Specifically, areas along these borders exhibit a distinct pattern of reduced public transportation usage. This phenomenon suggests a potential lower demand for bus services in these regions, indicating varying transportation preferences or alternative modes of commuting among residents.
+
+**Noteworthy Outliers and Unique Transportation Needs:**
+Within this context, noteworthy outliers such as Jurong Port, Pioneer Sector, and Tuas stand out, marking key gateways that play a crucial role in accommodating nearby migrant workers and tourists. These specific regions may harbor unique transportation requirements, contributing significantly to the distinctive spatial patterns observed. The presence of outliers indicates a deviation from the general trend, emphasizing the importance of understanding the specific dynamics influencing transportation demand in these particular locales.
+
+
+### Mode of Transport Influence
+
+The spatial distribution of bus trips may be influenced by the availability and efficiency of alternative modes of transportation, such as the MRT (Mass Rapid Transit) system or private vehicles. Areas with robust alternative public transportation networks might exhibit different bus trip patterns compared to regions heavily reliant on private vehicles. Analyzing the interplay between different modes of transport can offer insights into the dynamics of bus trip concentrations and outliers.
+
+### Population Density Correlation
+
+Exploring the correlation between bus trip patterns and population density can unveil insights into how transportation needs align with residential density. High-density residential areas may show increased reliance on public transportation, leading to concentrated bus trip clusters. On the other hand, lower-density regions might exhibit more scattered trip patterns.
+
+### Economic Activities and Employment Hubs
+
+Investigating the correlation between bus trip concentrations and major economic activities or employment hubs can shed light on commuter patterns. Areas with prominent business districts or industrial zones may experience higher bus trip concentrations during peak commuting hours, contributing to spatial clusters.
+
+### Demographic Variations
+
+Analyzing demographic factors such as age groups, income levels, and cultural preferences may provide nuanced insights into bus trip patterns. Different demographic segments may exhibit varying transportation behaviors, influencing the distribution of bus trips across different regions.
+
+### Urban Planning and Infrastructure Development
+
+Examining the influence of urban planning and infrastructure development on bus trip patterns can highlight the impact of transportation policies and initiatives. Regions with well-planned transportation infrastructure may demonstrate more organized and efficient bus trip distributions.
+
+### Seasonal and Event-Based Variations
+
+Considering the impact of seasons and major events on bus trip patterns can uncover dynamic changes in spatial distributions. Certain regions may experience fluctuations in bus trip concentrations during holidays, festivals, or major events, reflecting shifts in travel behavior.
+
+### Technological Advancements and Ride-Sharing Trends
+
+Assessing the role of technological advancements and ride-sharing trends on bus trip patterns can provide insights into the evolving landscape of transportation preferences. The integration of technology-driven solutions may influence how people choose and utilize bus services.
+:::
+
+# References
+
+Andrey Sekste and Eduard Kazakov. ["H3 hexagonal grid: Why we use it for data analysis and visualization"](https://www.kontur.io/blog/h3-hexagonal-grid/).
+
+Anselin, L. (1995). ["Local indicators of spatial association -- LISA"](https://onlinelibrary.wiley.com/doi/10.1111/j.1538-4632.1995.tb00338.x). Geographical Analysis, 27(4): 93-115.
+
+Sarah Gates (2017). ["Emerging Hot Spot Analysis: Finding Patterns over Space and Time"](https://www.azavea.com/blog/2017/08/15/emerging-hot-spot-spatial-statistics/)
+
+Sid Dhuri (2020). ["Spatial Data Analysis With Hexagonal Grids"](https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e)
+
+Tin Seong Kam. ["2 Choropleth Mapping with R"](https://r4gdsa.netlify.app/chap02) From R for Geospatial Data Science and Analytics
+
+Tin Seong Kam. ["9 Global Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap09) From R for Geospatial Data Science and Analytics
+
+Tin Seong Kam. ["10 Local Measures of Spatial Autocorrelation"](https://r4gdsa.netlify.app/chap10) From R for Geospatial Data Science and Analytics
+
+Land Transport Authority. [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en.html)
+
+Wong, Kenneth. [Create spatial square/hexagon grids and count points inside in R with sf](https://urbandatapalette.com/post/2021-08-tessellation-sf/) from Urban Data Pallete
+
