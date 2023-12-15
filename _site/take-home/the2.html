@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation"><span class="header-section-number">2</span> Preparation</a>
   <ul class="collapse">
   <li><a href="#import-library" id="toc-import-library" class="nav-link" data-scroll-target="#import-library"><span class="header-section-number">2.1</span> Import Library</a></li>
-  <li><a href="#import-the-data" id="toc-import-the-data" class="nav-link" data-scroll-target="#import-the-data"><span class="header-section-number">2.2</span> Import The Data</a>
+  <li><a href="#data-import-and-minor-wrangling" id="toc-data-import-and-minor-wrangling" class="nav-link" data-scroll-target="#data-import-and-minor-wrangling"><span class="header-section-number">2.2</span> Data Import and Minor Wrangling</a>
   <ul class="collapse">
   <li><a href="#aspatial-1" id="toc-aspatial-1" class="nav-link" data-scroll-target="#aspatial-1">Aspatial</a></li>
   <li><a href="#geospatial-1" id="toc-geospatial-1" class="nav-link" data-scroll-target="#geospatial-1">Geospatial</a></li>
@@ -650,7 +650,7 @@ Tutorial on Fetching the Data
 </div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<p>The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.</p>
+<p>The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset. The original dataset can be downloaded from <a href="https://beta.data.gov.sg/collections/150/view">Singapore’s National Open Data Collection</a>. However, the original dataset does not contain geoidentifier. The geoidentifier in the HDB dataset that is used here was provided by <a href="https://faculty.smu.edu.sg/profile/kam-tin-seong-486">Prof Kam Tin Seong</a>.</p>
 </div>
 </div>
 </div>
@@ -690,8 +690,8 @@ metadata
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <ul>
-<li><p>provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019.</p></li>
-<li><p>downloaded from <a href="https://beta.data.gov.sg/">Singapore’s National Open Data Collection</a></p></li>
+<li><p>Provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019 (MPSZ-2019).</p></li>
+<li><p>The original dataset can be downloaded from <a href="https://beta.data.gov.sg/">Singapore’s National Open Data Collection</a>. However, the original dataset have a different file type from the one that is used in this project. The changed file type of the data was provided by <a href="https://faculty.smu.edu.sg/profile/kam-tin-seong-486">Prof Kam Tin Seong</a>.</p></li>
 <li><p>Columns/Fields in the dataset includes SUBZONE_N, SUBZONE_C, PLN_AREA_N, PLN_AREA_C, REGION_N, REGION_C, and geometry</p></li>
 <li><p>While the analysis primarily focuses on hexagon cells, incorporating the Master Planning Sub-Zone 2019 file enables the integration of additional point layers like Retail and Leisure onto the Singapore map. This integration facilitates the visualization of their respective locations within various planning sub-zones across Singapore.</p></li>
 </ul>
@@ -812,21 +812,19 @@ Packages Explanations
 </div>
 </div>
 </section>
-<section id="import-the-data" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="import-the-data"><span class="header-section-number">2.2</span> Import The Data</h2>
+<section id="data-import-and-minor-wrangling" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-import-and-minor-wrangling"><span class="header-section-number">2.2</span> Data Import and Minor Wrangling</h2>
 <p>This section will import the required aspatial and geospatial dataset. The process also involves minor data change before going to more complex data wrangling in the next section.</p>
 <section id="aspatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="aspatial-1">Aspatial</h3>
-<p>the following code will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section. The process involves:</p>
-<ol type="1">
-<li><p>import the csv file using <code>read_csv</code> function from <a href="https://www.rdocumentation.org/packages/readr/versions/2.1.4">readr</a> package</p></li>
-<li><p>using <a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package, transform georeference data type into <a href="https://r4ds.hadley.nz/factors">factors</a> for easing compatibility issue and more efficient processing.</p></li>
-<li><p>using <a href="https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1/topics/describe">describe</a> from <strong>hmisc</strong> package, display the summary statistics of the dataset.</p></li>
-</ol>
+<p>This subsection will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.</p>
+<section id="passenger-volume" class="level4">
+<h4 class="anchored" data-anchor-id="passenger-volume">Passenger Volume</h4>
+<p>Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to <code>factor</code> for easing compatibility issue and more efficient processing. As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value. Finally, the code will generate output of summary statistics of the resulting dataset.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load each csv file</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load csv file</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>odb10 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/aspatial/origin_destination_bus_202310.csv.gz"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># change georeference data type into factors</span></span>
@@ -836,68 +834,402 @@ Packages Explanations
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">DESTINATION_PT_CODE =</span> <span class="fu">as.factor</span>(DESTINATION_PT_CODE)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># check the dataframe</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(odb10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># filter and group the data</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>odb10 <span class="ot">&lt;-</span> odb10 <span class="sc">%&gt;%</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DAY_TYPE <span class="sc">==</span> <span class="st">"WEEKDAY"</span>, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>         TIME_PER_HOUR <span class="sc">&gt;=</span> <span class="dv">6</span> <span class="sc">&amp;</span> TIME_PER_HOUR <span class="sc">&lt;=</span> <span class="dv">9</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ORIGIN_PT_CODE, DESTINATION_PT_CODE) <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">TRIPS =</span> <span class="fu">sum</span>(TOTAL_TRIPS))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># check the summary statistics of resulting dataframe</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(odb10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>odb10 
 
- 7  Variables      5694297  Observations
---------------------------------------------------------------------------------
-YEAR_MONTH 
-       n  missing distinct    value 
- 5694297        0        1  2023-10 
-                  
-Value      2023-10
-Frequency  5694297
-Proportion       1
---------------------------------------------------------------------------------
-DAY_TYPE 
-       n  missing distinct 
- 5694297        0        2 
-                                            
-Value               WEEKDAY WEEKENDS/HOLIDAY
-Frequency           3259419          2434878
-Proportion            0.572            0.428
---------------------------------------------------------------------------------
-TIME_PER_HOUR 
-       n  missing distinct     Info     Mean      Gmd      .05      .10 
- 5694297        0       23    0.997    14.04    5.933        6        7 
-     .25      .50      .75      .90      .95 
-      10       14       18       21       22 
-
-lowest :  0  1  2  4  5, highest: 19 20 21 22 23
---------------------------------------------------------------------------------
-PT_TYPE 
-       n  missing distinct    value 
- 5694297        0        1      BUS 
-                  
-Value          BUS
-Frequency  5694297
-Proportion       1
+ 3  Variables      242208  Observations
 --------------------------------------------------------------------------------
 ORIGIN_PT_CODE 
        n  missing distinct 
- 5694297        0     5073 
+  242208        0     5029 
 
 lowest : 01012 01013 01019 01029 01039, highest: 99139 99161 99171 99181 99189
 --------------------------------------------------------------------------------
 DESTINATION_PT_CODE 
        n  missing distinct 
- 5694297        0     5077 
+  242208        0     5043 
 
 lowest : 01012 01013 01019 01029 01039, highest: 99139 99161 99171 99181 99189
 --------------------------------------------------------------------------------
-TOTAL_TRIPS 
+TRIPS 
        n  missing distinct     Info     Mean      Gmd      .05      .10 
- 5694297        0     3495    0.982    20.76    33.13        1        1 
+  242208        0     3335    0.997    107.2    180.8        1        1 
      .25      .50      .75      .90      .95 
-       2        4       12       37       73 
+       3       15       57      187      373 
 
-lowest :     1     2     3     4     5, highest: 30985 31349 32355 35931 36668
+lowest :     1     2     3     4     5, highest: 41201 46505 72829 74796 97600
 --------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a> from <strong>readr</strong> package reads a CSV file into R, converting it to a data frame.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package is used to add new variables to a data frame or modify existing ones. Here, it converts <code>ORIGIN_PT_CODE</code> and <code>DESTINATION_PT_CODE</code> to factors.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a> from <strong>dplyr</strong> package is used to subset rows based on specified conditions. In this code, it filters data for weekdays during morning peak hours (6 to 9 AM).</li>
+<li><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a> from <strong>dplyr</strong> package groups the data by specified columns, here by <code>ORIGIN_PT_CODE</code> and <code>DESTINATION_PT_CODE</code>.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a> from <strong>dplyr</strong> package calculates summary statistics for each group, in this case summing up <code>TOTAL_TRIPS</code>.</li>
+<li><a href="https://www.rdocumentation.org/packages/Hmisc/versions/4.4-0/topics/describe">describe</a> from <strong>Hmisc</strong> package provides a detailed summary of an object’s contents, typically offering statistics like mean, standard deviation, frequency, and others.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="How to Read the Output?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How to Read the Output?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The data provides details about the origin and destination points, along with the corresponding number of total trips, time information, and categorization based on day types. The variable summaries indicate the data distribution, with details such as the unique values, frequency, and descriptive statistics for each column.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="hdb-1" class="level4">
+<h4 class="anchored" data-anchor-id="hdb-1">HDB</h4>
+<p>For the HDB dataset, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to <code>factor</code> for easing compatibility issue and more efficient processing. As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value. Finally, the code will generate output of summary statistics of the resulting dataset.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load csv file</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>hdb <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/aspatial/hdb.csv"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># check the summary statistics of resulting dataframe</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(hdb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>hdb 
+
+ 37  Variables      12442  Observations
+--------------------------------------------------------------------------------
+...1 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0    12442        1     6220     4148    622.1   1244.1 
+     .25      .50      .75      .90      .95 
+  3110.2   6220.5   9330.8  11196.9  11818.9 
+
+lowest :     0     1     2     3     4, highest: 12437 12438 12439 12440 12441
+--------------------------------------------------------------------------------
+blk_no 
+       n  missing distinct 
+   12442        0     3239 
+
+lowest : 1    10   100  101  101A, highest: 99B  99C  9A   9B   9C  
+--------------------------------------------------------------------------------
+street 
+       n  missing distinct 
+   12442        0      629 
+
+lowest : ADMIRALTY DR   ADMIRALTY LINK ADMIRALTY RD   AH HOOD RD     ALJUNIED AVE 2
+highest: YUNG KUANG RD  YUNG LOH RD    YUNG PING RD   YUNG SHENG RD  ZION RD       
+--------------------------------------------------------------------------------
+max_floor_lvl 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0       45    0.993    12.03    7.541        1        2 
+     .25      .50      .75      .90      .95 
+       6       12       16       19       25 
+
+lowest :  1  2  3  4  5, highest: 43 45 47 48 50
+--------------------------------------------------------------------------------
+year_completed 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0       66    0.999     1994     15.7     1974     1977 
+     .25      .50      .75      .90      .95 
+    1984     1993     2001     2015     2017 
+
+lowest : 1937 1938 1949 1958 1959, highest: 2017 2018 2019 2020 2021
+--------------------------------------------------------------------------------
+residential 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency   2261 10181
+Proportion 0.182 0.818
+--------------------------------------------------------------------------------
+commercial 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency   9934  2508
+Proportion 0.798 0.202
+--------------------------------------------------------------------------------
+market_hawker 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency  12330   112
+Proportion 0.991 0.009
+--------------------------------------------------------------------------------
+miscellaneous 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency   9619  2823
+Proportion 0.773 0.227
+--------------------------------------------------------------------------------
+multistorey_carpark 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency  11412  1030
+Proportion 0.917 0.083
+--------------------------------------------------------------------------------
+precinct_pavilion 
+       n  missing distinct 
+   12442        0        2 
+                      
+Value          N     Y
+Frequency  11679   763
+Proportion 0.939 0.061
+--------------------------------------------------------------------------------
+bldg_contract_town 
+       n  missing distinct 
+   12442        0       26 
+
+lowest : AMK BB  BD  BH  BM , highest: SK  TAP TP  WL  YS 
+--------------------------------------------------------------------------------
+total_dwelling_units 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      361    0.994    87.67     70.5      0.0      0.0 
+     .25      .50      .75      .90      .95 
+    34.0     90.0    120.0    156.9    195.0 
+
+lowest :   0   1   2   3   4, highest: 510 520 539 570 584
+--------------------------------------------------------------------------------
+1room_sold 
+       n  missing distinct     Info     Mean      Gmd 
+   12442        0        2        0   0.0205  0.04099 
+                      
+Value          0   255
+Frequency  12441     1
+Proportion     1     0
+--------------------------------------------------------------------------------
+2room_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      132    0.135    2.415    4.704        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        0        0 
+
+lowest :   0   1   2   3   4, highest: 176 180 181 187 225
+--------------------------------------------------------------------------------
+3room_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      261    0.595    19.66    33.36        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        6       76      121 
+
+lowest :   0   1   2   3   4, highest: 432 434 436 462 528
+--------------------------------------------------------------------------------
+4room_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      208     0.94    34.66    42.38        0        0 
+     .25      .50      .75      .90      .95 
+       0       22       58       92      114 
+
+lowest :   0   1   2   3   4, highest: 266 269 282 308 316
+--------------------------------------------------------------------------------
+5room_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      134     0.82    19.85    28.78        0        0 
+     .25      .50      .75      .90      .95 
+       0        0       40       68       84 
+
+lowest :   0   1   2   3   4, highest: 150 152 158 161 164
+--------------------------------------------------------------------------------
+exec_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      103    0.357    5.204    9.647        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        8       52 
+
+lowest :   0   1   2   3   4, highest: 125 126 129 132 135
+--------------------------------------------------------------------------------
+multigen_sold 
+       n  missing distinct     Info     Mean      Gmd 
+   12442        0        7    0.002   0.0295  0.05897 
+                                                    
+Value          0    20    22    45    48    50    66
+Frequency  12434     1     1     1     1     2     2
+Proportion 0.999 0.000 0.000 0.000 0.000 0.000 0.000
+
+For the frequency table, variable is rounded to the nearest 0
+--------------------------------------------------------------------------------
+studio_apartment_sold 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0       83    0.031   0.7066    1.403        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        0        0 
+
+lowest :   0  11  16  17  18, highest: 139 149 153 164 201
+--------------------------------------------------------------------------------
+1room_rental 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0       95    0.039    2.476    4.908        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        0        0 
+
+lowest :   0   5  10  14  16, highest: 396 412 430 456 520
+--------------------------------------------------------------------------------
+2room_rental 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0      128     0.07    2.504    4.948        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        0        0 
+
+lowest :   0   1   2   3   4, highest: 320 352 360 386 452
+--------------------------------------------------------------------------------
+3room_rental 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0       30     0.07   0.1372   0.2727        0        0 
+     .25      .50      .75      .90      .95 
+       0        0        0        0        0 
+
+lowest :   0   1   2   3   4, highest:  53  56  60 100 114
+--------------------------------------------------------------------------------
+other_room_rental 
+       n  missing distinct     Info     Mean      Gmd 
+   12442        0        5    0.003 0.009805   0.0196 
+                                        
+Value          0     1     2    14    32
+Frequency  12428     8     2     1     3
+Proportion 0.999 0.001 0.000 0.000 0.000
+
+For the frequency table, variable is rounded to the nearest 0
+--------------------------------------------------------------------------------
+lat 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0    12430        1    1.365  0.04844    1.291    1.310 
+     .25      .50      .75      .90      .95 
+   1.336    1.363    1.393    1.432    1.441 
+
+lowest : 1.27038 1.27092 1.2713  1.27146 1.27147
+highest: 1.45648 1.45655 1.45666 1.45673 1.45707
+--------------------------------------------------------------------------------
+lng 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12442        0    12429        1    103.8  0.08402    103.7    103.7 
+     .25      .50      .75      .90      .95 
+   103.8    103.8    103.9    103.9    104.0 
+
+lowest : 103.685 103.685 103.686 103.686 103.686
+highest: 103.988 103.988 103.988 103.988 103.989
+--------------------------------------------------------------------------------
+building 
+       n  missing distinct 
+   12442        0     1797 
+
+lowest : 51 OLD AIRPORT ROAD FOOD CENTRE AND SHOPPING MALL A &amp; J CHILD CARE CENTRE                           AAVC-ANIMAL &amp; AVIAN VETERINARY CLINIC             ABC BRICKWORKS MARKET &amp; FOOD CENTRE               ABC CHILDREN'S PLACE                             
+highest: YWCA MARINE DRIVE CHILD DEVELOPMENT CENTRE        YWCA MCNAIR ROAD CHILD DEVELOPMENT CENTRE         YWCA PASIR RIS CHILD DEVELOPMENT CENTRE           ZHUJIAO CENTRE (TEKKA MARKET)                     ZION HOME FOR THE AGED (FEMALES)                 
+--------------------------------------------------------------------------------
+addr 
+       n  missing distinct 
+   12442        0    12430 
+
+lowest : 1 BEACH ROAD RAFFLES HOTEL SINGAPORE 189673          1 BEDOK SOUTH AVENUE 1 SINGAPORE 460001              1 CANTONMENT ROAD DBS EVERTON PARK SINGAPORE 080001  1 CANTONMENT ROAD PINNACLE @ DUXTON SINGAPORE 080001 1 CHAI CHEE ROAD PING YI GARDENS SINGAPORE 461001   
+highest: 9A JOO SENG ROAD JOO SENG GREEN SINGAPORE 361009     9A SELEGIE ROAD SINGAPORE 181009                     9B BOON TIONG ROAD TIONG BAHRU VIEW SINGAPORE 163009 9C BOON TIONG ROAD TIONG BAHRU VIEW SINGAPORE 164009 BLK 216 AND 215 CHOA CHU KANG CENTRAL               
+--------------------------------------------------------------------------------
+postal 
+       n  missing distinct 
+   12442        0    12354 
+
+lowest : 050004 050032 050033 050034 050335, highest: 824679 824684 825195 828726 NIL   
+--------------------------------------------------------------------------------
+SUBZONE_NO 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+   12441        1       16    0.976    4.218    2.715        1        2 
+     .25      .50      .75      .90      .95 
+       2        4        5        8        9 
+                                                                            
+Value          1     2     3     4     5     6     7     8     9    10    11
+Frequency   1067  2284  2681  2106  1389   958   382   446   706   134    70
+Proportion 0.086 0.184 0.215 0.169 0.112 0.077 0.031 0.036 0.057 0.011 0.006
+                                        
+Value         12    13    14    15    16
+Frequency     49    71    36    32    30
+Proportion 0.004 0.006 0.003 0.003 0.002
+
+For the frequency table, variable is rounded to the nearest 0
+--------------------------------------------------------------------------------
+SUBZONE_N 
+       n  missing distinct 
+   12441        1      161 
+
+lowest : ADMIRALTY      ALEXANDRA HILL ALJUNIED       ANAK BUKIT     ANCHORVALE    
+highest: YISHUN SOUTH   YISHUN WEST    YUHUA EAST     YUHUA WEST     YUNNAN        
+--------------------------------------------------------------------------------
+SUBZONE_C 
+       n  missing distinct 
+   12441        1      161 
+
+lowest : AMSZ01 AMSZ02 AMSZ03 AMSZ04 AMSZ05, highest: YSSZ03 YSSZ04 YSSZ05 YSSZ08 YSSZ09
+--------------------------------------------------------------------------------
+PLN_AREA_N 
+       n  missing distinct 
+   12441        1       31 
+
+lowest : ANG MO KIO  BEDOK       BISHAN      BUKIT BATOK BUKIT MERAH
+highest: TAMPINES    TANGLIN     TOA PAYOH   WOODLANDS   YISHUN     
+--------------------------------------------------------------------------------
+PLN_AREA_C 
+       n  missing distinct 
+   12441        1       31 
+
+lowest : AM BD BK BM BP, highest: TM TN TP WD YS
+--------------------------------------------------------------------------------
+REGION_N 
+       n  missing distinct 
+   12441        1        5 
+                                                                
+Value         CENTRAL REGION       EAST REGION NORTH-EAST REGION
+Frequency               2541              2109              2887
+Proportion             0.204             0.170             0.232
+                                              
+Value           NORTH REGION       WEST REGION
+Frequency               1943              2961
+Proportion             0.156             0.238
+--------------------------------------------------------------------------------
+REGION_C 
+       n  missing distinct 
+   12441        1        5 
+                                        
+Value         CR    ER   NER    NR    WR
+Frequency   2541  2109  2887  1943  2961
+Proportion 0.204 0.170 0.232 0.156 0.238
+--------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="geospatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="geospatial-1">Geospatial</h3>

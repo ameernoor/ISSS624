@@ -216,6 +216,7 @@ the content of the following panel explained what aspatial and geospatial data a
 #### HDB
 
 The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.
+The original dataset can be downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/150/view). However, the original dataset does not contain geoidentifier. The geoidentifier in the HDB dataset that is used here was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486).
 :::
 
 
@@ -241,9 +242,9 @@ Geospatial data in `shp` format are used in this project, as shown in the follow
 
 #### URA Master Plan 2019
 
--   provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019.
+-   Provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019 (MPSZ-2019).
 
--   downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/)
+-   The original dataset can be downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/). However, the original dataset have a different file type from the one that is used in this project. The changed file type of the data was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486).
 
 -   Columns/Fields in the dataset includes SUBZONE_N, SUBZONE_C, PLN_AREA_N, PLN_AREA_C, REGION_N, REGION_C, and geometry
 
@@ -347,22 +348,20 @@ pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplan
 - [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html): Visualizes a correlation matrix, making it easier to understand the relationships between multiple variables.
 :::
 
-## Import The Data
+## Data Import and Minor Wrangling
 
 This section will import the required aspatial and geospatial dataset. The process also involves minor data change before going to more complex data wrangling in the next section. 
 
 ### Aspatial
 
-the following code will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section. The process involves:
+This subsection will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
 
-1.  import the csv file using `read_csv` function from [readr](https://www.rdocumentation.org/packages/readr/versions/2.1.4) package
-
-2.  using [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package, transform georeference data type into [factors](https://r4ds.hadley.nz/factors) for easing compatibility issue and more efficient processing.
-
-3.  using [describe](https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1/topics/describe) from **hmisc** package, display the summary statistics of the dataset.
-
+#### Passenger Volume
+Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
+As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
+Finally, the code will generate output of summary statistics of the resulting dataset. 
 ```{r}
-# Load each csv file
+# Load csv file
 odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
 
 # change georeference data type into factors
@@ -372,9 +371,41 @@ odb10 <- odb10 %>%
     DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
   )
 
-# check the dataframe
+# filter and group the data
+odb10 <- odb10 %>%
+  filter(DAY_TYPE == "WEEKDAY", 
+         TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+
+# check the summary statistics of resulting dataframe
 describe(odb10)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables to a data frame or modify existing ones. Here, it converts `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` to factors.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to subset rows based on specified conditions. In this code, it filters data for weekdays during morning peak hours (6 to 9 AM).
+-   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package groups the data by specified columns, here by `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE`.
+-   [summarise](https://dplyr.tidyverse.org/reference/summarise.html) from **dplyr** package calculates summary statistics for each group, in this case summing up `TOTAL_TRIPS`.
+-   [describe](https://www.rdocumentation.org/packages/Hmisc/versions/4.4-0/topics/describe) from **Hmisc** package provides a detailed summary of an object's contents, typically offering statistics like mean, standard deviation, frequency, and others.
+:::
+
+::: {.callout-note collapse="true" title="How to Read the Output?"}
+The data provides details about the origin and destination points, along with the corresponding number of total trips, time information, and categorization based on day types. The variable summaries indicate the data distribution, with details such as the unique values, frequency, and descriptive statistics for each column.
+:::
+
+#### HDB
+For the HDB dataset, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
+As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
+Finally, the code will generate output of summary statistics of the resulting dataset. 
+```{r}
+# Load csv file
+hdb <- read_csv("../data/aspatial/hdb.csv")
+
+# check the summary statistics of resulting dataframe
+describe(hdb)
+```
+
 
 ### Geospatial
 
