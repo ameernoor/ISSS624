@@ -240,7 +240,7 @@ Geospatial data in `shp` format are used in this project, as shown in the follow
 -   geometry: The spatial information representing the location of each bus stop as a point in the SVY21 projected coordinate reference system.
 :::
 
-#### URA Master Plan 2019
+#### URA Master Plan 2019 (MPSZ)
 
 -   Provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019 (MPSZ-2019).
 
@@ -354,7 +354,7 @@ This section will import the required aspatial and geospatial dataset. The proce
 
 ### Aspatial
 
-This subsection will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
+This subsection will import the aspatial data used in this project and check it. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
 
 #### Passenger Volume
 Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
@@ -406,16 +406,158 @@ hdb <- read_csv("../data/aspatial/hdb.csv")
 describe(hdb)
 ```
 
-
 ### Geospatial
+the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data and display how the data looks like in Singapore map
 
-#### Setup EPSG Code for all
+::: {.callout-note collapse="true" title="what is CRS Code?"}
+:::
+
+
+::: {.callout-note collapse="true" title="Why 3414?"}
+:::
+
+#### MPSZ
+
+```{r}
+mpsz <- st_read(dsn='../data/geospatial',
+                layer='MPSZ-2019') %>% 
+  st_transform(crs=3414)
+
+glimpse(mpsz)
+```
+
+```{r}
+# set tmap mode (plot for lighter rendering, view for analysis)
+tmap_mode('plot')
+
+# display the data in a map
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.3)
+```
+
+#### Bus Stop Location
+```{r}
+busstop <- st_read(dsn = "../data/geospatial",
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+
+# check the data
+glimpse(busstop)
+```
+
+```{r}
+# set tmap mode (plot for lighter rendering, view for analysis)
+tmap_mode('plot')
+
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.3)+
+  tm_shape(busstop)+
+  tm_dots()
+```
+
+#### Business
+```{r}
+biz <- st_read(dsn = "../data/geospatial",
+                   layer = "Business") %>%
+  st_transform(crs = 3414)
+
+glimpse(biz)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.01)+
+  tm_shape(biz)+
+  tm_dots(col = 'red')
+```
+
+#### Train Station
+```{r}
+station <- st_read(dsn = '../data/geospatial',
+                        layer = 'RapidTransitSystemStation') %>%
+  st_transform(crs = 3414)
+
+# the data contain non closed ring, use st_is_valid to fix
+station <- station %>%
+  filter(st_is_valid(.))
+         
+# check the data
+glimpse(station)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(col = 'white', alpha = 0.5) +
+  tm_shape(station) +
+  tm_fill(col = 'green',
+          id = 'STN_NAM_DE')
+```
+
+
+
+#### Train Exit
+```{r}
+trainexit <- st_read(dsn = '../data/geospatial',
+                     layer = 'Train_Station_Exit_Layer') %>%
+  st_transform(crs = 3414)
+
+glimpse(trainexit)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.5)+
+  tm_shape(trainexit)+
+  tm_dots(col = 'blue',
+          id = 'exit_code')
+```
+#### Entertainment
+```{r}
+entertn <- st_read(dsn = '../data/geospatial',
+                     layer = 'entertn') %>%
+  st_transform(crs = 3414)
+
+glimpse(entertn)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.5)+
+  tm_shape(entertn)+
+  tm_dots(col = 'cyan',
+          id = 'exit_code')
+```
+
+#### Food & Beverage
+
+#### Financial Services
+
+#### Leisure & Recreation
+
+#### Retails
+
+#### Hexagon 
+```{r}
+
+```
+
+:::
+
 
 # Data Wrangling
 
 ## Check for Duplicates
 
+## Derive Counts in Supporting Data
+
 ## Aggregate The Data
+
+##
 
 # References
 
