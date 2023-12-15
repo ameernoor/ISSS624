@@ -232,7 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
   <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation"><span class="header-section-number">2</span> Preparation</a>
   <ul class="collapse">
-  <li><a href="#import-the-library" id="toc-import-the-library" class="nav-link" data-scroll-target="#import-the-library"><span class="header-section-number">2.1</span> Import The Library</a></li>
+  <li><a href="#import-library" id="toc-import-library" class="nav-link" data-scroll-target="#import-library"><span class="header-section-number">2.1</span> Import Library</a></li>
   <li><a href="#import-the-data" id="toc-import-the-data" class="nav-link" data-scroll-target="#import-the-data"><span class="header-section-number">2.2</span> Import The Data</a>
   <ul class="collapse">
   <li><a href="#aspatial-1" id="toc-aspatial-1" class="nav-link" data-scroll-target="#aspatial-1">Aspatial</a></li>
@@ -482,7 +482,12 @@ what is distance matrix?
 </div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<p>For the General Spatial Interaction Model, the aim is to do the following: - Adjust spatial interaction models to identify factors influencing urban commuting during the specified time. - Present modeling results using suitable geovisualization and graphical methods. - Interpret the outcomes to gain insights into the factors impacting commuting flows in the urban landscape during the selected time frame.</p>
+<p>For the General Spatial Interaction Model, the aim is to do the following:</p>
+<ul>
+<li><p>Adjust spatial interaction models to identify factors influencing urban commuting during the specified time.</p></li>
+<li><p>Present modeling results using suitable geovisualization and graphical methods.</p></li>
+<li><p>Interpret the outcomes to gain insights into the factors impacting commuting flows in the urban landscape during the selected time frame.</p></li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled" title="what is spatial interaction model?">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -649,54 +654,6 @@ Tutorial on Fetching the Data
 </div>
 </div>
 </div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../data/aspatial/hdb.csv"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 12,442
-Columns: 37
-$ X                     &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…
-$ blk_no                &lt;chr&gt; "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"…
-$ street                &lt;chr&gt; "BEACH RD", "BEDOK STH AVE 1", "CANTONMENT RD", …
-$ max_floor_lvl         &lt;int&gt; 16, 14, 2, 15, 4, 25, 12, 14, 12, 2, 15, 15, 13,…
-$ year_completed        &lt;int&gt; 1970, 1975, 2010, 1982, 1975, 1982, 1975, 1977, …
-$ residential           &lt;chr&gt; "Y", "Y", "N", "Y", "Y", "Y", "Y", "Y", "Y", "N"…
-$ commercial            &lt;chr&gt; "Y", "N", "Y", "N", "Y", "N", "N", "N", "Y", "Y"…
-$ market_hawker         &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
-$ miscellaneous         &lt;chr&gt; "N", "Y", "N", "N", "N", "N", "Y", "Y", "N", "N"…
-$ multistorey_carpark   &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
-$ precinct_pavilion     &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
-$ bldg_contract_town    &lt;chr&gt; "KWN", "BD", "CT", "BD", "PRC", "BM", "QT", "GL"…
-$ total_dwelling_units  &lt;int&gt; 142, 206, 0, 102, 55, 96, 125, 247, 95, 0, 220, …
-$ X1room_sold           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ X2room_sold           &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ X3room_sold           &lt;int&gt; 138, 204, 0, 0, 54, 0, 118, 0, 62, 0, 216, 214, …
-$ X4room_sold           &lt;int&gt; 1, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ X5room_sold           &lt;int&gt; 2, 2, 0, 92, 1, 96, 7, 0, 33, 0, 4, 5, 0, 4, 0, …
-$ exec_sold             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ multigen_sold         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ studio_apartment_sold &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ X1room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 319, 0, 0, 0…
-$ X2room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 247, 0, 0, 0, 0, 0, 0, 56, …
-$ X3room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 1,…
-$ other_room_rental     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0,…
-$ lat                   &lt;dbl&gt; 1.295097, 1.320852, 1.275488, 1.327969, 1.388610…
-$ lng                   &lt;dbl&gt; 103.8541, 103.9337, 103.8414, 103.9227, 103.9881…
-$ building              &lt;chr&gt; "RAFFLES HOTEL", "NIL", "PINNACLE @ DUXTON", "PI…
-$ addr                  &lt;chr&gt; "1 BEACH ROAD RAFFLES HOTEL SINGAPORE 189673", "…
-$ postal                &lt;chr&gt; "189673", "460001", "080001", "461001", "500001"…
-$ SUBZONE_NO            &lt;int&gt; 2, 6, 3, 3, 1, 9, 10, 5, 3, 5, 1, 5, 2, 2, 1, 7,…
-$ SUBZONE_N             &lt;chr&gt; "CITY HALL", "BEDOK SOUTH", "CHINATOWN", "KEMBAN…
-$ SUBZONE_C             &lt;chr&gt; "DTSZ02", "BDSZ06", "OTSZ03", "BDSZ03", "CHSZ01"…
-$ PLN_AREA_N            &lt;chr&gt; "DOWNTOWN CORE", "BEDOK", "OUTRAM", "BEDOK", "CH…
-$ PLN_AREA_C            &lt;chr&gt; "DT", "BD", "OT", "BD", "CH", "BM", "QT", "GL", …
-$ REGION_N              &lt;chr&gt; "CENTRAL REGION", "EAST REGION", "CENTRAL REGION…
-$ REGION_C              &lt;chr&gt; "CR", "ER", "CR", "ER", "ER", "CR", "CR", "CR", …</code></pre>
-</div>
-</div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <p>Geospatial data in <code>shp</code> format are used in this project, as shown in the following panel:</p>
@@ -794,7 +751,7 @@ why hexagon?
 <li><p>Business: provide information about business locations across Singapore</p></li>
 <li><p>Rapid Transit System Station: encompasses the geographical positions of Mass Rapid Transit (MRT) and Light Rail Transit (LRT) stations in Singapore, represented as polygon shapes.</p></li>
 <li><p>Train Station Exit Layer: includes exit points for all MRT and LRT stations in Singapore, stored as individual points.</p></li>
-<li><p>Entertainment: file highlights the locations of entertainment venues in Singapore, such as cinemas and theaters, presented as points.</p></li>
+<li><p>Entertainment: highlights the locations of entertainment venues in Singapore, such as cinemas and theaters, presented as points.</p></li>
 <li><p>Food &amp; Beverage: captures the locations of Food &amp; Beverage venues in Singapore, such as restaurants and cafes, organized as points.</p></li>
 <li><p>Financial Services: showcases the locations of Financial Services in Singapore, encompassing ATMs, money changers, and banks, stored as individual points.</p></li>
 <li><p>Leisure &amp; Recreation: denotes the locations of Leisure and Recreation venues in Singapore, spanning sports venues, museums, and galleries, organized as points.</p></li>
@@ -812,13 +769,135 @@ why hexagon?
 </section>
 <section id="preparation" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Preparation</h1>
-<section id="import-the-library" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="import-the-library"><span class="header-section-number">2.1</span> Import The Library</h2>
+<p>Before starting with the analysis, we have to load the library and import the data. This section also contains minor checking and setup of the data.</p>
+<section id="import-library" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="import-library"><span class="header-section-number">2.1</span> Import Library</h2>
+<p>The following code chunk utilizing <a href="https://www.rdocumentation.org/packages/pacman/versions/0.5.1">pacman</a> will import the required library (and install it if it does not exist in the environment yet).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, h3jsr, units, httr, corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Packages Explanations">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Packages Explanations
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><a href="https://cran.r-project.org/web/packages/tmap/">tmap</a>: Used for creating thematic maps in R, both static and interactive, with extensive mapping capabilities.</p></li>
+<li><p><a href="https://r-spatial.github.io/sf/">sf</a>: Handles and manipulates geospatial data, enabling operations like reading, writing, transforming, and visualizing spatial data.</p></li>
+<li><p><a href="https://www.tidyverse.org/">tidyverse</a>: A suite of R packages designed for data science tasks, including data manipulation, exploration, and visualization.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sfdep/index.html">sfdep</a>: This package provides methods for measuring and diagnosing spatial dependence in linear regression models, particularly when working with spatial econometrics. It is tailored to work with ‘sf’ objects, which are used to handle spatial data in R.</p></li>
+<li><p><a href="https://yihui.org/knitr/">knitr</a>: Allows for dynamic report generation with R, making it easy to integrate R code into reports and weave together narrative text and code output.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/Hmisc/index.html">Hmisc</a>: Contains many functions useful for data analysis, high-level graphics, utility operations, and functions for dealing with missing values.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/mapview/index.html">mapview</a>: Facilitates the interactive viewing of spatial data in R, built on top of Leaflet.js.</p></li>
+<li><p><a href="https://rstudio.github.io/DT/">DT</a>: Provides an R interface to the JavaScript library DataTables, useful for creating interactive tables in R markdown documents and Shiny apps.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sp/index.html">sp</a>: Provides classes and methods for spatial data, and has been superseded by <code>sf</code> but is still widely used for compatibility reasons.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/stplanr/index.html">stplanr</a>: Offers sustainable transport planning tools for spatial lines, networks, and movement data.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/reshape2/index.html">reshape2</a>: An R package that allows you to flexibly reshape data, such as melting and casting data frames.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/skimr/index.html">skimr</a>: Summarizes data in a frictionless way and produces a report with useful summary statistics.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/performance/index.html">performance</a>: Assesses the quality and performance of statistical models, including checks for assumptions.</p></li>
+<li><p><a href="https://plotly.com/r/">plotly</a>: An R package that creates interactive web graphics using the plotly.js library.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/h3jsr/index.html">h3jsr</a>: Provides an R interface to Uber’s H3 spatial indexing system, allowing for the use of hexagonally-tiled maps.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/units/index.html">units</a>: Allows for the symbolic handling of measurement units in R.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/httr/index.html">httr</a>: Simplifies the process of working with HTTP requests, such as API calls.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/corrplot/index.html">corrplot</a>: Visualizes a correlation matrix, making it easier to understand the relationships between multiple variables.</p></li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 <section id="import-the-data" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="import-the-data"><span class="header-section-number">2.2</span> Import The Data</h2>
+<p>This section will import the required aspatial and geospatial dataset. The process also involves minor data change before going to more complex data wrangling in the next section.</p>
 <section id="aspatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="aspatial-1">Aspatial</h3>
+<p>the following code will import the aspatial data used in this project and check a sample dataframe. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section. The process involves:</p>
+<ol type="1">
+<li><p>import the csv file using <code>read_csv</code> function from <a href="https://www.rdocumentation.org/packages/readr/versions/2.1.4">readr</a> package</p></li>
+<li><p>using <a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package, transform georeference data type into <a href="https://r4ds.hadley.nz/factors">factors</a> for easing compatibility issue and more efficient processing.</p></li>
+<li><p>using <a href="https://www.rdocumentation.org/packages/Hmisc/versions/5.1-1/topics/describe">describe</a> from <strong>hmisc</strong> package, display the summary statistics of the dataset.</p></li>
+</ol>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load each csv file</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>odb10 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/aspatial/origin_destination_bus_202310.csv.gz"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># change georeference data type into factors</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>odb10 <span class="ot">&lt;-</span> odb10 <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">ORIGIN_PT_CODE =</span> <span class="fu">as.factor</span>(ORIGIN_PT_CODE),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">DESTINATION_PT_CODE =</span> <span class="fu">as.factor</span>(DESTINATION_PT_CODE)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># check the dataframe</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(odb10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>odb10 
+
+ 7  Variables      5694297  Observations
+--------------------------------------------------------------------------------
+YEAR_MONTH 
+       n  missing distinct    value 
+ 5694297        0        1  2023-10 
+                  
+Value      2023-10
+Frequency  5694297
+Proportion       1
+--------------------------------------------------------------------------------
+DAY_TYPE 
+       n  missing distinct 
+ 5694297        0        2 
+                                            
+Value               WEEKDAY WEEKENDS/HOLIDAY
+Frequency           3259419          2434878
+Proportion            0.572            0.428
+--------------------------------------------------------------------------------
+TIME_PER_HOUR 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+ 5694297        0       23    0.997    14.04    5.933        6        7 
+     .25      .50      .75      .90      .95 
+      10       14       18       21       22 
+
+lowest :  0  1  2  4  5, highest: 19 20 21 22 23
+--------------------------------------------------------------------------------
+PT_TYPE 
+       n  missing distinct    value 
+ 5694297        0        1      BUS 
+                  
+Value          BUS
+Frequency  5694297
+Proportion       1
+--------------------------------------------------------------------------------
+ORIGIN_PT_CODE 
+       n  missing distinct 
+ 5694297        0     5073 
+
+lowest : 01012 01013 01019 01029 01039, highest: 99139 99161 99171 99181 99189
+--------------------------------------------------------------------------------
+DESTINATION_PT_CODE 
+       n  missing distinct 
+ 5694297        0     5077 
+
+lowest : 01012 01013 01019 01029 01039, highest: 99139 99161 99171 99181 99189
+--------------------------------------------------------------------------------
+TOTAL_TRIPS 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+ 5694297        0     3495    0.982    20.76    33.13        1        1 
+     .25      .50      .75      .90      .95 
+       2        4       12       37       73 
+
+lowest :     1     2     3     4     5, highest: 30985 31349 32355 35931 36668
+--------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
 </section>
 <section id="geospatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="geospatial-1">Geospatial</h3>

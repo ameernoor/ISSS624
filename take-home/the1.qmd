@@ -115,6 +115,8 @@ Explanations for the imported library:
 
 ## Import and Setup the Data
 
+The following section will import the required aspatial and geospatial dataset. 
+
 ### Aspatial
 
 the following code will import all the origin destination bus data and check a sample dataframe. The process involved:
