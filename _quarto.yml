@@ -43,6 +43,9 @@ website:
       - icon: linkedin
         href: https://www.linkedin.com/in/muhamad-ameer-noor/
         aria-label: Linkedin
+      - icon: github
+        href: https://github.com/ameernoor
+        aria-label: Github
       - icon: book
         href: https://scholar.google.com/citations?user=TS_ilSMAAAAJ&hl=en&oi=ao
         aria-label: Google Scholar      

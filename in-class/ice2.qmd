@@ -3,7 +3,7 @@ title: "In-class Exercise 2 - sfdep for Spatial Weights, GLSA & EHSA"
 author: "Muhamad Ameer Noor"
 date: "25 November 2023"
 date-modified: "last-modified"
-editor: visual
+editor: source
 format: 
   html:
     code-fold: true

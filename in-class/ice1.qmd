@@ -14,7 +14,7 @@ execute:
   echo: true # all code chunk will appear
   eval: true # all code chunk will running live (be evaluated)
   warning: false # don't display warning
-editor: visual 
+editor: source
 ---
 
 ![Preparing Data Flow Illustration](../images/flow.png)

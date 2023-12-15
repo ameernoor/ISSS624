@@ -17,6 +17,7 @@ execute:
   warning: false # don't display warning
   message: false
 ---
+
 ![Geographically Weighted Regression Illustration](../images/hoe4.png)
 
 ## Overview
@@ -27,8 +28,8 @@ execute:
 
 Two datasets will be used:
 
-- URA Master Plan subzone boundaries in shapefile format (*MP14_SUBZONE_WEB_PL*)
-- Condo resale data for 2015 in CSV format (*condo_resale_2015.csv*)
+-   URA Master Plan subzone boundaries in shapefile format (*MP14_SUBZONE_WEB_PL*)
+-   Condo resale data for 2015 in CSV format (*condo_resale_2015.csv*)
 
 ## Getting Started
 
@@ -39,23 +40,23 @@ pacman::p_load(olsrr, corrplot, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gts
 ```
 
 ::: {.callout-note collapse="true" title="Packages Explanation"}
-- [olsrr](https://cran.r-project.org/web/packages/olsrr/index.html): A package designed for tools that assist in the model building and exploratory analysis associated with ordinary least squares regression.
+-   [olsrr](https://cran.r-project.org/web/packages/olsrr/index.html): A package designed for tools that assist in the model building and exploratory analysis associated with ordinary least squares regression.
 
-- [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html): A graphical display of a correlation matrix, confidence interval, or general matrix-like visualization to assist with interpretative analysis.
+-   [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html): A graphical display of a correlation matrix, confidence interval, or general matrix-like visualization to assist with interpretative analysis.
 
-- [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html): An 'ggplot2' extension that simplifies creating beautiful graphics for publication, offering an easy-to-use set of tools for descriptive statistics and a rich array of plots.
+-   [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html): An 'ggplot2' extension that simplifies creating beautiful graphics for publication, offering an easy-to-use set of tools for descriptive statistics and a rich array of plots.
 
-- [sf](https://r-spatial.github.io/sf/): This package provides simple and straightforward ways to handle and manipulate spatial vector data in R, integrating tightly with the 'tidyverse' and 'ggplot2'.
+-   [sf](https://r-spatial.github.io/sf/): This package provides simple and straightforward ways to handle and manipulate spatial vector data in R, integrating tightly with the 'tidyverse' and 'ggplot2'.
 
-- [spdep](https://cran.r-project.org/web/packages/spdep/index.html): Spatial dependence: weighting schemes, statistics, and models; a collection of functions to create spatial weights matrix objects from polygon contiguities, from point patterns by distance and tessellations, for summarizing these objects, and for permitting their use in spatial data models.
+-   [spdep](https://cran.r-project.org/web/packages/spdep/index.html): Spatial dependence: weighting schemes, statistics, and models; a collection of functions to create spatial weights matrix objects from polygon contiguities, from point patterns by distance and tessellations, for summarizing these objects, and for permitting their use in spatial data models.
 
-- [GWmodel](https://cran.r-project.org/web/packages/GWmodel/index.html): An R package for fitting Geographically Weighted Models, which are spatial statistical models that allow local rather than global parameters to be estimated.
+-   [GWmodel](https://cran.r-project.org/web/packages/GWmodel/index.html): An R package for fitting Geographically Weighted Models, which are spatial statistical models that allow local rather than global parameters to be estimated.
 
-- [tmap](https://cran.r-project.org/web/packages/tmap/): An R library for creating thematic maps, which are designed to represent spatial variation of a subject using statistical data.
+-   [tmap](https://cran.r-project.org/web/packages/tmap/): An R library for creating thematic maps, which are designed to represent spatial variation of a subject using statistical data.
 
-- [tidyverse](https://www.tidyverse.org/): An opinionated collection of R packages designed for data science tasks that make it easy to import, tidy, transform, and visualize data.
+-   [tidyverse](https://www.tidyverse.org/): An opinionated collection of R packages designed for data science tasks that make it easy to import, tidy, transform, and visualize data.
 
-- [gtsummary](https://cran.r-project.org/web/packages/gtsummary/index.html): This package provides an elegant and flexible way to create publication-ready analytical and summary tables using the 'gt' package, integrating with 'broom' and 'tidyverse' workflows.
+-   [gtsummary](https://cran.r-project.org/web/packages/gtsummary/index.html): This package provides an elegant and flexible way to create publication-ready analytical and summary tables using the 'gt' package, integrating with 'broom' and 'tidyverse' workflows.
 :::
 
 ## A Brief Note on GWmodel
@@ -106,7 +107,6 @@ st_bbox(mpsz_svy21) #view extent
 -   [st_bbox](https://r-spatial.github.io/sf/reference/st_bbox.html) from **sf** package computes the bounding box of a spatial object. The code uses it to view the extent of `mpsz_svy21`.
 -   The transformation to CRS 3414 and subsequent checking of CRS and bounding box provide important spatial information about the dataset, which is essential in geospatial analyses.
 :::
-
 
 ## Aspatial Data Wrangling
 
@@ -161,7 +161,6 @@ The output now represents a point feature data frame.
 In this part, you'll discover how to use visual tools from the **ggplot2** package for Exploratory Data Analysis (EDA).
 
 ::: panel-tabset
-
 ### Selling Price Distribution
 
 To understand the distribution of *SELLING_PRICE*, check out the code below. It generates a histogram:
@@ -248,7 +247,7 @@ Finally, let's visualize the geographic distribution of condominium resale price
 
 ```{r echo=TRUE, eval=FALSE}
 # activate interactive mode
-tmap_mode("view")
+tmap_mode("plot")
 
 # correct the invalid geometry
 fixed_geom <- sf::st_make_valid(mpsz_svy21[mpsz_svy21$REGION_N == "CENTRAL REGION", ])
@@ -387,24 +386,21 @@ tbl_regression(condo.mlr1,
 
 For more customization options, refer to [Tutorial: tbl_regression](https://www.danieldsjoberg.com/gtsummary/articles/tbl_regression.html)
 
-
 #### Statistical Assumption Tests
 
 In this section, we'll introduce a powerful R package designed for OLS regression - [**olsrr**](https://olsrr.rsquaredacademy.com/). It offers valuable methods for enhancing multiple linear regression models:
 
-- Comprehensive regression output
-- Residual diagnostics
-- Measures of influence
-- Heteroskedasticity tests
-- Collinearity diagnostics
-- Model fit assessment
-- Variable contribution assessment
-- Variable selection procedures
+-   Comprehensive regression output
+-   Residual diagnostics
+-   Measures of influence
+-   Heteroskedasticity tests
+-   Collinearity diagnostics
+-   Model fit assessment
+-   Variable contribution assessment
+-   Variable selection procedures
 
 ::: panel-tabset
-
 ##### Multicollinearity
-
 
 The code chunk below uses the [`ols_vif_tol()`](https://olsrr.rsquaredacademy.com/reference/ols_coll_diag.html) function of the **olsrr** package to test for signs of multicollinearity.
 
@@ -478,7 +474,7 @@ Next, use the **tmap** package to display the distribution of residuals on an in
 The code churn below turns on the interactive mode of tmap.
 
 ```{r echo=TRUE, eval=TRUE}
-tmap_mode("view")
+tmap_mode("plot")
 ```
 
 The code chunks below create an interactive point symbol map.
@@ -529,7 +525,6 @@ lm.morantest(condo.mlr1, nb_lw)
 The Global Moran's I test for residual spatial autocorrelation shows that its p-value is less than 0.00000000000000022, which is less than the alpha value of 0.05. Hence, we reject the null hypothesis that the residuals are randomly distributed.
 
 Since the Observed Global Moran I = 0.1424418, which is greater than 0, we can infer that the residuals resemble a cluster distribution.
-
 :::
 
 ## Building Hedonic Pricing Models using GWmodel
@@ -636,13 +631,9 @@ The report shows that the AICc of the adaptive distance gwr is 41982.22, which i
 
 In addition to regression residuals, the output feature class table includes fields for observed and predicted y values, condition number (cond), Local R2, residuals, and explanatory variable coefficients and standard errors:
 
-- Condition Number: this diagnostic evaluates local collinearity. In
+-   Condition Number: this diagnostic evaluates local collinearity. In
 
- the presence of strong local collinearity, results become unstable. Results associated with condition numbers larger than 30 may be unreliable.
-- Local R2: these values range between 0.0 and 1.0 and indicate how well the local regression model fits observed y values. Very low values indicate the local model is performing poorly. Mapping the Local R2 values to see where GWR predicts well and where it predicts poorly may provide clues about important variables that may be missing from the regression model.
-- Predicted: these are the estimated (or fitted) y values computed by GWR.
-- Residuals: to obtain the residual values, the fitted y values are subtracted from the observed y values. Standardized residuals have a mean of zero and a standard deviation of 1. A cold-to-hot rendered map of standardized residuals can be produced by using these values.
-- Coefficient Standard Error: these values measure the reliability of each coefficient estimate. Confidence in those estimates is higher when standard errors are small in relation to the actual coefficient values. Large standard errors may indicate problems with local collinearity.
+the presence of strong local collinearity, results become unstable. Results associated with condition numbers larger than 30 may be unreliable. - Local R2: these values range between 0.0 and 1.0 and indicate how well the local regression model fits observed y values. Very low values indicate the local model is performing poorly. Mapping the Local R2 values to see where GWR predicts well and where it predicts poorly may provide clues about important variables that may be missing from the regression model. - Predicted: these are the estimated (or fitted) y values computed by GWR. - Residuals: to obtain the residual values, the fitted y values are subtracted from the observed y values. Standardized residuals have a mean of zero and a standard deviation of 1. A cold-to-hot rendered map of standardized residuals can be produced by using these values. - Coefficient Standard Error: these values measure the reliability of each coefficient estimate. Confidence in those estimates is higher when standard errors are small in relation to the actual coefficient values. Large standard errors may indicate problems with local collinearity.
 
 They are all stored in a SpatialPointsDataFrame or SpatialPolygonsDataFrame object integrated with fit.points, GWR coefficient estimates, y value, predicted values, coefficient standard errors, and t-values in its "data" slot in an object called **SDF** of the output list.
 
@@ -680,7 +671,7 @@ summary(gwr.adaptive$SDF$yhat)
 The code chunks below are used to create an interactive point symbol map.
 
 ```{r}
-tmap_mode("view")
+tmap_mode("plot")
 tm_shape(mpsz_svy21)+
   tm_polygons(alpha = 0.1) +
 tm_shape(condo_resale.sf.adaptive) +  
@@ -699,7 +690,7 @@ tmap_mode("plot")
 The code chunks below are used to create an interactive point symbol map.
 
 ```{r}
-tmap_mode("view")
+tmap_mode("plot")
 AREA_SQM_SE <- tm_shape(mpsz_svy21)+
   tm_polygons(alpha = 0.1) +
 tm_shape(condo_resale.sf.adaptive) +  
@@ -726,6 +717,7 @@ tmap_mode("plot")
 ```
 
 #### By URA Planning Region
+
 ```{r echo=TRUE, eval=TRUE, fig.height = 6, fig.width = 6, fig.align = "center"}
 # correct the invalid geometry
 fixed_geom <- sf::st_make_valid(mpsz_svy21[mpsz_svy21$REGION_N == "CENTRAL REGION", ])

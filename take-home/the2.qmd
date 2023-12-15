@@ -3,8 +3,7 @@ title: "Take-home 2 - Applied Spatial Interaction Models: A case study of Singap
 author: "Muhamad Ameer Noor"
 date: "15 December 2023"
 date-modified: "last-modified"
-
-editor: visual
+editor: source
 format: 
   html:
     self_contained: false
@@ -43,7 +42,7 @@ To address this gap, this exercise conducts a case study showcasing the potentia
 This task aims to achieve specific goals, focusing on General Geospatial Data Science and Spatial Interaction Modeling.
 
 ::: panel-tabset
-### General Geospatial Data Science:
+### General Geospatial Data Science
 
 For the General Geospatial Data Science, the aim is to do the following: - Create a detailed hexagon map (375m distance from center to edges) representing Traffic Analysis Zones (TAZ). - Various time will have different pattern of traffic flow. For this study, the focus is on the period of ***weekday morning peak from 6am to 9am***. - Develop an Origin-Destination (O-D) matrix illustrating commuter flows during the chosen time interval. - Visualize passenger trip flows using geospatial methods, analyzing the observed spatial patterns. - Gather relevant data, both spatial and aspatial, from publicly available sources. - Generate a distance matrix based on the earlier derived hexagon data.
 
@@ -58,7 +57,13 @@ When planning city maps and deciding where to place public transport stops, we u
 ::: {.callout-note collapse="true" title="what is Traffic Analysis Zones (TAZ)?"}
 A Traffic Analysis Zone (TAZ) is a way of dividing a city into smaller areas for transportation planning. Each TAZ has some information about the people and places in it, such as how many people live there, how many cars they have, and where they work or go to school. These information help planners understand how people travel and what kind of transportation they need.
 
-Some key points about TAZs are: - The size and shape of a TAZ can vary depending on the location and the purpose of the study. For example, a TAZ in a downtown area might be smaller and more regular than a TAZ in a rural area. - The choice of a TAZ system is very important because it affects the accuracy and usefulness of the transportation models. A good TAZ system should reflect the reality of the travel patterns and demands in the city. - TAZs are not fixed and can be changed or updated over time to reflect new data or changes in the city. However, changing TAZs can also cause some problems, such as losing historical data or making comparisons difficult.
+Some key points about TAZs are:
+
+-   The size and shape of a TAZ can vary depending on the location and the purpose of the study. For example, a TAZ in a downtown area might be smaller and more regular than a TAZ in a rural area.
+
+-   The choice of a TAZ system is very important because it affects the accuracy and usefulness of the transportation models. A good TAZ system should reflect the reality of the travel patterns and demands in the city.
+
+-   AZs are not fixed and can be changed or updated over time to reflect new data or changes in the city. However, changing TAZs can also cause some problems, such as losing historical data or making comparisons difficult.
 
 *Summarized from: [Miller, 2021](https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf)*
 :::
@@ -105,9 +110,15 @@ The main difference between spatial and aspatial data is that spatial data can s
 A distance matrix is a way of showing how far away different places are from each other in a given area. For example, a distance matrix can tell us how many kilometers or minutes it takes to travel from one city to another by car, bus, or bike. Applying geospatial analytics on distance matrix can help us understand the patterns and reasons of these movements, and how they affect the environment, the economy, and the society. *dive deeper at (ArcGIS)\[https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/distance-analysis.htm\]*
 :::
 
-### Spatial Interaction Modeling:
+### Spatial Interaction Modeling
 
-For the General Spatial Interaction Model, the aim is to do the following: - Adjust spatial interaction models to identify factors influencing urban commuting during the specified time. - Present modeling results using suitable geovisualization and graphical methods. - Interpret the outcomes to gain insights into the factors impacting commuting flows in the urban landscape during the selected time frame.
+For the General Spatial Interaction Model, the aim is to do the following:
+
+-   Adjust spatial interaction models to identify factors influencing urban commuting during the specified time.
+
+-   Present modeling results using suitable geovisualization and graphical methods.
+
+-   Interpret the outcomes to gain insights into the factors impacting commuting flows in the urban landscape during the selected time frame.
 
 ::: {.callout-note collapse="true" title="what is spatial interaction model?"}
 A spatial interaction model is a way of describing how people or things move from one place to another in a given area. For example, a spatial interaction model can show how many people commute from their home to their work, or how many goods are traded between different cities or countries. A spatial interaction model can help us understand the patterns and reasons of these movements, and how they affect the environment, the economy, and the society.
@@ -153,7 +164,8 @@ the content of the following panel explained what aspatial and geospatial data a
 ::: panel-tabset
 ### Aspatial
 
-Monthly ***Passenger Volume by Origin Destination Bus Stops:***
+::: panel-tabset
+#### Passenger Volume by Origin Destination Bus Stops
 
 -   October 2023 Period
 
@@ -180,41 +192,36 @@ Monthly ***Passenger Volume by Origin Destination Bus Stops:***
 :::
 
 ::: {.callout-note collapse="true" title="Tutorial on Fetching the Data"}
-1.  Click this [link](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html), and click the `Request for API Access`
-![](../images/tutorial1.jpg)
+1.  Click this [link](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html), and click the `Request for API Access` ![](../images/tutorial1.jpg)
 
-2.  Fill in the required form
-![](../images/tutorial2.jpg)
+2.  Fill in the required form ![](../images/tutorial2.jpg)
 
-3.  Check email for confirmation. The `API Account Key` will be required for later step.
-![](../images/tutorial3.jpg)
+3.  Check email for confirmation. The `API Account Key` will be required for later step. ![](../images/tutorial3.jpg)
 
-4.  The user guide from LTA [here](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf) will explains how to make API calls. The user guide also provide the link required for various kind of dataset, keep the link for future use.
-![](../images/tutorial4.jpg)
+4.  The user guide from LTA [here](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf) will explains how to make API calls. The user guide also provide the link required for various kind of dataset, keep the link for future use. ![](../images/tutorial4.jpg)
 
-5.  *The following step assume usage of desktop apps version of `Postman` to make the API call*. Firstly, go to [Postman](https://www.postman.com/) and click on the logo of the OS system that you are using.
-![](../images/tutorial5.jpg)
+5.  *The following step assume usage of desktop apps version of `Postman` to make the API call*. Firstly, go to [Postman](https://www.postman.com/) and click on the logo of the OS system that you are using. ![](../images/tutorial5.jpg)
 
-6.  *The following step is for Windows User, adjust accordingly if you use other OS*. Click on the dowload button, install the apps, and launch it.
-![](../images/tutorial6.png)
+6.  *The following step is for Windows User, adjust accordingly if you use other OS*. Click on the dowload button, install the apps, and launch it. ![](../images/tutorial6.png)
 
-7.  In the apps, copy-paste the url from step 4, and make sure that the option is set to `GET`. In this case where the data is monthly, you need to add a parameter of the month data that you want to download in the format of YYYYMM (202308 shown in the example). The parameter is under `Params` section.
-![](../images/tutorial7.png)
+7.  In the apps, copy-paste the url from step 4, and make sure that the option is set to `GET`. In this case where the data is monthly, you need to add a parameter of the month data that you want to download in the format of YYYYMM (202308 shown in the example). The parameter is under `Params` section. ![](../images/tutorial7.png)
 
-8.  Next, go to `Headers` section and add AccountKey which value can be obtained from step 3. Click the blue `Send` button.
-![](../images/tutorial8.png)
+8.  Next, go to `Headers` section and add AccountKey which value can be obtained from step 3. Click the blue `Send` button. ![](../images/tutorial8.png)
 
-9.  Click the link that will come out on the bottom of the apps, it will be opened in a new tab.
-![](../images/tutorial9.png)
+9.  Click the link that will come out on the bottom of the apps, it will be opened in a new tab. ![](../images/tutorial9.png)
 
-10.  In this last step, click `Send and Download` in the new tab. You can choose where to put the data and the download will start.
-![](../images/tutorial10.jpg)
-
+10. In this last step, click `Send and Download` in the new tab. You can choose where to put the data and the download will start. ![](../images/tutorial10.jpg)
 :::
+
+#### HDB
+
+The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.
+:::
+
 
 ### Geospatial
 
-Two geospatial data in `shp` format are used in this project, as shown in the following panel:
+Geospatial data in `shp` format are used in this project, as shown in the following panel:
 
 ::: panel-tabset
 #### Bus Stop Location
@@ -232,6 +239,26 @@ Two geospatial data in `shp` format are used in this project, as shown in the fo
 -   geometry: The spatial information representing the location of each bus stop as a point in the SVY21 projected coordinate reference system.
 :::
 
+#### URA Master Plan 2019
+
+-   provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019.
+
+-   downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/)
+
+-   Columns/Fields in the dataset includes SUBZONE_N, SUBZONE_C, PLN_AREA_N, PLN_AREA_C, REGION_N, REGION_C, and geometry
+
+-   While the analysis primarily focuses on hexagon cells, incorporating the Master Planning Sub-Zone 2019 file enables the integration of additional point layers like Retail and Leisure onto the Singapore map. This integration facilitates the visualization of their respective locations within various planning sub-zones across Singapore.
+
+::: {.callout-note collapse="true" title="metadata"}
+-   SUBZONE_N: The unique name for each subzone boundary.
+-   SUBZONE_C: The unique identifier for each subzone boundary.
+-   PLN_AREA_N: The unique name for each planning area.
+-   PLN_AREA_C: The unique identifier for each planning area
+-   REGION_N: The unique name for each region.
+-   REGION_C: The unique identifier for each region.
+-   geometry: The spatial information representing the location of each subzone boundary in Coordinate Reference System (CRS) from World Geodetic Systems (WGS) 84.
+:::
+
 #### Hexagon
 
 A [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 375m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.
@@ -247,9 +274,94 @@ A [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics
 
 Summarized from: [Dhuri](https://medium.com/swlh/spatial-data-analysis-with-hexagonal-grids-961de90a220e), and [Sekste & Kazakov](https://www.kontur.io/blog/h3-hexagonal-grid/).
 :::
+
+#### Other Supporting Data
+
+The following dataset will support as propulsive/attractive factors for the modelling. The data was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486). The data includes:
+
+-   Business: provide information about business locations across Singapore
+
+-   Rapid Transit System Station: encompasses the geographical positions of Mass Rapid Transit (MRT) and Light Rail Transit (LRT) stations in Singapore, represented as polygon shapes.
+
+-   Train Station Exit Layer: includes exit points for all MRT and LRT stations in Singapore, stored as individual points.
+
+-   Entertainment: highlights the locations of entertainment venues in Singapore, such as cinemas and theaters, presented as points.
+
+-   Food & Beverage: captures the locations of Food & Beverage venues in Singapore, such as restaurants and cafes, organized as points.
+
+-   Financial Services: showcases the locations of Financial Services in Singapore, encompassing ATMs, money changers, and banks, stored as individual points.
+
+-   Leisure & Recreation: denotes the locations of Leisure and Recreation venues in Singapore, spanning sports venues, museums, and galleries, organized as points.
+
+-   Retails: documents the locations of Retail venues in Singapore, encompassing all shops that may not fit into other categories, presented as points.
 :::
 :::
 :::
+
+# Preparation
+
+Before starting with the analysis, we have to load the library and import the data. This section also contains minor checking and setup of the data.
+
+## Import Library
+The following code chunk utilizing [pacman](https://www.rdocumentation.org/packages/pacman/versions/0.5.1) will import the required library (and install it if it does not exist in the environment yet).
+```{r}
+#| code-fold: false
+pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, h3jsr, units, httr, corrplot)
+```
+
+::: {.callout-note collapse="true" title="Packages Explanations"}
+- [tmap](https://cran.r-project.org/web/packages/tmap/): Used for creating thematic maps in R, both static and interactive, with extensive mapping capabilities.
+
+- [sf](https://r-spatial.github.io/sf/): Handles and manipulates geospatial data, enabling operations like reading, writing, transforming, and visualizing spatial data.
+
+- [tidyverse](https://www.tidyverse.org/): A suite of R packages designed for data science tasks, including data manipulation, exploration, and visualization.
+
+- [sfdep](https://cran.r-project.org/web/packages/sfdep/index.html): This package provides methods for measuring and diagnosing spatial dependence in linear regression models, particularly when working with spatial econometrics. It is tailored to work with 'sf' objects, which are used to handle spatial data in R. 
+
+- [knitr](https://yihui.org/knitr/): Allows for dynamic report generation with R, making it easy to integrate R code into reports and weave together narrative text and code output.
+
+- [Hmisc](https://cran.r-project.org/web/packages/Hmisc/index.html): Contains many functions useful for data analysis, high-level graphics, utility operations, and functions for dealing with missing values.
+
+- [mapview](https://cran.r-project.org/web/packages/mapview/index.html): Facilitates the interactive viewing of spatial data in R, built on top of Leaflet.js.
+
+- [DT](https://rstudio.github.io/DT/): Provides an R interface to the JavaScript library DataTables, useful for creating interactive tables in R markdown documents and Shiny apps.
+
+- [sp](https://cran.r-project.org/web/packages/sp/index.html): Provides classes and methods for spatial data, and has been superseded by `sf` but is still widely used for compatibility reasons.
+
+- [stplanr](https://cran.r-project.org/web/packages/stplanr/index.html): Offers sustainable transport planning tools for spatial lines, networks, and movement data.
+
+- [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html): An R package that allows you to flexibly reshape data, such as melting and casting data frames.
+
+- [skimr](https://cran.r-project.org/web/packages/skimr/index.html): Summarizes data in a frictionless way and produces a report with useful summary statistics.
+
+- [performance](https://cran.r-project.org/web/packages/performance/index.html): Assesses the quality and performance of statistical models, including checks for assumptions.
+
+- [plotly](https://plotly.com/r/): An R package that creates interactive web graphics using the plotly.js library.
+
+- [h3jsr](https://cran.r-project.org/web/packages/h3jsr/index.html): Provides an R interface to Uber's H3 spatial indexing system, allowing for the use of hexagonally-tiled maps.
+
+- [units](https://cran.r-project.org/web/packages/units/index.html): Allows for the symbolic handling of measurement units in R.
+
+- [httr](https://cran.r-project.org/web/packages/httr/index.html): Simplifies the process of working with HTTP requests, such as API calls.
+
+- [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html): Visualizes a correlation matrix, making it easier to understand the relationships between multiple variables.
+:::
+
+## Import The Data
+
+The following section will import the required aspatial and geospatial dataset.
+
+### Aspatial
+
+### Geospatial
+
+#### Setup EPSG Code for all
+
+# Data Wrangling
+
+## Check for Duplicates
+
+## Aggregate The Data
 
 # References
 
@@ -261,7 +373,7 @@ Daniels & Mulley. [Explaining walking distance to public transport: The dominanc
 
 Haynes & Fotheringham (1985). [Gravity and Spatial Interaction Models](https://researchrepository.wvu.edu/rri-web-book/16/)
 
-Kam Tin Seong. [16 Calbirating Spatial Interaction Models with R](https://r4gdsa.netlify.app/chap16)
+Kam Tin Seong. [16 Calibrating Spatial Interaction Models with R](https://r4gdsa.netlify.app/chap16)
 
 Miller (2021). [TRAFFIC ANALYSIS ZONE DEFINITION: ISSUES & GUIDANCE](https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf)
 

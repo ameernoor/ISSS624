@@ -204,6 +204,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ameernoor" rel="" target=""><i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
     <a class="nav-link" href="https://scholar.google.com/citations?user=TS_ilSMAAAAJ&amp;hl=en&amp;oi=ao" rel="" target=""><i class="bi bi-book" role="img" aria-label="Google Scholar">
 </i> 
  <span class="menu-text"></span></a>
@@ -225,7 +230,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1</span> Overview</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">2</span> References</a></li>
+  <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation"><span class="header-section-number">2</span> Preparation</a>
+  <ul class="collapse">
+  <li><a href="#import-the-library" id="toc-import-the-library" class="nav-link" data-scroll-target="#import-the-library"><span class="header-section-number">2.1</span> Import The Library</a></li>
+  <li><a href="#import-the-data" id="toc-import-the-data" class="nav-link" data-scroll-target="#import-the-data"><span class="header-section-number">2.2</span> Import The Data</a>
+  <ul class="collapse">
+  <li><a href="#aspatial-1" id="toc-aspatial-1" class="nav-link" data-scroll-target="#aspatial-1">Aspatial</a></li>
+  <li><a href="#geospatial-1" id="toc-geospatial-1" class="nav-link" data-scroll-target="#geospatial-1">Geospatial</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">3</span> Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#check-for-duplicates" id="toc-check-for-duplicates" class="nav-link" data-scroll-target="#check-for-duplicates"><span class="header-section-number">3.1</span> Check for Duplicates</a></li>
+  <li><a href="#aggregate-the-data" id="toc-aggregate-the-data" class="nav-link" data-scroll-target="#aggregate-the-data"><span class="header-section-number">3.2</span> Aggregate The Data</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">4</span> References</a></li>
   </ul>
 </nav>
     </div>
@@ -258,7 +277,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 14, 2023</p>
+      <p class="date-modified">December 15, 2023</p>
     </div>
   </div>
     
@@ -279,17 +298,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="overview" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">The Scene</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">The Objective</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">The Method</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false">The Data</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">The Scene</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">The Objective</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">The Method</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-4" role="tab" aria-controls="tabset-5-4" aria-selected="false">The Data</a></li></ul>
 <div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <p>Understanding why city residents wake up early to travel from home to work and assessing the consequences of discontinuing a public bus service along a specific route are key challenges faced by transport operators and urban managers in the realm of urban mobility. Traditionally, answering such questions relied on expensive, time-consuming commuter surveys. However, these surveys not only demanded considerable resources but also yielded data that took a substantial amount of time to clean and analyze, often rendering it outdated by the time reports were ready.</p>
 <p>In today’s digital era, urban infrastructures, including public buses and mass rapid transits, are becoming increasingly digital. The proliferation of technologies like GPS on vehicles and SMART cards for public transport users generates vast geospatial data sets, offering insights into movement patterns over time and space. Despite this wealth of data, planners struggle to effectively leverage and transform it into valuable information, impacting the return on investment in data collection and management.</p>
 <p>To address this gap, this exercise conducts a case study showcasing the potential of Geographic Information System and Spatial Data Analysis (GDSA). By integrating data from various sources, this approach aims to build spatial interaction models that unveil the factors influencing urban mobility patterns in the context of public bus transit.</p>
 </div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <p>This task aims to achieve specific goals, focusing on General Geospatial Data Science and Spatial Interaction Modeling.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">General Geospatial Data Science:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Spatial Interaction Modeling:</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">General Geospatial Data Science</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Spatial Interaction Modeling</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>For the General Geospatial Data Science, the aim is to do the following: - Create a detailed hexagon map (375m distance from center to edges) representing Traffic Analysis Zones (TAZ). - Various time will have different pattern of traffic flow. For this study, the focus is on the period of <strong><em>weekday morning peak from 6am to 9am</em></strong>. - Develop an Origin-Destination (O-D) matrix illustrating commuter flows during the chosen time interval. - Visualize passenger trip flows using geospatial methods, analyzing the observed spatial patterns. - Gather relevant data, both spatial and aspatial, from publicly available sources. - Generate a distance matrix based on the earlier derived hexagon data.</p>
@@ -324,7 +343,12 @@ what is Traffic Analysis Zones (TAZ)?
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>A Traffic Analysis Zone (TAZ) is a way of dividing a city into smaller areas for transportation planning. Each TAZ has some information about the people and places in it, such as how many people live there, how many cars they have, and where they work or go to school. These information help planners understand how people travel and what kind of transportation they need.</p>
-<p>Some key points about TAZs are: - The size and shape of a TAZ can vary depending on the location and the purpose of the study. For example, a TAZ in a downtown area might be smaller and more regular than a TAZ in a rural area. - The choice of a TAZ system is very important because it affects the accuracy and usefulness of the transportation models. A good TAZ system should reflect the reality of the travel patterns and demands in the city. - TAZs are not fixed and can be changed or updated over time to reflect new data or changes in the city. However, changing TAZs can also cause some problems, such as losing historical data or making comparisons difficult.</p>
+<p>Some key points about TAZs are:</p>
+<ul>
+<li><p>The size and shape of a TAZ can vary depending on the location and the purpose of the study. For example, a TAZ in a downtown area might be smaller and more regular than a TAZ in a rural area.</p></li>
+<li><p>The choice of a TAZ system is very important because it affects the accuracy and usefulness of the transportation models. A good TAZ system should reflect the reality of the travel patterns and demands in the city.</p></li>
+<li><p>AZs are not fixed and can be changed or updated over time to reflect new data or changes in the city. However, changing TAZs can also cause some problems, such as losing historical data or making comparisons difficult.</p></li>
+</ul>
 <p><em>Summarized from: <a href="https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf">Miller, 2021</a></em></p>
 </div>
 </div>
@@ -484,7 +508,7 @@ what is spatial interaction model?
 </div>
 </div>
 </div>
-<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
 <p>The spatial interaction models being used in this task are the variants of <strong>Gravity Model</strong> including <strong>Unconstrained</strong>, <strong>Origin Constrained</strong>, <strong>Destination Constrained</strong>, and <strong>Doubly Constraint</strong>. The models’ performance will be compared to see which one is more appropriate to use in the modelling.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="What is Unconstrained Gravity Model?">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
@@ -552,13 +576,16 @@ What is Doubly Constrained Gravity Model?
 </div>
 <p>To dive deeper on these models, explanation can be found on research by <a href="https://researchrepository.wvu.edu/rri-web-book/16/">Haynes &amp; Fotheringham, 1985</a> and class materials by <a href="https://r4gdsa.netlify.app/chap16">Prof Kam Tin Seong</a></p>
 </div>
-<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
 <p>the content of the following panel explained what aspatial and geospatial data are used in this project.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Aspatial</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Geospatial</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Aspatial</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Geospatial</a></li></ul>
 <div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<p>Monthly <strong><em>Passenger Volume by Origin Destination Bus Stops:</em></strong></p>
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Passenger Volume by Origin Destination Bus Stops</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">HDB</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <ul>
 <li><p>October 2023 Period</p></li>
 <li><p>downloaded from <a href="https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html">LTA DataMall - Dynamic Dataset</a> via <a href="https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf">API</a></p></li>
@@ -617,12 +644,66 @@ Tutorial on Fetching the Data
 </div>
 </div>
 </div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<p>Two geospatial data in <code>shp</code> format are used in this project, as shown in the following panel:</p>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../data/aspatial/hdb.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 12,442
+Columns: 37
+$ X                     &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…
+$ blk_no                &lt;chr&gt; "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"…
+$ street                &lt;chr&gt; "BEACH RD", "BEDOK STH AVE 1", "CANTONMENT RD", …
+$ max_floor_lvl         &lt;int&gt; 16, 14, 2, 15, 4, 25, 12, 14, 12, 2, 15, 15, 13,…
+$ year_completed        &lt;int&gt; 1970, 1975, 2010, 1982, 1975, 1982, 1975, 1977, …
+$ residential           &lt;chr&gt; "Y", "Y", "N", "Y", "Y", "Y", "Y", "Y", "Y", "N"…
+$ commercial            &lt;chr&gt; "Y", "N", "Y", "N", "Y", "N", "N", "N", "Y", "Y"…
+$ market_hawker         &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
+$ miscellaneous         &lt;chr&gt; "N", "Y", "N", "N", "N", "N", "Y", "Y", "N", "N"…
+$ multistorey_carpark   &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
+$ precinct_pavilion     &lt;chr&gt; "N", "N", "N", "N", "N", "N", "N", "N", "N", "N"…
+$ bldg_contract_town    &lt;chr&gt; "KWN", "BD", "CT", "BD", "PRC", "BM", "QT", "GL"…
+$ total_dwelling_units  &lt;int&gt; 142, 206, 0, 102, 55, 96, 125, 247, 95, 0, 220, …
+$ X1room_sold           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ X2room_sold           &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ X3room_sold           &lt;int&gt; 138, 204, 0, 0, 54, 0, 118, 0, 62, 0, 216, 214, …
+$ X4room_sold           &lt;int&gt; 1, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ X5room_sold           &lt;int&gt; 2, 2, 0, 92, 1, 96, 7, 0, 33, 0, 4, 5, 0, 4, 0, …
+$ exec_sold             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ multigen_sold         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ studio_apartment_sold &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ X1room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 319, 0, 0, 0…
+$ X2room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 247, 0, 0, 0, 0, 0, 0, 56, …
+$ X3room_rental         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 1,…
+$ other_room_rental     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0,…
+$ lat                   &lt;dbl&gt; 1.295097, 1.320852, 1.275488, 1.327969, 1.388610…
+$ lng                   &lt;dbl&gt; 103.8541, 103.9337, 103.8414, 103.9227, 103.9881…
+$ building              &lt;chr&gt; "RAFFLES HOTEL", "NIL", "PINNACLE @ DUXTON", "PI…
+$ addr                  &lt;chr&gt; "1 BEACH ROAD RAFFLES HOTEL SINGAPORE 189673", "…
+$ postal                &lt;chr&gt; "189673", "460001", "080001", "461001", "500001"…
+$ SUBZONE_NO            &lt;int&gt; 2, 6, 3, 3, 1, 9, 10, 5, 3, 5, 1, 5, 2, 2, 1, 7,…
+$ SUBZONE_N             &lt;chr&gt; "CITY HALL", "BEDOK SOUTH", "CHINATOWN", "KEMBAN…
+$ SUBZONE_C             &lt;chr&gt; "DTSZ02", "BDSZ06", "OTSZ03", "BDSZ03", "CHSZ01"…
+$ PLN_AREA_N            &lt;chr&gt; "DOWNTOWN CORE", "BEDOK", "OUTRAM", "BEDOK", "CH…
+$ PLN_AREA_C            &lt;chr&gt; "DT", "BD", "OT", "BD", "CH", "BM", "QT", "GL", …
+$ REGION_N              &lt;chr&gt; "CENTRAL REGION", "EAST REGION", "CENTRAL REGION…
+$ REGION_C              &lt;chr&gt; "CR", "ER", "CR", "ER", "ER", "CR", "CR", "CR", …</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<p>Geospatial data in <code>shp</code> format are used in this project, as shown in the following panel:</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Bus Stop Location</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Hexagon</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Bus Stop Location</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">URA Master Plan 2019</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Hexagon</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false">Other Supporting Data</a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <ul>
 <li><p>provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.</p></li>
 <li><p>downloaded from <a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall - Static Dataset</a></p></li>
@@ -650,10 +731,42 @@ metadata
 </div>
 </div>
 </div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<ul>
+<li><p>provides information about the sub-zone boundary of Urban Redevelopment Authority (URA) Master Plan 2019.</p></li>
+<li><p>downloaded from <a href="https://beta.data.gov.sg/">Singapore’s National Open Data Collection</a></p></li>
+<li><p>Columns/Fields in the dataset includes SUBZONE_N, SUBZONE_C, PLN_AREA_N, PLN_AREA_C, REGION_N, REGION_C, and geometry</p></li>
+<li><p>While the analysis primarily focuses on hexagon cells, incorporating the Master Planning Sub-Zone 2019 file enables the integration of additional point layers like Retail and Leisure onto the Singapore map. This integration facilitates the visualization of their respective locations within various planning sub-zones across Singapore.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="metadata">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+metadata
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>SUBZONE_N: The unique name for each subzone boundary.</li>
+<li>SUBZONE_C: The unique identifier for each subzone boundary.</li>
+<li>PLN_AREA_N: The unique name for each planning area.</li>
+<li>PLN_AREA_C: The unique identifier for each planning area</li>
+<li>REGION_N: The unique name for each region.</li>
+<li>REGION_C: The unique identifier for each region.</li>
+<li>geometry: The spatial information representing the location of each subzone boundary in Coordinate Reference System (CRS) from World Geodetic Systems (WGS) 84.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p>A <a href="https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm">hexagon</a> layer of 375m (perpendicular distance between the centre of the hexagon and its edges.) Each spatial unit is regular in shape and finer than the Master Plan 2019 Planning Sub-zone GIS data set of URA.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="why hexagon?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -662,7 +775,7 @@ why hexagon?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><p><strong><em>Uniform Distances Everywhere</em></strong>: Think of hexagons as honeycomb cells. Each cell (hexagon) touches its neighbors at the same distance from its center. It’s like standing in the middle of a room and being the same distance from every wall, making it easier to measure and compare things.</p></li>
@@ -675,6 +788,19 @@ why hexagon?
 </div>
 </div>
 </div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<p>The following dataset will support as propulsive/attractive factors for the modelling. The data was provided by <a href="https://faculty.smu.edu.sg/profile/kam-tin-seong-486">Prof Kam Tin Seong</a>. The data includes:</p>
+<ul>
+<li><p>Business: provide information about business locations across Singapore</p></li>
+<li><p>Rapid Transit System Station: encompasses the geographical positions of Mass Rapid Transit (MRT) and Light Rail Transit (LRT) stations in Singapore, represented as polygon shapes.</p></li>
+<li><p>Train Station Exit Layer: includes exit points for all MRT and LRT stations in Singapore, stored as individual points.</p></li>
+<li><p>Entertainment: file highlights the locations of entertainment venues in Singapore, such as cinemas and theaters, presented as points.</p></li>
+<li><p>Food &amp; Beverage: captures the locations of Food &amp; Beverage venues in Singapore, such as restaurants and cafes, organized as points.</p></li>
+<li><p>Financial Services: showcases the locations of Financial Services in Singapore, encompassing ATMs, money changers, and banks, stored as individual points.</p></li>
+<li><p>Leisure &amp; Recreation: denotes the locations of Leisure and Recreation venues in Singapore, spanning sports venues, museums, and galleries, organized as points.</p></li>
+<li><p>Retails: documents the locations of Retail venues in Singapore, encompassing all shops that may not fit into other categories, presented as points.</p></li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -684,13 +810,40 @@ why hexagon?
 </div>
 </div>
 </section>
-<section id="references" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> References</h1>
+<section id="preparation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Preparation</h1>
+<section id="import-the-library" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="import-the-library"><span class="header-section-number">2.1</span> Import The Library</h2>
+</section>
+<section id="import-the-data" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="import-the-data"><span class="header-section-number">2.2</span> Import The Data</h2>
+<section id="aspatial-1" class="level3">
+<h3 class="anchored" data-anchor-id="aspatial-1">Aspatial</h3>
+</section>
+<section id="geospatial-1" class="level3">
+<h3 class="anchored" data-anchor-id="geospatial-1">Geospatial</h3>
+<section id="setup-epsg-code-for-all" class="level4">
+<h4 class="anchored" data-anchor-id="setup-epsg-code-for-all">Setup EPSG Code for all</h4>
+</section>
+</section>
+</section>
+</section>
+<section id="data-wrangling" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data Wrangling</h1>
+<section id="check-for-duplicates" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="check-for-duplicates"><span class="header-section-number">3.1</span> Check for Duplicates</h2>
+</section>
+<section id="aggregate-the-data" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="aggregate-the-data"><span class="header-section-number">3.2</span> Aggregate The Data</h2>
+</section>
+</section>
+<section id="references" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> References</h1>
 <p>Cengel. <a href="https://cengel.github.io/R-spatial/intro.html">Introduction to spatial data in R</a></p>
 <p>Coşkun, et al.&nbsp;(2020). <a href="https://isprs-archives.copernicus.org/articles/XLIII-B4-2020/449/2020/isprs-archives-XLIII-B4-2020-449-2020.pdf">Performance Matters on Identification of Origin-Destination Matrix on Geospatial Big Data</a></p>
 <p>Daniels &amp; Mulley. <a href="https://www.jstor.org/stable/26202654">Explaining walking distance to public transport: The dominance of public transport supply</a></p>
 <p>Haynes &amp; Fotheringham (1985). <a href="https://researchrepository.wvu.edu/rri-web-book/16/">Gravity and Spatial Interaction Models</a></p>
-<p>Kam Tin Seong. <a href="https://r4gdsa.netlify.app/chap16">16 Calbirating Spatial Interaction Models with R</a></p>
+<p>Kam Tin Seong. <a href="https://r4gdsa.netlify.app/chap16">16 Calibrating Spatial Interaction Models with R</a></p>
 <p>Miller (2021). <a href="https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf">TRAFFIC ANALYSIS ZONE DEFINITION: ISSUES &amp; GUIDANCE</a></p>
 <p>R. <a href="https://cran.r-project.org/web/packages/simodels/vignettes/simodels.html.">Spatial interaction models with R</a></p>
 <p>Sekste and Kazakov. <a href="https://www.kontur.io/blog/h3-hexagonal-grid/">“H3 hexagonal grid: Why we use it for data analysis and visualization”</a>.</p>

@@ -3,7 +3,7 @@ title: "In-class Exercise 4 - Geospatial Data Science and Spatial Interaction Mo
 author: "Muhamad Ameer Noor"
 date: "9 December 2023"
 date-modified: "last-modified"
-editor: visual
+editor: source
 format: 
   html:
     code-fold: true
@@ -216,7 +216,7 @@ tm_shape(schools_sf) +
 ### Create Interactive Map
 
 ```{r}
-tmap_mode("view")
+tmap_mode("plot")
 tm_shape(schools_sf) +
   tm_dots() +
   tm_view(set.zoom.limits = c(11,14))
