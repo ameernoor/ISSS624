@@ -119,7 +119,7 @@ The following section will import the required aspatial and geospatial dataset.
 
 ### Aspatial
 
-the following code will import all the origin destination bus data and check a sample dataframe. The process involved:
+the following code will import all the origin destination bus data and show the summary statistics of the dataset. The process involved:
 
 1.  import the csv file using `read_csv` function from [readr](https://www.rdocumentation.org/packages/readr/versions/2.1.4) package
 
