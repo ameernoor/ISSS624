@@ -21,11 +21,6 @@ execute:
 
 ![Illustration](../images/the2.png)
 
-```{r}
-#| code-fold: false
-pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT)
-```
-
 # Overview
 
 ::: panel-tabset
@@ -311,7 +306,7 @@ Before starting with the analysis, we have to load the library and import the da
 The following code chunk utilizing [pacman](https://www.rdocumentation.org/packages/pacman/versions/0.5.1) will import the required library (and install it if it does not exist in the environment yet).
 ```{r}
 #| code-fold: false
-pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, h3jsr, units, httr, corrplot)
+pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, h3jsr, units, httr, corrplot, gifski)
 ```
 
 ::: {.callout-note collapse="true" title="Packages Explanations"}
@@ -1087,7 +1082,7 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flow for 99th Percentile Trips', main.title.position = 'center',
             main.title.size = 1.2)
 ```
-north-downtown and north-east becomes more visible
+north-downtown, west-downton, north-east, and short trip becomes more visible
 
 ## 3rd Quantile Distance (8923)
 ```{r}
@@ -1112,7 +1107,7 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flowline for 3rd Quantile Distance', main.title.position = 'center',
             main.title.size = 1.2)
 ```
-busier in central and east
+too messy
 
 ## 99th Quantile Distance (18587)
 ```{r}
@@ -1127,7 +1122,7 @@ tm_shape(hexagons_with_bus_stops) +
   tm_polygons(alpha = 0.4,
               col = 'gray') +
 flowline %>%
-  filter(trips >= 6082) %>%
+  filter(distance >= 18587) %>%
   tm_shape() +
   tm_lines(col = 'coral',
            lwd = "trips",
@@ -1135,11 +1130,46 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile Distance', main.title.position = 'center',
             main.title.size = 1.2)
 ```
-north-downtown and north-east becomes more visible
+more dense from all directions to downtown, and also slightly dense between north and east
 
-## Use GIF
+## Spread Across Decile of Trips
+```{r}
+quantile(flowline$trips, probs = seq(0, 1, 0.1), na.rm = TRUE)
+```
 
-# Assembling Push & Pull Factor
+```{r}
+flowline <- flowline %>%
+  mutate(
+    decile = cut(trips, 
+                         breaks = c(0, 2, 5, 11, 21, 38, 67, 125, 254, 661, 5000, Inf),
+                         labels = c("<2", "2-5", "5-11", "11-21",
+                                    "21-38", "38-67", "67-125", "125-254",
+                                    "254-661", "661-5000", ">5000"),
+                         ordered_result=TRUE
+))
+
+# check the output
+glimpse(flowline)
+```
+```{r}
+#| eval: false
+trips_spread <- tm_shape(mpsz) +
+  tm_fill(col = "white") +
+  tm_borders(col = "black", lwd = .5) +
+tm_shape(flowline) +
+  tm_lines(lwd = "trips", scale = 1.5, col = "coral", alpha = .7) +
+  tm_layout(title = "Weekday Morning Peak Traffic Flow") +
+  tm_facets(along = "decile", free.coords = FALSE)
+
+# Save animation as gif
+tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 500,
+               outer.margins = NA, restart.delay=1000)
+```
+![](../images/trips_spread.gif)
+for the first 8th decile, the trips slightly change but still more dense on central.
+on the extra category of >5000, north-downtown, west-downtown, north-east, and short trip becomes more visible
+
+# Adding Push & Pull Factors
 
 ## Push
 show flow vs variables
