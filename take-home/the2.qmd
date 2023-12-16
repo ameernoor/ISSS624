@@ -407,7 +407,7 @@ describe(hdb)
 ```
 
 ### Geospatial
-the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data and display how the data looks like in Singapore map
+the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data in general, check for duplicates, and display how the data looks like in Singapore map
 
 ::: {.callout-note collapse="true" title="what is CRS Code?"}
 :::
@@ -424,6 +424,10 @@ mpsz <- st_read(dsn='../data/geospatial',
   st_transform(crs=3414)
 
 glimpse(mpsz)
+```
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(mpsz$SUBZONE_N) == nrow(mpsz), "no duplicates detected", "possible duplicates detected")
 ```
 
 ```{r}
@@ -444,6 +448,33 @@ busstop <- st_read(dsn = "../data/geospatial",
 # check the data
 glimpse(busstop)
 ```
+*BUS_STOP_N is used as the basis for duplicate checking because it will be the reference in joining the data*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(busstop$BUS_STOP_N) == nrow(busstop), "no duplicates detected", "possible duplicates detected")
+```
+show the duplicates
+```{r}
+# Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
+duplicates <- busstop[duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP_N, fromLast = TRUE), ] %>%
+  arrange(BUS_STOP_N)
+
+# show the number of duplicates
+nrow(duplicates)
+
+# Display the sorted rows with duplicate BUS_STOP_N
+kable(head(duplicates, n = 32))
+```
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 5161 to 5145.
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+busstop <- busstop[!duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP_N, fromLast = TRUE), ]
+
+# Display the resulting dataset
+glimpse(busstop)
+```
 
 ```{r}
 # set tmap mode (plot for lighter rendering, view for analysis)
@@ -462,6 +493,33 @@ biz <- st_read(dsn = "../data/geospatial",
                    layer = "Business") %>%
   st_transform(crs = 3414)
 
+glimpse(biz)
+```
+```{r}
+n_distinct(biz$geometry)
+```
+*considering some business might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(biz) == nrow(biz), "no duplicates detected", "possible duplicates detected")
+```
+show the duplicates
+```{r}
+# Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
+duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
+  arrange(POI_NAME)
+
+# Display the sorted rows with duplicate BUS_STOP_N
+head(duplicates)
+```
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 6550 to 6549
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+biz <- busstop[!duplicated(biz) | duplicated(biz, fromLast = TRUE), ]
+
+# Display the resulting dataset
 glimpse(biz)
 ```
 
@@ -486,6 +544,12 @@ station <- station %>%
 # check the data
 glimpse(station)
 ```
+*the duplicate consider geometry as the unique value*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(station$geometry) == nrow(station), "no duplicates detected", "possible duplicates detected")
+```
+all MRT Station location are unique
 
 ```{r}
 # visualize the output
@@ -496,8 +560,6 @@ tm_shape(mpsz)+
           id = 'STN_NAM_DE')
 ```
 
-
-
 #### Train Exit
 ```{r}
 trainexit <- st_read(dsn = '../data/geospatial',
@@ -506,15 +568,23 @@ trainexit <- st_read(dsn = '../data/geospatial',
 
 glimpse(trainexit)
 ```
+*the duplicate consider geometry as the unique value*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(trainexit$geometry) == nrow(trainexit), "no duplicates detected", "possible duplicates detected")
+```
+all MRT Station location are unique
 
 ```{r}
-# visualize the output
+
+# visualize the data
 tm_shape(mpsz)+
   tm_polygons(alpha = 0.5)+
   tm_shape(trainexit)+
   tm_dots(col = 'blue',
-          id = 'exit_code')
+          id = 'exit_id')
 ```
+
 #### Entertainment
 ```{r}
 entertn <- st_read(dsn = '../data/geospatial',
@@ -523,19 +593,64 @@ entertn <- st_read(dsn = '../data/geospatial',
 
 glimpse(entertn)
 ```
+```{r}
+# checking unique value
+n_distinct(entertn$POI_NAME)
+n_distinct(entertn$POI_ST_NUM)
+n_distinct(entertn$POI_ST_NAM)
+n_distinct(entertn$POI_ID)
+```
+```{r}
+duplicated_rows <- entertn[duplicated(entertn$POI_ID) | duplicated(entertn$POI_ID, fromLast = TRUE), ]
+duplicated_rows
+```
 
 ```{r}
+# create a unique identifier
+entertn <- mutate(entertn, POI_ID = paste(POI_NAME, POI_ST_NUM, POI_ST_NAM, sep = ' '))
+
 # visualize the output
 tm_shape(mpsz)+
   tm_polygons(alpha = 0.5)+
   tm_shape(entertn)+
   tm_dots(col = 'cyan',
-          id = 'exit_code')
+          id = 'POI_NAME')
 ```
 
 #### Food & Beverage
+```{r}
+fnb <- st_read(dsn = '../data/geospatial',
+                     layer = 'F&B') %>%
+  st_transform(crs = 3414)
 
+glimpse(fnb)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.5)+
+  tm_shape(fnb)+
+  tm_dots(col = 'cyan',
+          id = 'POI_NAME')
+```
 #### Financial Services
+```{r}
+finance <- st_read(dsn = '../data/geospatial',
+                   layer = 'FinServ') %>%
+  st_transform(crs = 3414)
+
+glimpse(finance)
+```
+
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.5)+
+  tm_shape(fnb)+
+  tm_dots(col = 'cyan',
+          id = 'POI_NAME')
+```
 
 #### Leisure & Recreation
 

@@ -175,6 +175,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../in-class/ice4.html" rel="" target="">
  <span class="dropdown-text">4 - GDS and SIM with R</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../in-class/ice5.html" rel="" target="">
+ <span class="dropdown-text">5 - Spatial Econometric Interaction Models (SIEM)</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -1235,7 +1239,7 @@ Proportion 0.204 0.170 0.232 0.156 0.238
 </section>
 <section id="geospatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="geospatial-1">Geospatial</h3>
-<p>the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data and display how the data looks like in Singapore map</p>
+<p>the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data in general, check for duplicates, and display how the data looks like in Singapore map</p>
 <div class="callout callout-style-default callout-note callout-titled" title="what is CRS Code?">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1304,15 +1308,25 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((33222.98 29..., MULTIPOLYG
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set tmap mode (plot for lighter rendering, view for analysis)</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># display the data in a map</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for duplicates based on unique id</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="fu">n_distinct</span>(mpsz<span class="sc">$</span>SUBZONE_N) <span class="sc">==</span> <span class="fu">nrow</span>(mpsz), <span class="st">"no duplicates detected"</span>, <span class="st">"possible duplicates detected"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "no duplicates detected"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set tmap mode (plot for lighter rendering, view for analysis)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># display the data in a map</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1321,25 +1335,275 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((33222.98 29..., MULTIPOLYG
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>busstop <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"../data/geospatial"</span>,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">"BusStop"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>busstop <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"../data/geospatial"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">"BusStop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `BusStop' from data source `C:\ameernoor\ISSS624\data\geospatial' using driver `ESRI Shapefile'
-Simple feature collection with 5161 features and 3 fields
+Simple feature collection with 5159 features and 3 fields
 Geometry type: POINT
 Dimension:     XY
-Bounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48284.56 ymax: 52983.82
+Bounding box:  xmin: 3970.122 ymin: 26482.1 xmax: 48280.78 ymax: 52983.82
 Projected CRS: SVY21</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the data</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(busstop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the data</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(busstop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 5,161
+<pre><code>Rows: 5,159
+Columns: 4
+$ BUS_STOP_N &lt;chr&gt; "22069", "32071", "44331", "96081", "11561", "66191", "2338…
+$ BUS_ROOF_N &lt;chr&gt; "B06", "B23", "B01", "B05", "B05", "B03", "B02A", "B02", "B…
+$ LOC_DESC   &lt;chr&gt; "OPP CEVA LOGISTICS", "AFT TRACK 13", "BLK 239", "GRACE IND…
+$ geometry   &lt;POINT [m]&gt; POINT (13576.31 32883.65), POINT (13228.59 44206.38),…</code></pre>
+</div>
+</div>
+<p><em>BUS_STOP_N is used as the basis for duplicate checking because it will be the reference in joining the data</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for duplicates based on unique id</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="fu">n_distinct</span>(busstop<span class="sc">$</span>BUS_STOP_N) <span class="sc">==</span> <span class="fu">nrow</span>(busstop), <span class="st">"no duplicates detected"</span>, <span class="st">"possible duplicates detected"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "possible duplicates detected"</code></pre>
+</div>
+</div>
+<p>show the duplicates</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> busstop[<span class="fu">duplicated</span>(busstop<span class="sc">$</span>BUS_STOP_N) <span class="sc">|</span> <span class="fu">duplicated</span>(busstop<span class="sc">$</span>BUS_STOP_N, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ] <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(BUS_STOP_N)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># show the number of duplicates</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(duplicates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 30</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the sorted rows with duplicate BUS_STOP_N</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(duplicates, <span class="at">n =</span> <span class="dv">32</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 30%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">BUS_STOP_N</th>
+<th style="text-align: left;">BUS_ROOF_N</th>
+<th style="text-align: left;">LOC_DESC</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">22501</td>
+<td style="text-align: left;">B02</td>
+<td style="text-align: left;">Blk 662A</td>
+<td style="text-align: left;">POINT (13489.09 35536.4)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">22501</td>
+<td style="text-align: left;">B02</td>
+<td style="text-align: left;">BLK 662A</td>
+<td style="text-align: left;">POINT (13488.02 35537.88)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">43709</td>
+<td style="text-align: left;">B06</td>
+<td style="text-align: left;">BLK 644</td>
+<td style="text-align: left;">POINT (18963.42 36762.8)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">43709</td>
+<td style="text-align: left;">B06</td>
+<td style="text-align: left;">BLK 644</td>
+<td style="text-align: left;">POINT (18952.02 36751.83)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">47201</td>
+<td style="text-align: left;">UNK</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POINT (22616.75 47793.68)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">47201</td>
+<td style="text-align: left;">NIL</td>
+<td style="text-align: left;">W’LANDS NTH STN</td>
+<td style="text-align: left;">POINT (22632.92 47934)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">51071</td>
+<td style="text-align: left;">B21</td>
+<td style="text-align: left;">MACRITCHIE RESERVOIR</td>
+<td style="text-align: left;">POINT (28300.11 36045.9)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">51071</td>
+<td style="text-align: left;">B21</td>
+<td style="text-align: left;">MACRITCHIE RESERVOIR</td>
+<td style="text-align: left;">POINT (28305.37 36036.67)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">52059</td>
+<td style="text-align: left;">B03</td>
+<td style="text-align: left;">OPP BLK 65</td>
+<td style="text-align: left;">POINT (30770.3 34460.06)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">52059</td>
+<td style="text-align: left;">B09</td>
+<td style="text-align: left;">BLK 219</td>
+<td style="text-align: left;">POINT (30565.45 36133.15)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">53041</td>
+<td style="text-align: left;">B05</td>
+<td style="text-align: left;">Upp Thomson Road</td>
+<td style="text-align: left;">POINT (28105.8 37246.76)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">53041</td>
+<td style="text-align: left;">B07</td>
+<td style="text-align: left;">Upp Thomson Road</td>
+<td style="text-align: left;">POINT (27956.34 37379.29)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">58031</td>
+<td style="text-align: left;">UNK</td>
+<td style="text-align: left;">OPP CANBERRA DR</td>
+<td style="text-align: left;">POINT (27089.69 47570.9)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">58031</td>
+<td style="text-align: left;">UNK</td>
+<td style="text-align: left;">OPP CANBERRA DR</td>
+<td style="text-align: left;">POINT (27111.07 47517.77)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">62251</td>
+<td style="text-align: left;">B03</td>
+<td style="text-align: left;">Bef Blk 471B</td>
+<td style="text-align: left;">POINT (35500.54 39943.41)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">62251</td>
+<td style="text-align: left;">B03</td>
+<td style="text-align: left;">BEF BLK 471B</td>
+<td style="text-align: left;">POINT (35500.36 39943.34)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">67421</td>
+<td style="text-align: left;">B01</td>
+<td style="text-align: left;">CHENG LIM STN EXIT B</td>
+<td style="text-align: left;">POINT (34548.54 42052.15)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">67421</td>
+<td style="text-align: left;">NIL</td>
+<td style="text-align: left;">CHENG LIM STN EXIT B</td>
+<td style="text-align: left;">POINT (34741.77 42004.21)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">68091</td>
+<td style="text-align: left;">B01</td>
+<td style="text-align: left;">AFT BAKER ST</td>
+<td style="text-align: left;">POINT (32164.11 42695.98)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">68091</td>
+<td style="text-align: left;">B08</td>
+<td style="text-align: left;">AFT BAKER ST</td>
+<td style="text-align: left;">POINT (32038.84 43298.68)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">68099</td>
+<td style="text-align: left;">B02</td>
+<td style="text-align: left;">BEF BAKER ST</td>
+<td style="text-align: left;">POINT (32154.9 42742.82)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">68099</td>
+<td style="text-align: left;">B07</td>
+<td style="text-align: left;">BEF BAKER ST</td>
+<td style="text-align: left;">POINT (32004.05 43320.34)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">77329</td>
+<td style="text-align: left;">B01</td>
+<td style="text-align: left;">BEF PASIR RIS ST 53</td>
+<td style="text-align: left;">POINT (40765.35 39452.18)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">77329</td>
+<td style="text-align: left;">B03</td>
+<td style="text-align: left;">Pasir Ris Central</td>
+<td style="text-align: left;">POINT (40728.15 39438.15)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">82221</td>
+<td style="text-align: left;">B01</td>
+<td style="text-align: left;">BLK 3A</td>
+<td style="text-align: left;">POINT (35323.6 33257.05)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">82221</td>
+<td style="text-align: left;">B01</td>
+<td style="text-align: left;">Blk 3A</td>
+<td style="text-align: left;">POINT (35308.74 33335.17)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">96319</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Yusen Logistics</td>
+<td style="text-align: left;">POINT (42187.23 34995.78)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">96319</td>
+<td style="text-align: left;">NIL</td>
+<td style="text-align: left;">YUSEN LOGISTICS</td>
+<td style="text-align: left;">POINT (42187.23 34995.78)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">97079</td>
+<td style="text-align: left;">B14</td>
+<td style="text-align: left;">OPP ST. JOHN’S CRES</td>
+<td style="text-align: left;">POINT (44144.57 38980.25)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">97079</td>
+<td style="text-align: left;">B14</td>
+<td style="text-align: left;">OPP ST. JOHN’S CRES</td>
+<td style="text-align: left;">POINT (44055.75 38908.5)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 5161 to 5145.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep one row of the duplicates in the original dataset</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>busstop <span class="ot">&lt;-</span> busstop[<span class="sc">!</span><span class="fu">duplicated</span>(busstop<span class="sc">$</span>BUS_STOP_N) <span class="sc">|</span> <span class="fu">duplicated</span>(busstop<span class="sc">$</span>BUS_STOP_N, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the resulting dataset</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(busstop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5,144
 Columns: 4
 $ BUS_STOP_N &lt;chr&gt; "22069", "32071", "44331", "96081", "11561", "66191", "2338…
 $ BUS_ROOF_N &lt;chr&gt; "B06", "B23", "B01", "B05", "B05", "B03", "B02A", "B02", "B…
@@ -1350,17 +1614,17 @@ $ geometry   &lt;POINT [m]&gt; POINT (13576.31 32883.65), POINT (13228.59 44206.
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set tmap mode (plot for lighter rendering, view for analysis)</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>)<span class="sc">+</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(busstop)<span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set tmap mode (plot for lighter rendering, view for analysis)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>)<span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(busstop)<span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1369,9 +1633,9 @@ $ geometry   &lt;POINT [m]&gt; POINT (13576.31 32883.65), POINT (13228.59 44206.
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>biz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"../data/geospatial"</span>,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">"Business"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>biz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"../data/geospatial"</span>,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">"Business"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `Business' from data source `C:\ameernoor\ISSS624\data\geospatial' using driver `ESRI Shapefile'
@@ -1383,7 +1647,7 @@ Projected CRS: SVY21 / Singapore TM</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(biz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(biz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 6,550
@@ -1397,14 +1661,75 @@ $ geometry   &lt;POINT [m]&gt; POINT (33818.36 35620.16), POINT (33770.51 35610.
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.01</span>)<span class="sc">+</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biz)<span class="sc">+</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(biz<span class="sc">$</span>geometry)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5968</code></pre>
+</div>
+</div>
+<p><em>considering some business might have branches, the duplicate condition here is only if all column value is the same</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for duplicates based on unique id</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="fu">n_distinct</span>(biz) <span class="sc">==</span> <span class="fu">nrow</span>(biz), <span class="st">"no duplicates detected"</span>, <span class="st">"possible duplicates detected"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "possible duplicates detected"</code></pre>
+</div>
+</div>
+<p>show the duplicates</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> biz[<span class="fu">duplicated</span>(biz) <span class="sc">|</span> <span class="fu">duplicated</span>(biz, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ] <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(POI_NAME)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the sorted rows with duplicate BUS_STOP_N</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(duplicates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 27455.94 ymin: 28233.69 xmax: 27455.94 ymax: 28233.69
+Projected CRS: SVY21 / Singapore TM
+           POI_NAME POI_ST_NUM  POI_ST_NAM                  geometry
+1 KEPPEL DISTRIPARK        511 KG BAHRU RD POINT (27455.94 28233.69)
+2 KEPPEL DISTRIPARK        511 KG BAHRU RD POINT (27455.94 28233.69)</code></pre>
+</div>
+</div>
+<p>The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 6550 to 6549</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep one row of the duplicates in the original dataset</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>biz <span class="ot">&lt;-</span> busstop[<span class="sc">!</span><span class="fu">duplicated</span>(biz) <span class="sc">|</span> <span class="fu">duplicated</span>(biz, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the resulting dataset</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(biz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6,549
+Columns: 4
+$ BUS_STOP_N &lt;chr&gt; "22069", "32071", "44331", "96081", "11561", "66191", "2338…
+$ BUS_ROOF_N &lt;chr&gt; "B06", "B23", "B01", "B05", "B05", "B03", "B02A", "B02", "B…
+$ LOC_DESC   &lt;chr&gt; "OPP CEVA LOGISTICS", "AFT TRACK 13", "BLK 239", "GRACE IND…
+$ geometry   &lt;POINT [m]&gt; POINT (13576.31 32883.65), POINT (13228.59 44206.38),…</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.01</span>)<span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biz)<span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1413,9 +1738,9 @@ $ geometry   &lt;POINT [m]&gt; POINT (33818.36 35620.16), POINT (33770.51 35610.
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>station <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">layer =</span> <span class="st">'RapidTransitSystemStation'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>station <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">layer =</span> <span class="st">'RapidTransitSystemStation'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `RapidTransitSystemStation' from data source 
@@ -1428,12 +1753,12 @@ Projected CRS: SVY21</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the data contain non closed ring, use st_is_valid to fix</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>station <span class="ot">&lt;-</span> station <span class="sc">%&gt;%</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">st_is_valid</span>(.))</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>         </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># check the data</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(station)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the data contain non closed ring, use st_is_valid to fix</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>station <span class="ot">&lt;-</span> station <span class="sc">%&gt;%</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">st_is_valid</span>(.))</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="co"># check the data</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(station)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 217
@@ -1445,18 +1770,30 @@ $ STN_NAM_DE &lt;chr&gt; "ESPLANADE MRT STATION", "PAYA LEBAR MRT STATION", "DHO
 $ geometry   &lt;POLYGON [m]&gt; POLYGON ((30566.07 30621.21..., POLYGON ((34495.6 3…</code></pre>
 </div>
 </div>
+<p><em>the duplicate consider geometry as the unique value</em></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">col =</span> <span class="st">'white'</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(station) <span class="sc">+</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">'green'</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'STN_NAM_DE'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for duplicates based on unique id</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="fu">n_distinct</span>(station<span class="sc">$</span>geometry) <span class="sc">==</span> <span class="fu">nrow</span>(station), <span class="st">"no duplicates detected"</span>, <span class="st">"possible duplicates detected"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "no duplicates detected"</code></pre>
+</div>
+</div>
+<p>all MRT Station location are unique</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">col =</span> <span class="st">'white'</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(station) <span class="sc">+</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">'green'</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'STN_NAM_DE'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1465,9 +1802,9 @@ $ geometry   &lt;POLYGON [m]&gt; POLYGON ((30566.07 30621.21..., POLYGON ((34495
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>trainexit <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">'Train_Station_Exit_Layer'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>trainexit <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">'Train_Station_Exit_Layer'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `Train_Station_Exit_Layer' from data source 
@@ -1480,7 +1817,7 @@ Projected CRS: SVY21</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(trainexit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(trainexit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 565
@@ -1490,18 +1827,30 @@ $ exit_code &lt;chr&gt; "Exit A", "Exit B", "Exit C", "Exit B", "Exit A", "Exit 
 $ geometry  &lt;POINT [m]&gt; POINT (34285.07 34322.99), POINT (34382.15 34231.9), P…</code></pre>
 </div>
 </div>
+<p><em>the duplicate consider geometry as the unique value</em></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(trainexit)<span class="sc">+</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'blue'</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'exit_code'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for duplicates based on unique id</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="fu">n_distinct</span>(trainexit<span class="sc">$</span>geometry) <span class="sc">==</span> <span class="fu">nrow</span>(trainexit), <span class="st">"no duplicates detected"</span>, <span class="st">"possible duplicates detected"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "no duplicates detected"</code></pre>
+</div>
+</div>
+<p>all MRT Station location are unique</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the data</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(trainexit)<span class="sc">+</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'blue'</span>,</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'exit_id'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1510,9 +1859,9 @@ $ geometry  &lt;POINT [m]&gt; POINT (34285.07 34322.99), POINT (34382.15 34231.9
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>entertn <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">'entertn'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>entertn <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">'entertn'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `entertn' from data source `C:\ameernoor\ISSS624\data\geospatial' using driver `ESRI Shapefile'
@@ -1524,7 +1873,7 @@ Projected CRS: SVY21 / Singapore TM</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(entertn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(entertn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 114
@@ -1538,23 +1887,155 @@ $ geometry   &lt;POINT [m]&gt; POINT (39115.71 36392.13), POINT (21533.12 34921.
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(entertn)<span class="sc">+</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'cyan'</span>,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'exit_code'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># checking unique value</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(entertn<span class="sc">$</span>POI_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 110</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(entertn<span class="sc">$</span>POI_ST_NUM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 47</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(entertn<span class="sc">$</span>POI_ST_NAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 68</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(entertn<span class="sc">$</span>POI_ID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>duplicated_rows <span class="ot">&lt;-</span> entertn[<span class="fu">duplicated</span>(entertn<span class="sc">$</span>POI_ID) <span class="sc">|</span> <span class="fu">duplicated</span>(entertn<span class="sc">$</span>POI_ID, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>duplicated_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 0 features and 3 fields
+Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
+Projected CRS: SVY21 / Singapore TM
+[1] POI_NAME   POI_ST_NUM POI_ST_NAM geometry  
+&lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a unique identifier</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>entertn <span class="ot">&lt;-</span> <span class="fu">mutate</span>(entertn, <span class="at">POI_ID =</span> <span class="fu">paste</span>(POI_NAME, POI_ST_NUM, POI_ST_NAM, <span class="at">sep =</span> <span class="st">' '</span>))</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(entertn)<span class="sc">+</span></span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'cyan'</span>,</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'POI_NAME'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="the2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="the2_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
 <section id="food-beverage" class="level4">
 <h4 class="anchored" data-anchor-id="food-beverage">Food &amp; Beverage</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fnb <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">'F&amp;B'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `F&amp;B' from data source `C:\ameernoor\ISSS624\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 1919 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 6010.495 ymin: 25343.27 xmax: 45462.43 ymax: 48796.21
+Projected CRS: SVY21 / Singapore TM</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(fnb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,919
+Columns: 4
+$ POI_NAME   &lt;chr&gt; "KHEL", "I PUB", "LARK LOUNGE &amp; NITE-CLUB", "CHAKRAVARTHY",…
+$ POI_ST_NUM &lt;chr&gt; "141", "14", "195", "195", "48", "36", "10", "697", "11", "…
+$ POI_ST_NAM &lt;chr&gt; "KITCHENER RD", "CHUN TIN RD", "LAVENDER ST", "LAVENDER ST"…
+$ geometry   &lt;POINT [m]&gt; POINT (30654.44 32466.51), POINT (21515.34 36007.18),…</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(fnb)<span class="sc">+</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'cyan'</span>,</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'POI_NAME'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="the2_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="financial-services" class="level4">
 <h4 class="anchored" data-anchor-id="financial-services">Financial Services</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>finance <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">'../data/geospatial'</span>,</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer =</span> <span class="st">'FinServ'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `FinServ' from data source `C:\ameernoor\ISSS624\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 3320 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 4881.527 ymin: 25171.88 xmax: 46526.16 ymax: 49338.02
+Projected CRS: SVY21 / Singapore TM</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(finance)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,320
+Columns: 4
+$ POI_NAME   &lt;chr&gt; "UOB", "POSB", "UOB", "OCBC", "OCBC", "MAYBANK", "ADPOST MO…
+$ POI_ST_NUM &lt;chr&gt; "201", "375", "375", "375", NA, "707", "163", NA, "11", NA,…
+$ POI_ST_NAM &lt;chr&gt; "YISHUN AVE 2", "COMMONWEALTH AVE", "COMMONWEALTH AVE", "CO…
+$ geometry   &lt;POINT [m]&gt; POINT (27966.77 44304.65), POINT (24163.96 31606.25),…</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the output</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz)<span class="sc">+</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(fnb)<span class="sc">+</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">col =</span> <span class="st">'cyan'</span>,</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">id =</span> <span class="st">'POI_NAME'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="the2_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="leisure-recreation" class="level4">
 <h4 class="anchored" data-anchor-id="leisure-recreation">Leisure &amp; Recreation</h4>

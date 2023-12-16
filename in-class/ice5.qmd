@@ -1,0 +1,296 @@
+---
+title: "In-class Exercise 4 - Spatial Econometric Interaction Models (SIEM)"
+author: "Muhamad Ameer Noor"
+date: "16 December 2023"
+date-modified: "last-modified"
+editor: source
+format: 
+  html:
+    code-fold: true
+    code-summary: "code chunk"
+    fontsize: 17px
+    number-sections: true
+    number-depth: 3
+execute:
+  echo: true # all code chunk will appear
+  eval: true # all code chunk will running live (be evaluated)
+  warning: false # don't display warning
+---
+
+![Illustration](../images/ice5.png)
+
+# Overview
+
+# Getting Started
+
+we manually install the git version instead of the one from CRAN.
+
+```{r}
+devtools::install_github("LukeCe/spflow")
+```
+
+Next, we will load spflow and other R packages into R environment.
+
+```{r}
+pacman::p_load(tmap, sf, spdep, sp, Matrix, spflow, reshape2, knitr, tidyverse)
+```
+
+# Data Preparation
+
+Before we can calibrate Spatial Econometric Interaction Models by using **spflow** package, three data sets are required. They are: a spatial weights, a tibble data.frame consists of the origins, destination, flows, and distances between the origins and destination, and a tibble data.frame consists of the explanatory variables.
+
+## Building the geographical map
+
+Shapefile will be imported into R environment as a sf tibble data.frame called *mpsz*
+
+```{r}
+mpsz <- st_read(dsn = "../data/geospatial",
+                layer = "MPSZ-2019") %>%
+  st_transform(crs=3414)  %>%
+  mutate(
+    SUBZONE_N = as.factor(SUBZONE_N),
+    SUBZONE_C = as.factor(SUBZONE_C),
+    PLN_AREA_N = as.factor(PLN_AREA_N),
+    PLN_AREA_C = as.factor(PLN_AREA_C),
+    REGION_N = as.factor(REGION_N),
+    REGION_C = as.factor(REGION_C),
+  )
+
+# check the output
+glimpse(mpsz)
+```
+
+```{r}
+busstop <- st_read(dsn = "../data/geospatial",
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+
+# check the data
+glimpse(busstop)
+```
+
+In this study our analysis will be focused on planning subzone with bus stop. In view of this, the code chunk below will be used to perform Point-in-Polygon count analysis.
+
+##### this is a code, fix it later
+#####} eval: false
+mpsz_busstop <- st_intersection(busstop, mpsz) %>%
+  filter = BUSSTOP_COUNT
+
+##### eval can be set to true once the flow is fix
+
+```{r}
+#| eval: false
+centroids <- suppressWarnings({
+st_point_on_surface(st_geometry(mpsz_busstop))
+})
+
+mpsz_nb <- list(
+  "by_contiguity" = poly2nb(mpsz_busstop),
+  "by_distance" = dnearneigh(centroids, d1 = 0, d2 = 5000),
+  "by_knn" = knn2nb(knearneigh(centroids,3))
+  )
+```
+
+```{r}
+#| eval: false
+mpsz_nb
+```
+
+## Preparing the Spatial Weight
+
+```{r}
+schools <- read_rds("../data/rds/schools.rds")
+```
+
+import the rest
+
+#### Things to learn
+
+Let us retrieve by using the code chunk below
+
+```{r}
+mpsz_nb <- read_rds("../data/rds/mpsz_nb.rds")
+mpsz_flow <- read_rds("../data/rds/mpsz_flow.rds")
+mpsz_var <- read_rds("../data/rds/mpsz_var.rds")
+```
+
+check the data
+
+```{r}
+glimpse(mpsz_nb)
+```
+
+```{r}
+glimpse(mpsz_flow)
+```
+
+```{r}
+glimpse(mpsz_var)
+```
+
+# Preparing spflow objects
+
+For our model, we choose the contiguity based neighborhood structure.
+
+```{r}
+mpsz_net <- spflow_network(
+  id_net = "sg",
+  node_neighborhood =
+    nb2mat(mpsz_nb$by_contiguity),
+  node_data = mpsz_var,
+  node_key_column = "SZ_CODE")
+
+mpsz_net
+```
+
+::: {.callout-note collapse="true" title="Functions"}
+-   [spflow_network](https://cran.r-project.org/web/packages/spflow/spflow.pdf) from **spflow** package is used to create a spatial interaction network. In this code, `mpsz_net` is defined as a spatial interaction network with several parameters:
+    -   `id_net`: A unique identifier for the network, set as "sg" in this case.
+    -   `node_neighborhood`: A matrix that represents the neighborhood structure of the nodes (areas or locations) in the network, created from `mpsz_nb$by_contiguity` using the `nb2mat` function (which converts neighbor objects into matrices).
+    -   `node_data`: A data frame containing variables associated with each node (e.g., demographic data, economic indicators), here specified as `mpsz_var`.
+    -   `node_key_column`: The column in `node_data` that uniquely identifies each node, set as "SZ_CODE".
+-   The last line, `mpsz_net`, displays the created spatial interaction network.
+:::
+
+Do for destinations.
+
+In **spflow** package, [`spflow_network_pair()`](https://lukece.github.io/spflow/reference/spflow_network_pair.html)
+
+```{r}
+mpsz_net_pairs <- spflow_network_pair(
+  id_orig_net = "sg",
+  id_dest_net = "sg",
+  pair_data = mpsz_flow,
+  orig_key_column = "ORIGIN_SZ",
+  dest_key_column = "DESTIN_SZ"
+)
+
+mpsz_net_pairs
+```
+
+Both data sources are consistent. For example, if some of the origins in the sp_network_pair-class are not identified with the nodes in the sp_network_nodes-class an error will be raised.
+
+[`spflow_network_multi()`](https://lukece.github.io/spflow/reference/spflow_network_multi.html)
+
+```{r}
+mpsz_multi_net <- spflow_network_multi(mpsz_net,
+                                       mpsz_net_pairs)
+mpsz_multi_net
+```
+
+the next step is using correlation analysis to check for multicollinearity. it is done using `pair_cor()` to create the correlation matrix and `cor_image()` to plot the correlation matrix into a correlogram.
+
+```{r}
+#} eval: false
+cor_formula <- log(1+ TRIPS) ~
+  BUSSTOP_COUNT +
+  AGE7_12 +
+  AGE13_24 +
+  AGE25_64 +
+  SCHOOL_COUNT +
+  BUSINESS_COUNT +
+  RETAILS_COUNT +
+  FINSERV_COUNT +
+  P_(log(DISTANCE + 1))
+
+cor_mat <- pair_cor(
+  mpsz_multi_net,
+  spflow_formula = cor_formula,
+  add_lags_x = FALSE
+)
+
+summary(cor_mat)
+```
+
+```{r}
+colnames(cor_mat) <- paste0(
+  substr(colnames(cor_mat),1,3),"..."
+)
+
+cor_image(cor_mat)
+```
+
+# Model Calibration
+
+## The Base Model
+
+```{r}
+base_model <- spflow(
+  spflow_formula = log(1 + TRIPS) ~
+    O_(BUSSTOP_COUNT +
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+         BUSINESS_COUNT +
+         RETAILS_COUNT +
+         FINSERV_COUNT) +
+         P_(log(DISTANCE + 1)),
+       spflow_networks = mpsz_multi_net)
+  
+base_model
+```
+::: {.notebox .lightbulb data-latex="lightbulb"}
+note that many of the lag1 are statistically significant. this signifies that neighboring area can actually affect the number of trips as well.
+:::
+
+
+```{r}
+old_par <- par(mfrow = c(1, 3),
+               mar = c(2,2,2,2))
+spflow_moran_plots(base_model)
+par(old_par)
+```
+
+```{r}
+corr_residual <- pair_cor(base_model)
+colnames(corr_residual) <- substr(colnames(corr_residual), 1,3)
+cor_image(corr_residual)
+```
+
+## Working with model control
+
+the original code is for model_8
+```{r}
+spflow_formula <- log(1 + TRIPS) ~
+  O_(BUSSTOP_COUNT +
+         AGE25_64) +
+  D_(SCHOOL_COUNT +
+       BUSINESS_COUNT +
+       RETAILS_COUNT +
+       FINSERV_COUNT) +
+  P_(log(DISTANCE + 1))
+
+model_control <- spflow_control(
+  estimation_method = "mle",
+  model = "model_8")
+  
+mle_model8 <- spflow(
+  spflow_formula,
+  spflow_networks = mpsz_multi_net,
+  estimation_control = model_control)
+
+mle_model8
+```
+
+next, change to model_1
+```{r}
+spflow_formula <- log(1 + TRIPS) ~
+  O_(BUSSTOP_COUNT +
+         AGE25_64) +
+  D_(SCHOOL_COUNT +
+       BUSINESS_COUNT +
+       RETAILS_COUNT +
+       FINSERV_COUNT) +
+  P_(log(DISTANCE + 1))
+
+model_control <- spflow_control(
+  estimation_method = "mle",
+  model = "model_1")
+  
+mle_model1 <- spflow(
+  spflow_formula,
+  spflow_networks = mpsz_multi_net,
+  estimation_control = model_control)
+
+mle_model1
+```
+

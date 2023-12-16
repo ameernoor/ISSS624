@@ -31,6 +31,8 @@ website:
             href: in-class/ice3.html
           - text: 4 - GDS and SIM with R
             href: in-class/ice4.html
+          - text: 5 - Spatial Econometric Interaction Models (SIEM)
+            href: in-class/ice5.html
       - text: Take-Home Exercise
         menu:
           - text: 1 - Geospatial Analytics for Public Goods
