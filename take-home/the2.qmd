@@ -971,20 +971,39 @@ glimpse(odb_flow)
 
 ## Create Distance Variable
 ```{r}
+# set busstop to spatial
 busstop_sp <- as(busstop_with_hex_info, "Spatial")
 
-distance <- sp::spDists(busstop_sp, longlat = FALSE)
+# calculate the distance
+tp_dist <- sp::spDists(busstop_sp, longlat = FALSE)
 
+# add column names to the variable
 hex_id_names <- busstop_sp$hexagon_id
+colnames(tp_dist) <- paste0(hex_id_names)
+rownames(tp_dist) <- paste0(hex_id_names)
 
-colnames(distance) <- paste0(hex_id_names)
-rownames(distance) <- paste0(hex_id_names)
+# melt the table
+dist <- reshape2::melt(tp_dist) %>%
+  rename(origin_hex = Var1,
+         destination_hex = Var2,
+         distance = value) %>%
+  mutate(origin_hex = as.factor(origin_hex),
+         destination_hex = as.factor(destination_hex))
 
-distPair <- reshape2::melt(dist) %>%
-  mutate()
+# remove duplicates
+dist <- distinct(dist, origin_hex, destination_hex, .keep_all = TRUE)
 
-distPair
-glimpse(distPair)
+# Perform left join to odb_flow with factor conversion
+odb_flow <- odb_flow %>%
+  left_join(
+    dist %>% select(origin_hex, destination_hex, distance) %>%
+      mutate(across(c(origin_hex, destination_hex), as.character)),
+    by = c("origin_hex", "destination_hex")
+  ) %>%
+  mutate(across(c(origin_hex, destination_hex), as.factor))
+
+# check the output
+glimpse(odb_flow)
 ```
 ## Remove Intra-Zonal Flows
 the following code chunk will remove intra-zonal flows
@@ -1022,6 +1041,7 @@ flowline <- od2line(flow = odb_flow,
 
 glimpse(flowline)
 ```
+
 ## 3rd Quantile Trips (175)
 ```{r}
 summary(flowline$trips)
@@ -1042,7 +1062,7 @@ flowline %>%
            lwd = "trips",
            scale = c(0.1, 1, 2, 3, 4, 5, 6, 7),
            alpha = 0.2)+
-  tm_layout(main.title = 'Weekday Morning Peak Flowline for 3rd Quantile', main.title.position = 'center')
+  tm_layout(main.title = 'Weekday Morning Peak Flow for 3rd Quantile Trips', main.title.position = 'center')
 ```
 busier in central and east
 
@@ -1064,13 +1084,59 @@ flowline %>%
   tm_lines(col = 'coral',
            lwd = "trips",
            scale = c(0.1, 1, 2, 3, 4, 5, 6, 7))+
-  tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile', main.title.position = 'center')
+  tm_layout(main.title = 'Weekday Morning Peak Flow for 99th Percentile Trips', main.title.position = 'center',
+            main.title.size = 1.2)
 ```
+north-downtown and north-east becomes more visible
 
-## Filter by Distance
+## 3rd Quantile Distance (8923)
 ```{r}
-summary(flowline$dist)
+summary(flowline$distance)
 ```
+since trips without filter will be too messy, first trial will use the third quantile
+```{r}
+tmap_mode('plot')
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons(col = 'white') +
+tm_shape(hexagons_with_bus_stops) +
+  tm_polygons(alpha = 0.4,
+              col = 'gray') +
+flowline %>%
+  filter(distance >= 8923) %>%
+  tm_shape() +
+  tm_lines(col = 'coral',
+           lwd = "trips",
+           scale = c(0.1, 1, 2, 3, 4, 5, 6, 7),
+           alpha = 0.2)+
+  tm_layout(main.title = 'Weekday Morning Peak Flowline for 3rd Quantile Distance', main.title.position = 'center',
+            main.title.size = 1.2)
+```
+busier in central and east
+
+## 99th Quantile Distance (18587)
+```{r}
+quantile(flowline$distance, probs = seq(0, 1, 0.01), na.rm = TRUE)
+```
+```{r}
+tmap_mode('plot')
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons(col = 'white') +
+tm_shape(hexagons_with_bus_stops) +
+  tm_polygons(alpha = 0.4,
+              col = 'gray') +
+flowline %>%
+  filter(trips >= 6082) %>%
+  tm_shape() +
+  tm_lines(col = 'coral',
+           lwd = "trips",
+           scale = c(0.1, 1, 2, 3, 4, 5, 6, 7))+
+  tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile Distance', main.title.position = 'center',
+            main.title.size = 1.2)
+```
+north-downtown and north-east becomes more visible
+
 ## Use GIF
 
 # Assembling Push & Pull Factor
