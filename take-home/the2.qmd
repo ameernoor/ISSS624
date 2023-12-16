@@ -952,7 +952,7 @@ glimpse(odb_hex)
 ```{r}
 if_else(n_distinct(odb_hex) == nrow(odb_hex), "no duplicates detected", "possible duplicates detected")
 ```
-## Construct O-D Matrix of Commuter Flows
+## Construct O-D Matrix
 ```{r}
 # Remove rows with missing values
 clean_odb <- odb_hex[complete.cases(odb_hex), ]
@@ -968,7 +968,26 @@ odb_flow <- clean_odb %>%
 # check the output
 glimpse(odb_flow)
 ```
+
+## Create Distance Variable
+```{r}
+busstop_sp <- as(busstop_with_hex_info, "Spatial")
+
+distance <- sp::spDists(busstop_sp, longlat = FALSE)
+
+hex_id_names <- busstop_sp$hexagon_id
+
+colnames(distance) <- paste0(hex_id_names)
+rownames(distance) <- paste0(hex_id_names)
+
+distPair <- reshape2::melt(dist) %>%
+  mutate()
+
+distPair
+glimpse(distPair)
+```
 ## Remove Intra-Zonal Flows
+the following code chunk will remove intra-zonal flows
 ```{r}
 odb_flow <- odb_flow %>%
   filter(as.character(origin_hex) != as.character(destination_hex))
@@ -976,19 +995,85 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+::: {.callout-note collapse="true" title="Why intra-zonal flows is removed?"}
+The exclusion of intra-zonal flows from the Spatial Interaction Model calibration process is likely driven by the desire to focus on modeling and understanding interactions between different zones, without interference from flows within the same zone.
 
-# Visualize the Flow
-## Use Styles
+Intra-zonal flows, representing movements within a single zone, may not contribute significantly to the overall spatial interaction patterns that the model aims to capture. By removing intra-zonal flows, the analysis can concentrate on the dynamics and factors influencing interactions between distinct zones, providing a clearer and more interpretable representation of spatial relationships.
 
-## Filter by Trips
-use summary statistics to determine the cutoff
+Including intra-zonal flows in the model might introduce unnecessary complexity or noise, potentially affecting the accuracy and interpretability of the model's results. Therefore, excluding intra-zonal flows is a methodological choice to streamline the analysis and enhance the model's ability to capture meaningful inter-zonal interactions.
+:::
+
+# Visualize the Desire Lines
+firstly, create the line
+
+There are important arguments in od2line:
+
+flow: A data frame representing the origin-destination data. The first column should be the same as the first column of the data in the zones dataframe.
+
+zones: The origin and destination of the travels should be passed here.
+
+zone_code: Name of the variable in zones containing the ids of the zones.
+
+
+```{r}
+flowline <- od2line(flow = odb_flow, 
+        zones = hexagons_with_bus_stops,
+        zone_code = 'hexagon_id')
+
+glimpse(flowline)
+```
+## 3rd Quantile Trips (175)
+```{r}
+summary(flowline$trips)
+```
+since trips without filter will be too messy, first trial will use the third quantile
+```{r}
+tmap_mode('plot')
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons(col = 'white') +
+tm_shape(hexagons_with_bus_stops) +
+  tm_polygons(alpha = 0.4,
+              col = 'gray') +
+flowline %>%
+  filter(trips >= 175) %>%
+  tm_shape() +
+  tm_lines(col = 'coral',
+           lwd = "trips",
+           scale = c(0.1, 1, 2, 3, 4, 5, 6, 7),
+           alpha = 0.2)+
+  tm_layout(main.title = 'Weekday Morning Peak Flowline for 3rd Quantile', main.title.position = 'center')
+```
+busier in central and east
+
+## 99th Quantile Trips (6082)
+```{r}
+quantile(flowline$trips, probs = seq(0, 1, 0.01), na.rm = TRUE)
+```
+```{r}
+tmap_mode('plot')
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons(col = 'white') +
+tm_shape(hexagons_with_bus_stops) +
+  tm_polygons(alpha = 0.4,
+              col = 'gray') +
+flowline %>%
+  filter(trips >= 6082) %>%
+  tm_shape() +
+  tm_lines(col = 'coral',
+           lwd = "trips",
+           scale = c(0.1, 1, 2, 3, 4, 5, 6, 7))+
+  tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile', main.title.position = 'center')
+```
+
 ## Filter by Distance
-use summary statistics to determine the cutoff
-
+```{r}
+summary(flowline$dist)
+```
 ## Use GIF
 
-# Assembling the Variables
-## Distance
+# Assembling Push & Pull Factor
 
 ## Push
 show flow vs variables
@@ -996,10 +1081,18 @@ show flow vs variables
 show flow vs variables
 
 # Spatial Interaction Model
+## Correlation Analysis
+
 ## Run the Model
 
 ## Compare The Result
+add R2 on top of RMSE
+## Visualize the Result
+Fitted Value
 
+Log it 
+
+## Conclusion
 
 
 # References

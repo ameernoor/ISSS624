@@ -249,24 +249,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#combine-bus-stop-and-hexagon" id="toc-combine-bus-stop-and-hexagon" class="nav-link" data-scroll-target="#combine-bus-stop-and-hexagon"><span class="header-section-number">3.2</span> Combine Bus Stop and Hexagon</a></li>
   <li><a href="#combine-trips-and-hexagon" id="toc-combine-trips-and-hexagon" class="nav-link" data-scroll-target="#combine-trips-and-hexagon"><span class="header-section-number">3.3</span> Combine Trips and Hexagon</a></li>
   <li><a href="#final-duplicate-checking" id="toc-final-duplicate-checking" class="nav-link" data-scroll-target="#final-duplicate-checking"><span class="header-section-number">3.4</span> Final Duplicate Checking</a></li>
-  <li><a href="#construct-o-d-matrix-of-commuter-flows" id="toc-construct-o-d-matrix-of-commuter-flows" class="nav-link" data-scroll-target="#construct-o-d-matrix-of-commuter-flows"><span class="header-section-number">3.5</span> Construct O-D Matrix of Commuter Flows</a></li>
-  <li><a href="#remove-intra-zonal-flows" id="toc-remove-intra-zonal-flows" class="nav-link" data-scroll-target="#remove-intra-zonal-flows"><span class="header-section-number">3.6</span> Remove Intra-Zonal Flows</a></li>
+  <li><a href="#construct-o-d-matrix" id="toc-construct-o-d-matrix" class="nav-link" data-scroll-target="#construct-o-d-matrix"><span class="header-section-number">3.5</span> Construct O-D Matrix</a></li>
+  <li><a href="#create-distance-variable" id="toc-create-distance-variable" class="nav-link" data-scroll-target="#create-distance-variable"><span class="header-section-number">3.6</span> Create Distance Variable</a></li>
+  <li><a href="#remove-intra-zonal-flows" id="toc-remove-intra-zonal-flows" class="nav-link" data-scroll-target="#remove-intra-zonal-flows"><span class="header-section-number">3.7</span> Remove Intra-Zonal Flows</a></li>
   </ul></li>
-  <li><a href="#visualize-the-flow" id="toc-visualize-the-flow" class="nav-link" data-scroll-target="#visualize-the-flow"><span class="header-section-number">4</span> Visualize the Flow</a>
+  <li><a href="#visualize-the-desire-lines" id="toc-visualize-the-desire-lines" class="nav-link" data-scroll-target="#visualize-the-desire-lines"><span class="header-section-number">4</span> Visualize the Desire Lines</a>
   <ul class="collapse">
-  <li><a href="#use-styles" id="toc-use-styles" class="nav-link" data-scroll-target="#use-styles"><span class="header-section-number">4.1</span> Use Styles</a></li>
-  <li><a href="#filter-by-trips" id="toc-filter-by-trips" class="nav-link" data-scroll-target="#filter-by-trips"><span class="header-section-number">4.2</span> Filter by Trips</a></li>
-  <li><a href="#use-gif" id="toc-use-gif" class="nav-link" data-scroll-target="#use-gif"><span class="header-section-number">4.3</span> Use GIF</a></li>
+  <li><a href="#rd-quantile-175" id="toc-rd-quantile-175" class="nav-link" data-scroll-target="#rd-quantile-175"><span class="header-section-number">4.1</span> 3rd Quantile (175)</a></li>
+  <li><a href="#th-quantile" id="toc-th-quantile" class="nav-link" data-scroll-target="#th-quantile"><span class="header-section-number">4.2</span> 99th Quantile</a></li>
+  <li><a href="#filter-by-distance" id="toc-filter-by-distance" class="nav-link" data-scroll-target="#filter-by-distance"><span class="header-section-number">4.3</span> Filter by Distance</a></li>
+  <li><a href="#use-gif" id="toc-use-gif" class="nav-link" data-scroll-target="#use-gif"><span class="header-section-number">4.4</span> Use GIF</a></li>
   </ul></li>
-  <li><a href="#assembling-the-variables" id="toc-assembling-the-variables" class="nav-link" data-scroll-target="#assembling-the-variables"><span class="header-section-number">5</span> Assembling the Variables</a>
+  <li><a href="#assembling-push-pull-factor" id="toc-assembling-push-pull-factor" class="nav-link" data-scroll-target="#assembling-push-pull-factor"><span class="header-section-number">5</span> Assembling Push &amp; Pull Factor</a>
   <ul class="collapse">
-  <li><a href="#distance" id="toc-distance" class="nav-link" data-scroll-target="#distance"><span class="header-section-number">5.1</span> Distance</a></li>
-  <li><a href="#push" id="toc-push" class="nav-link" data-scroll-target="#push"><span class="header-section-number">5.2</span> Push</a></li>
+  <li><a href="#push" id="toc-push" class="nav-link" data-scroll-target="#push"><span class="header-section-number">5.1</span> Push</a></li>
   </ul></li>
   <li><a href="#spatial-interaction-model" id="toc-spatial-interaction-model" class="nav-link" data-scroll-target="#spatial-interaction-model"><span class="header-section-number">6</span> Spatial Interaction Model</a>
   <ul class="collapse">
-  <li><a href="#run-the-model" id="toc-run-the-model" class="nav-link" data-scroll-target="#run-the-model"><span class="header-section-number">6.1</span> Run the Model</a></li>
-  <li><a href="#compare-the-result" id="toc-compare-the-result" class="nav-link" data-scroll-target="#compare-the-result"><span class="header-section-number">6.2</span> Compare The Result</a></li>
+  <li><a href="#correlation-analysis" id="toc-correlation-analysis" class="nav-link" data-scroll-target="#correlation-analysis"><span class="header-section-number">6.1</span> Correlation Analysis</a></li>
+  <li><a href="#run-the-model" id="toc-run-the-model" class="nav-link" data-scroll-target="#run-the-model"><span class="header-section-number">6.2</span> Run the Model</a></li>
+  <li><a href="#compare-the-result" id="toc-compare-the-result" class="nav-link" data-scroll-target="#compare-the-result"><span class="header-section-number">6.3</span> Compare The Result</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">6.4</span> Conclusion</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">7</span> References</a></li>
   </ul>
@@ -301,7 +304,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 16, 2023</p>
+      <p class="date-modified">December 17, 2023</p>
     </div>
   </div>
     
@@ -2637,8 +2640,8 @@ $ destination_hex     &lt;fct&gt; 1496, 1496, 1538, 1538, 1559, 1559, 1539, 1581
 </div>
 </div>
 </section>
-<section id="construct-o-d-matrix-of-commuter-flows" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="construct-o-d-matrix-of-commuter-flows"><span class="header-section-number">3.5</span> Construct O-D Matrix of Commuter Flows</h2>
+<section id="construct-o-d-matrix" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="construct-o-d-matrix"><span class="header-section-number">3.5</span> Construct O-D Matrix</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -2665,16 +2668,67 @@ $ trips           &lt;dbl&gt; 1091, 766, 230, 311, 32, 63, 153, 77, 29, 127, 218
 </div>
 </div>
 </section>
-<section id="remove-intra-zonal-flows" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="remove-intra-zonal-flows"><span class="header-section-number">3.6</span> Remove Intra-Zonal Flows</h2>
+<section id="create-distance-variable" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="create-distance-variable"><span class="header-section-number">3.6</span> Create Distance Variable</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>odb_flow <span class="ot">&lt;-</span> odb_flow <span class="sc">%&gt;%</span></span>
-<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.character</span>(origin_hex) <span class="sc">!=</span> <span class="fu">as.character</span>(destination_hex))</span>
-<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a><span class="co"># check the output</span></span>
-<span id="cb119-5"><a href="#cb119-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(odb_flow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>busstop_sp <span class="ot">&lt;-</span> <span class="fu">as</span>(busstop_with_hex_info, <span class="st">"Spatial"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>dist <span class="ot">&lt;-</span> sp<span class="sc">::</span><span class="fu">spDists</span>(busstop_sp, <span class="at">longlat =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb120-2"><a href="#cb120-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb120-3"><a href="#cb120-3" aria-hidden="true" tabindex="-1"></a>dist[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]     [,2]     [,3]     [,4]     [,5]
+[1,]     0.00 11328.06 10484.71 28141.36 11271.32
+[2,] 11328.06     0.00  8764.33 29706.43 17872.89
+[3,] 10484.71  8764.33     0.00 21118.18 10461.51
+[4,] 28141.36 29706.43 21118.18     0.00 17759.65
+[5,] 11271.32 17872.89 10461.51 17759.65     0.00</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>hex_id_names <span class="ot">&lt;-</span> busstop_sp<span class="sc">$</span>hexagon_id</span>
+<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb122-3"><a href="#cb122-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dist) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(hex_id_names)</span>
+<span id="cb122-4"><a href="#cb122-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(dist) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(hex_id_names)</span>
+<span id="cb122-5"><a href="#cb122-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(dist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> num [1:5144, 1:5144] 0 11328 10485 28141 11271 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:5144] "573" "560" "977" "2129" ...
+  ..$ : chr [1:5144] "573" "560" "977" "2129" ...</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(hex_id_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:5144] 573 560 977 2129 1159 1543 509 1502 660 2150 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="remove-intra-zonal-flows" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="remove-intra-zonal-flows"><span class="header-section-number">3.7</span> Remove Intra-Zonal Flows</h2>
+<p>the following code chunk will remove intra-zonal flows</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>odb_flow <span class="ot">&lt;-</span> odb_flow <span class="sc">%&gt;%</span></span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.character</span>(origin_hex) <span class="sc">!=</span> <span class="fu">as.character</span>(destination_hex))</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb126-4"><a href="#cb126-4" aria-hidden="true" tabindex="-1"></a><span class="co"># check the output</span></span>
+<span id="cb126-5"><a href="#cb126-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(odb_flow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 64,885
@@ -2684,38 +2738,153 @@ $ destination_hex &lt;fct&gt; 1496, 1538, 1539, 1559, 1581, 1582, 1601, 1602, 16
 $ trips           &lt;dbl&gt; 1091, 766, 230, 311, 32, 63, 153, 77, 29, 127, 218, 15…</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Why intra-zonal flows is removed?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why intra-zonal flows is removed?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The exclusion of intra-zonal flows from the Spatial Interaction Model calibration process is likely driven by the desire to focus on modeling and understanding interactions between different zones, without interference from flows within the same zone.</p>
+<p>Intra-zonal flows, representing movements within a single zone, may not contribute significantly to the overall spatial interaction patterns that the model aims to capture. By removing intra-zonal flows, the analysis can concentrate on the dynamics and factors influencing interactions between distinct zones, providing a clearer and more interpretable representation of spatial relationships.</p>
+<p>Including intra-zonal flows in the model might introduce unnecessary complexity or noise, potentially affecting the accuracy and interpretability of the model’s results. Therefore, excluding intra-zonal flows is a methodological choice to streamline the analysis and enhance the model’s ability to capture meaningful inter-zonal interactions.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
-<section id="visualize-the-flow" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Visualize the Flow</h1>
-<section id="use-styles" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="use-styles"><span class="header-section-number">4.1</span> Use Styles</h2>
+<section id="visualize-the-desire-lines" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Visualize the Desire Lines</h1>
+<p>firstly, create the line</p>
+<p>There are important arguments in od2line:</p>
+<p>flow: A data frame representing the origin-destination data. The first column should be the same as the first column of the data in the zones dataframe.</p>
+<p>zones: The origin and destination of the travels should be passed here.</p>
+<p>zone_code: Name of the variable in zones containing the ids of the zones.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a>flowline <span class="ot">&lt;-</span> <span class="fu">od2line</span>(<span class="at">flow =</span> odb_flow, </span>
+<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">zones =</span> hexagons_with_bus_stops,</span>
+<span id="cb128-3"><a href="#cb128-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">zone_code =</span> <span class="st">'hexagon_id'</span>)</span>
+<span id="cb128-4"><a href="#cb128-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb128-5"><a href="#cb128-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(flowline)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 64,885
+Columns: 4
+$ origin_hex      &lt;fct&gt; 1474, 1474, 1474, 1474, 1474, 1474, 1474, 1474, 1474, …
+$ destination_hex &lt;fct&gt; 1496, 1538, 1539, 1559, 1581, 1582, 1601, 1602, 1603, …
+$ trips           &lt;dbl&gt; 1091, 766, 230, 311, 32, 63, 153, 77, 29, 127, 218, 15…
+$ geometry        &lt;LINESTRING [m]&gt; LINESTRING (29845.12 31028...., LINESTRING …</code></pre>
+</div>
+</div>
+<section id="rd-quantile-175" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="rd-quantile-175"><span class="header-section-number">4.1</span> 3rd Quantile (175)</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(flowline<span class="sc">$</span>trips)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    1.0     7.0    38.0   375.7   175.0 97602.0 </code></pre>
+</div>
+</div>
+<p>since trips without filter will be too messy, first trial will use the third quantile</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
+<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_options</span>(<span class="at">check.and.fix =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb132-3"><a href="#cb132-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz) <span class="sc">+</span></span>
+<span id="cb132-4"><a href="#cb132-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb132-5"><a href="#cb132-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(hexagons_with_bus_stops) <span class="sc">+</span></span>
+<span id="cb132-6"><a href="#cb132-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb132-7"><a href="#cb132-7" aria-hidden="true" tabindex="-1"></a>flowline <span class="sc">%&gt;%</span></span>
+<span id="cb132-8"><a href="#cb132-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(trips <span class="sc">&gt;=</span> <span class="dv">175</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb132-9"><a href="#cb132-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>() <span class="sc">+</span></span>
+<span id="cb132-10"><a href="#cb132-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_lines</span>(<span class="at">col =</span> <span class="st">'lightcoral'</span>,</span>
+<span id="cb132-11"><a href="#cb132-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">lwd =</span> <span class="st">"trips"</span>,</span>
+<span id="cb132-12"><a href="#cb132-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">scale =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="fl">1.5</span>, <span class="dv">2</span>, <span class="fl">2.5</span>, <span class="dv">3</span>, <span class="fl">3.5</span>))<span class="sc">+</span></span>
+<span id="cb132-13"><a href="#cb132-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">'Weekday Morning Peak Flowline for &gt;175 Trips'</span>, <span class="at">main.title.position =</span> <span class="st">'center'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="the2_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
-<section id="filter-by-trips" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="filter-by-trips"><span class="header-section-number">4.2</span> Filter by Trips</h2>
-<p>use summary statistics to determine the cutoff ## Filter by Distance use summary statistics to determine the cutoff</p>
+<section id="th-quantile" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="th-quantile"><span class="header-section-number">4.2</span> 99th Quantile</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(flowline<span class="sc">$</span>trips, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.01</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      0%       1%       2%       3%       4%       5%       6%       7% 
+    1.00     1.00     1.00     1.00     1.00     1.00     1.00     1.00 
+      8%       9%      10%      11%      12%      13%      14%      15% 
+    2.00     2.00     2.00     2.00     2.00     2.00     3.00     3.00 
+     16%      17%      18%      19%      20%      21%      22%      23% 
+    3.00     4.00     4.00     4.00     5.00     5.00     6.00     6.00 
+     24%      25%      26%      27%      28%      29%      30%      31% 
+    7.00     7.00     8.00     8.00     9.00    10.00    11.00    12.00 
+     32%      33%      34%      35%      36%      37%      38%      39% 
+   13.00    13.00    14.00    15.00    16.00    18.00    19.00    20.00 
+     40%      41%      42%      43%      44%      45%      46%      47% 
+   21.00    22.00    24.00    25.00    27.00    28.00    30.00    32.00 
+     48%      49%      50%      51%      52%      53%      54%      55% 
+   33.00    35.00    38.00    40.00    42.00    45.00    47.00    50.00 
+     56%      57%      58%      59%      60%      61%      62%      63% 
+   53.00    57.00    60.00    64.00    67.00    71.00    76.00    81.00 
+     64%      65%      66%      67%      68%      69%      70%      71% 
+   86.00    91.00    97.00   103.00   110.00   117.00   125.00   134.00 
+     72%      73%      74%      75%      76%      77%      78%      79% 
+  143.00   153.00   163.00   175.00   188.00   202.00   217.00   233.00 
+     80%      81%      82%      83%      84%      85%      86%      87% 
+  254.00   276.00   301.00   327.00   357.00   391.00   429.24   475.00 
+     88%      89%      90%      91%      92%      93%      94%      95% 
+  523.00   586.00   661.00   747.44   854.00   998.00  1170.00  1413.80 
+     96%      97%      98%      99%     100% 
+ 1766.00  2335.44  3384.32  6082.16 97602.00 </code></pre>
+</div>
+</div>
 </section>
-<section id="use-gif" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="use-gif"><span class="header-section-number">4.3</span> Use GIF</h2>
+<section id="filter-by-distance" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="filter-by-distance"><span class="header-section-number">4.3</span> Filter by Distance</h2>
+<p>use summary statistics to determine the cutoff</p>
+</section>
+<section id="use-gif" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="use-gif"><span class="header-section-number">4.4</span> Use GIF</h2>
 </section>
 </section>
-<section id="assembling-the-variables" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Assembling the Variables</h1>
-<section id="distance" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="distance"><span class="header-section-number">5.1</span> Distance</h2>
-</section>
-<section id="push" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="push"><span class="header-section-number">5.2</span> Push</h2>
+<section id="assembling-push-pull-factor" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Assembling Push &amp; Pull Factor</h1>
+<section id="push" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="push"><span class="header-section-number">5.1</span> Push</h2>
 <p>show flow vs variables ## Pull show flow vs variables</p>
 </section>
 </section>
 <section id="spatial-interaction-model" class="level1" data-number="6">
 <h1 data-number="6"><span class="header-section-number">6</span> Spatial Interaction Model</h1>
-<section id="run-the-model" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="run-the-model"><span class="header-section-number">6.1</span> Run the Model</h2>
+<section id="correlation-analysis" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="correlation-analysis"><span class="header-section-number">6.1</span> Correlation Analysis</h2>
 </section>
-<section id="compare-the-result" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="compare-the-result"><span class="header-section-number">6.2</span> Compare The Result</h2>
+<section id="run-the-model" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="run-the-model"><span class="header-section-number">6.2</span> Run the Model</h2>
+</section>
+<section id="compare-the-result" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="compare-the-result"><span class="header-section-number">6.3</span> Compare The Result</h2>
+<p>add R2 on top of RMSE ## Visualize the Result Fitted Value</p>
+<p>Log it</p>
+</section>
+<section id="conclusion" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">6.4</span> Conclusion</h2>
 </section>
 </section>
 <section id="references" class="level1" data-number="7">
