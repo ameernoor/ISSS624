@@ -217,6 +217,10 @@ the content of the following panel explained what aspatial and geospatial data a
 
 The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.
 The original dataset can be downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/150/view). However, the original dataset does not contain geoidentifier. The geoidentifier in the HDB dataset that is used here was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486).
+
+#### School
+The School Directory and Information dataset, sourced from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view), provides valuable information pertinent to the morning period, notably involving students commuting to school. The dataset encompasses details about the locations, implicitly indicated by the 'POSTAL_CODE' field, of MOE kindergartens, primary schools, secondary schools, and junior colleges. Notably, it excludes information on the locations of ITEs, polytechnics, and universities. With a total of 346 records, this dataset serves as a comprehensive resource for understanding the geographical distribution of various educational institutions.
+
 :::
 
 
@@ -352,59 +356,6 @@ pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplan
 
 This section will import the required aspatial and geospatial dataset. The process also involves minor data change before going to more complex data wrangling in the next section. 
 
-### Aspatial
-
-This subsection will import the aspatial data used in this project and check it. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
-
-#### Passenger Volume
-Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
-As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
-Finally, the code will generate output of summary statistics of the resulting dataset. 
-```{r}
-# Load csv file
-odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
-
-# change georeference data type into factors
-odb10 <- odb10 %>%
-  mutate(
-    ORIGIN_PT_CODE = as.factor(ORIGIN_PT_CODE),
-    DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
-  )
-
-# filter and group the data
-odb10 <- odb10 %>%
-  filter(DAY_TYPE == "WEEKDAY", 
-         TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
-  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>%
-  summarise(TRIPS = sum(TOTAL_TRIPS))
-
-# check the summary statistics of resulting dataframe
-describe(odb10)
-```
-::: {.callout-note collapse="true" title="Functions"}
--   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame.
--   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables to a data frame or modify existing ones. Here, it converts `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` to factors.
--   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to subset rows based on specified conditions. In this code, it filters data for weekdays during morning peak hours (6 to 9 AM).
--   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package groups the data by specified columns, here by `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE`.
--   [summarise](https://dplyr.tidyverse.org/reference/summarise.html) from **dplyr** package calculates summary statistics for each group, in this case summing up `TOTAL_TRIPS`.
--   [describe](https://www.rdocumentation.org/packages/Hmisc/versions/4.4-0/topics/describe) from **Hmisc** package provides a detailed summary of an object's contents, typically offering statistics like mean, standard deviation, frequency, and others.
-:::
-
-::: {.callout-note collapse="true" title="How to Read the Output?"}
-The data provides details about the origin and destination points, along with the corresponding number of total trips, time information, and categorization based on day types. The variable summaries indicate the data distribution, with details such as the unique values, frequency, and descriptive statistics for each column.
-:::
-
-#### HDB
-For the HDB dataset, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
-As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
-Finally, the code will generate output of summary statistics of the resulting dataset. 
-```{r}
-# Load csv file
-hdb <- read_csv("../data/aspatial/hdb.csv")
-
-# check the summary statistics of resulting dataframe
-describe(hdb)
-```
 
 ### Geospatial
 the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data in general, check for duplicates, and display how the data looks like in Singapore map
@@ -436,7 +387,8 @@ tmap_mode('plot')
 
 # display the data in a map
 tm_shape(mpsz)+
-  tm_polygons(alpha = 0.3)
+  tm_polygons(alpha = 0.3) +
+  tm_layout(main.title = 'Singapore Planning Zone', main.title.position = "center")
 ```
 
 #### Bus Stop Location
@@ -484,51 +436,8 @@ tmap_mode('plot')
 tm_shape(mpsz)+
   tm_polygons(alpha = 0.3)+
   tm_shape(busstop)+
-  tm_dots()
-```
-
-#### Business
-```{r}
-biz <- st_read(dsn = "../data/geospatial",
-                   layer = "Business") %>%
-  st_transform(crs = 3414)
-
-glimpse(biz)
-```
-```{r}
-n_distinct(biz$geometry)
-```
-*considering some business might have branches, the duplicate condition here is only if all column value is the same*
-```{r}
-# check for duplicates based on unique id
-if_else(n_distinct(biz) == nrow(biz), "no duplicates detected", "possible duplicates detected")
-```
-show the duplicates
-```{r}
-# Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
-duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
-  arrange(POI_NAME)
-
-# Display the sorted rows with duplicate BUS_STOP_N
-head(duplicates)
-```
-
-The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 6550 to 6549
-
-```{r}
-# Keep one row of the duplicates in the original dataset
-biz <- busstop[!duplicated(biz) | duplicated(biz, fromLast = TRUE), ]
-
-# Display the resulting dataset
-glimpse(biz)
-```
-
-```{r}
-# visualize the output
-tm_shape(mpsz)+
-  tm_polygons(alpha = 0.01)+
-  tm_shape(biz)+
-  tm_dots(col = 'red')
+  tm_dots() +
+  tm_layout(main.title = 'Bus Stop Distribution Map', main.title.position = "center")
 ```
 
 #### Train Station
@@ -554,10 +463,11 @@ all MRT Station location are unique
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
-  tm_polygons(col = 'white', alpha = 0.5) +
+  tm_polygons(col = 'white', alpha = 0.01) +
   tm_shape(station) +
   tm_fill(col = 'green',
-          id = 'STN_NAM_DE')
+          id = 'STN_NAM_DE') +
+  tm_layout(main.title = 'MRT Station Distribution Map', main.title.position = "center")
 ```
 
 #### Train Exit
@@ -573,16 +483,59 @@ glimpse(trainexit)
 # check for duplicates based on unique id
 if_else(n_distinct(trainexit$geometry) == nrow(trainexit), "no duplicates detected", "possible duplicates detected")
 ```
-all MRT Station location are unique
+all MRT Station Exit location are unique
 
 ```{r}
-
 # visualize the data
 tm_shape(mpsz)+
   tm_polygons(alpha = 0.5)+
   tm_shape(trainexit)+
   tm_dots(col = 'blue',
-          id = 'exit_id')
+          id = 'exit_id') +
+  tm_layout(main.title = 'Train Station Exit Distribution Map', main.title.position = "center")
+```
+
+#### Business
+```{r}
+biz <- st_read(dsn = "../data/geospatial",
+                   layer = "Business") %>%
+  st_transform(crs = 3414)
+
+glimpse(biz)
+```
+*considering some business might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(biz) == nrow(biz), "no duplicates detected", "possible duplicates detected")
+```
+show the duplicates
+```{r}
+# Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
+duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
+  arrange(POI_NAME)
+
+# Display the sorted rows with duplicate BUS_STOP_N
+head(duplicates)
+```
+The output shows that it really is the same business.
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 6550 to 6549
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+biz <- biz[!duplicated(biz) | duplicated(biz, fromLast = TRUE), ]
+
+# Display the resulting dataset
+glimpse(biz)
+```
+visualize the distribution on the map
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.01)+
+  tm_shape(biz)+
+  tm_dots(col = 'red') +
+  tm_layout(main.title = 'Business Distribution Map', main.title.position = "center")
 ```
 
 #### Entertainment
@@ -593,30 +546,41 @@ entertn <- st_read(dsn = '../data/geospatial',
 
 glimpse(entertn)
 ```
+*considering some entertainment might have branches, the duplicate condition here is only if all column value is the same*
 ```{r}
-# checking unique value
-n_distinct(entertn$POI_NAME)
-n_distinct(entertn$POI_ST_NUM)
-n_distinct(entertn$POI_ST_NAM)
-n_distinct(entertn$POI_ID)
+# check for duplicates based on unique id
+if_else(n_distinct(entertn) == nrow(entertn), "no duplicates detected", "possible duplicates detected")
 ```
+show the duplicates
 ```{r}
-duplicated_rows <- entertn[duplicated(entertn$POI_ID) | duplicated(entertn$POI_ID, fromLast = TRUE), ]
-duplicated_rows
+# Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
+duplicates <- entertn[duplicated(entertn) | duplicated(entertn, fromLast = TRUE), ] %>%
+  arrange(POI_NAME)
+
+# Display the sorted rows with duplicateW
+head(duplicates)
 ```
+The output shows that it really is the same entertainment
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 114 to 113
 
 ```{r}
-# create a unique identifier
-entertn <- mutate(entertn, POI_ID = paste(POI_NAME, POI_ST_NUM, POI_ST_NAM, sep = ' '))
+# Keep one row of the duplicates in the original dataset
+entertn <- entertn[!duplicated(entertn) | duplicated(entertn, fromLast = TRUE), ]
 
+# Display the resulting dataset
+glimpse(entertn)
+```
+visualize the distribution on the map
+```{r}
 # visualize the output
 tm_shape(mpsz)+
-  tm_polygons(alpha = 0.5)+
+  tm_polygons(alpha = 0.01)+
   tm_shape(entertn)+
   tm_dots(col = 'cyan',
-          id = 'POI_NAME')
+          id = 'POI_NAME') +
+  tm_layout(main.title = 'Entertainment Distribution Map', main.title.position = "center")
 ```
-
 #### Food & Beverage
 ```{r}
 fnb <- st_read(dsn = '../data/geospatial',
@@ -625,14 +589,22 @@ fnb <- st_read(dsn = '../data/geospatial',
 
 glimpse(fnb)
 ```
+*considering some F & B might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(fnb) == nrow(fnb), "no duplicates detected", "possible duplicates detected")
+```
+
+visualize the distribution on the map
 
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
-  tm_polygons(alpha = 0.5)+
+  tm_polygons(alpha = 0.01)+
   tm_shape(fnb)+
-  tm_dots(col = 'cyan',
-          id = 'POI_NAME')
+  tm_dots(col = 'magenta',
+          id = 'POI_NAME') +
+  tm_layout(main.title = 'Food & Beverage Distribution Map', main.title.position = "center")
 ```
 #### Financial Services
 ```{r}
@@ -642,37 +614,393 @@ finance <- st_read(dsn = '../data/geospatial',
 
 glimpse(finance)
 ```
+*considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(finance) == nrow(finance), "no duplicates detected", "possible duplicates detected")
+```
+show the duplicates
+```{r}
+# Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
+duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE), ] %>%
+  arrange(POI_NAME, POI_ST_NAM)
 
+# Display the sorted rows with duplicatew
+kable(head(duplicates, n=20))
+```
+The output shows that it really is the same financial service
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 3320 to 3058
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+finance <- finance[!duplicated(finance) | duplicated(finance, fromLast = TRUE), ]
+
+# Display the resulting dataset
+glimpse(finance)
+```
+
+visualize the distribution on the map
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
-  tm_polygons(alpha = 0.5)+
-  tm_shape(fnb)+
-  tm_dots(col = 'cyan',
-          id = 'POI_NAME')
+  tm_polygons(alpha = 0.01)+
+  tm_shape(finance)+
+  tm_dots(col = 'black',
+          id = 'POI_NAME') +
+  tm_layout(main.title = 'Financial Service Distribution Map', main.title.position = "center")
 ```
 
 #### Leisure & Recreation
+```{r}
+lnr <- st_read(dsn = '../data/geospatial',
+                   layer = 'Liesure&Recreation') %>%
+  st_transform(crs = 3414)
+
+glimpse(lnr)
+```
+```{r}
+n_distinct(lnr$LINK_ID)
+n_distinct(lnr$POI_ID)
+n_distinct(lnr$geometry)
+```
+
+*considering some leisure & recreation might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(lnr) == nrow(lnr), "no duplicates detected", "possible duplicates detected")
+```
+visualize the distribution on the map
+```{r}
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(alpha = 0.01)+
+  tm_shape(lnr)+
+  tm_dots(col = 'coral',
+          id = 'POI_NAME') +
+  tm_layout(main.title = 'Leisure & Recreation Distribution Map', main.title.position = "center")
+```
 
 #### Retails
-
-#### Hexagon 
 ```{r}
+retails <- st_read(dsn = '../data/geospatial',
+                   layer = 'Retails') %>%
+  st_transform(crs = 3414)
 
+glimpse(retails)
 ```
+*considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+```{r}
+# check for duplicates based on unique id
+if_else(n_distinct(retails) == nrow(retails), "no duplicates detected", "possible duplicates detected")
+```
+
+show the duplicates
+```{r}
+# Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
+duplicates <- retails[duplicated(retails) | duplicated(retails, fromLast = TRUE), ] %>%
+  arrange(POI_NAME, POI_ST_NAM)
+
+# Display the sorted rows with duplicatew
+kable(head(duplicates, n=20))
+```
+The output indicates that it really is the same retail business
+
+The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 37635 to 37463
+
+```{r}
+# Keep one row of the duplicates in the original dataset
+retails <- retails[!duplicated(retails) | duplicated(retails, fromLast = TRUE), ]
+
+# Display the resulting dataset
+glimpse(retails)
+```
+visualize the distribution on the map
+```{r}
+# visualize the output
+tm_shape(mpsz) +
+  tm_polygons(alpha = 0.01) +
+  tm_shape(finance) +
+  tm_dots(col = 'lightcoral', id = 'POI_NAME') +
+  tm_layout(main.title="Retail Distribution Map", main.title.position = "center")
+```
+
 
 :::
 
 
+### Aspatial
+
+This subsection will import the aspatial data used in this project and check it. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
+
+#### Passenger Volume
+Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
+As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
+Finally, the code will generate output of summary statistics of the resulting dataset. 
+```{r}
+# Load csv file
+odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
+
+# change georeference data type into factors
+odb10 <- odb10 %>%
+  mutate(
+    ORIGIN_PT_CODE = as.factor(ORIGIN_PT_CODE),
+    DESTINATION_PT_CODE = as.factor(DESTINATION_PT_CODE)
+  )
+
+# filter and group the data
+odb10 <- odb10 %>%
+  filter(DAY_TYPE == "WEEKDAY", 
+         TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+
+# check the summary statistics of resulting dataframe
+describe(odb10)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame.
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables to a data frame or modify existing ones. Here, it converts `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` to factors.
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to subset rows based on specified conditions. In this code, it filters data for weekdays during morning peak hours (6 to 9 AM).
+-   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package groups the data by specified columns, here by `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE`.
+-   [summarise](https://dplyr.tidyverse.org/reference/summarise.html) from **dplyr** package calculates summary statistics for each group, in this case summing up `TOTAL_TRIPS`.
+-   [describe](https://www.rdocumentation.org/packages/Hmisc/versions/4.4-0/topics/describe) from **Hmisc** package provides a detailed summary of an object's contents, typically offering statistics like mean, standard deviation, frequency, and others.
+:::
+
+::: {.callout-note collapse="true" title="How to Read the Output?"}
+The data provides details about the origin and destination points, along with the corresponding number of total trips, time information, and categorization based on day types. The variable summaries indicate the data distribution, with details such as the unique values, frequency, and descriptive statistics for each column.
+:::
+
+#### HDB
+For the HDB dataset
+```{r}
+# Load csv file
+hdb <- read_csv("../data/aspatial/hdb.csv")
+
+# check the data
+glimpse(hdb)
+```
+visualize the distribution
+```{r}
+hdb_sf <- st_as_sf(hdb,
+                   coords = c("lng", "lat"),
+                   crs = 4326) %>%
+  st_transform(crs = 3414)
+
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(col = 'white', alpha = 0.01) +
+  tm_shape(hdb_sf) +
+  tm_dots(col = 'lightblue',
+          id = 'building') +
+  tm_layout(main.title = 'HDB Distribution Map', main.title.position = "center")
+```
+
+
+#### School
+For the School dataset
+
+Geocoding is the conversion of an address or postal code into geographic coordinates, typically latitude and longitude. The Singapore Land Authority offers the [OneMap API](https://www.onemap.gov.sg/apidocs/), specifically the [Search](https://www.onemap.gov.sg/apidocs/apidocs) API, which retrieves latitude, longitude, and x,y coordinates for a given address or postal code.
+
+To perform geocoding using the [SLA OneMap API](https://www.onemap.gov.sg/docs/#onemap-rest-apis), the provided code, written in R, reads input data from a CSV file using the *read_csv* function from the **readr** package. The **httr** package's HTTP call functions are then used to send individual records to the OneMap geocoding server.
+
+The geocoding process creates two data frames: `found` for successfully geocoded records and `not_found` for those that failed. The `found` data table is joined with the initial CSV data table using a unique identifier (POSTAL) and saved as a new CSV file named `found`.
+
+```{r}
+url <- "https://www.onemap.gov.sg/api/common/elastic/search"
+
+csv <- read_csv("../data/aspatial/Generalinformationofschools.csv")
+postcodes <- csv$postal_code
+
+found <- data.frame()
+not_found <- data.frame()
+
+for(postcode in postcodes){
+  query <-list('searchVal' = postcode, 'returnGeom'='Y', 'getAddrDetails'='Y', 'pageNum' = '1')
+  res  <- GET(url, query=query)
+  
+  if((content(res)$found)!=0)
+    found<-rbind(found, data.frame(content(res))[4:13])
+  else {
+  not_found = data.frame(postcode)
+  }
+}
+
+glimpse(found)
+```
+
+```{r}
+schools = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
+
+# manually add the Zhenghua Secondary School data
+schools[schools$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LATITUDE"] <- 1.3887
+schools[schools$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LONGITUDE"] <- 103.7652
+
+# check the output
+glimpse(schools)
+```
+visualize the distribution
+```{r}
+schools_sf <- schools %>%
+  rename(
+    latitude = "results.LATITUDE",
+    longitude = "results.LONGITUDE"
+  ) %>%
+  select(
+    postal_code, 
+    school_name, 
+    latitude, 
+    longitude
+  ) %>%
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs=4326
+  ) %>%
+  st_transform(
+    crs = 3414
+  )
+
+# visualize the output
+tm_shape(mpsz)+
+  tm_polygons(col = 'white', alpha = 0.01) +
+  tm_shape(schools_sf) +
+  tm_dots(col = 'lightgreen',
+          id = 'building') +
+  tm_layout(main.title = 'Schools Distribution Map', main.title.position = "center")
+```
+
 # Data Wrangling
+## Create Hexagon Layer 
+```{r}
+# Create hexagonal grid based on bus stop locations
+hexagonal_grid <- st_make_grid(busstop,
+                               cellsize = 750,
+                               what = "polygons",
+                               square = FALSE)
 
-## Check for Duplicates
+# Convert hexagonal grid to spatial dataframe
+hex_grid_sf <- st_sf(hex_grid = hexagonal_grid) %>%
+  mutate(hexagon_id = 1:length(lengths(hexagonal_grid)))
 
-## Derive Counts in Supporting Data
+# Count the number of bus stops within each hexagon
+hex_grid_sf$num_bus_stops = lengths(st_intersects(hex_grid_sf, busstop))
 
-## Aggregate The Data
+# Filter hexagons with at least one bus stop
+hexagons_with_bus_stops <- filter(hex_grid_sf, num_bus_stops > 0)
 
-##
+# check the output
+glimpse(hexagons_with_bus_stops)
+```
+visualize the output
+```{r}
+# Plot the number of bus stops per hexagon with a color gradient and legend
+tm_shape(hexagons_with_bus_stops) +
+  tm_borders() +
+  tm_fill("num_bus_stops",
+          title = "Bus Stop Density",
+          style = "jenks",
+          palette = "YlOrRd",
+          legend.show = TRUE) +
+  tm_layout(main.title = 'Bus Stop Density in Hexagonal Grid',
+            main.title.position = "center",
+            legend.position = c("right", "top"))
+```
+## Combine Bus Stop and Hexagon
+```{r}
+# Perform a spatial join
+busstop_with_hex_info <- st_join(busstop, hexagons_with_bus_stops, by = NULL, join = st_within)
+
+# Select the relevant columns
+busstop_with_hex_info <- busstop_with_hex_info %>%
+  select(BUS_STOP_N, BUS_ROOF_N, LOC_DESC, hexagon_id, geometry) %>%
+  mutate(
+    BUS_STOP_N = as.factor(BUS_STOP_N)
+  )
+
+# Display the resulting data
+glimpse(busstop_with_hex_info)
+```
+## Combine Trips and Hexagon
+```{r}
+# Add origin_hex to odb10
+odb_hex <- odb10 %>%
+  left_join(busstop_with_hex_info %>% select(BUS_STOP_N, hexagon_id), 
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(origin_hex = hexagon_id)
+
+# Add destination_hex to odb10
+odb_hex <- odb_hex %>%
+  left_join(busstop_with_hex_info %>% select(BUS_STOP_N, hexagon_id), 
+            by = c("DESTINATION_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(destination_hex = hexagon_id)
+
+# Remove additional geometry columns
+odb_hex <- odb_hex %>%
+  select(-contains("geometry."))
+
+# Convert hex id to factor
+odb_hex <- odb_hex %>%
+  mutate(
+    origin_hex = as.factor(origin_hex),
+    destination_hex = as.factor(destination_hex)
+  )
+
+# check the output
+glimpse(odb_hex)
+```
+## Final Duplicate Checking
+```{r}
+if_else(n_distinct(odb_hex) == nrow(odb_hex), "no duplicates detected", "possible duplicates detected")
+```
+## Construct O-D Matrix of Commuter Flows
+```{r}
+# Remove rows with missing values
+clean_odb <- odb_hex[complete.cases(odb_hex), ]
+
+# Aggregate data based on origin_hex and destination_hex
+odb_flow <- clean_odb %>%
+  group_by(origin_hex, destination_hex) %>%
+  summarise(trips = sum(TRIPS),
+            origin_hex = unique(origin_hex),
+            destination_hex = unique(destination_hex)) %>%
+  ungroup()
+
+# check the output
+glimpse(odb_flow)
+```
+## Remove Intra-Zonal Flows
+```{r}
+odb_flow <- odb_flow %>%
+  filter(as.character(origin_hex) != as.character(destination_hex))
+
+# check the output
+glimpse(odb_flow)
+```
+
+# Visualize the Flow
+## Use Styles
+
+## Filter by Trips
+use summary statistics to determine the cutoff
+## Filter by Distance
+use summary statistics to determine the cutoff
+
+## Use GIF
+
+# Assembling the Variables
+## Distance
+
+## Push
+show flow vs variables
+## Pull
+show flow vs variables
+
+# Spatial Interaction Model
+## Run the Model
+
+## Compare The Result
+
+
 
 # References
 
