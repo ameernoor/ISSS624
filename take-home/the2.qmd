@@ -812,20 +812,42 @@ tm_shape(mpsz)+
 :::
 
 #### Food & Beverage
+::: panel-tabset
+##### import
 the following code will import the F&B point of interest dataset and assign the correct coordinate reference.
 ```{r}
 fnb <- st_read(dsn = '../data/geospatial',
                      layer = 'F&B') %>%
   st_transform(crs = 3414)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "F&B" layer (likely representing food and beverage establishments) from the data source located at `"../data/geospatial"`.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `fnb` to 3414.
+:::
 
+##### glimpse
+using glimpse, we can see the structure of the data
+```{r}
 glimpse(fnb)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+[glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+##### check duplicates
 next, check for possible duplicates using this code.
 *considering some F & B might have branches, the duplicate condition here is only if all column value is the same*
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(fnb) == nrow(fnb), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `fnb` data frame.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `fnb`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `fnb` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
+
+##### distribution map
 since no duplicate is found, we can immediately try to visualize how does the F&B distribution looks like in the map using the following code.
 ```{r}
 # visualize the output
@@ -836,23 +858,51 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Food & Beverage Distribution Map', main.title.position = "center")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for both `mpsz` (planning zones) and `fnb` (food and beverage locations).
+-   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map, with the alpha parameter setting the transparency for the `mpsz` polygons.
+-   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots) adds a layer of dots to the map, representing `fnb` data. The dots are colored magenta and identified by `POI_NAME`.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) customizes the layout of the map, including the main title and its position.
+-   This code snippet creates a thematic map displaying the distribution of food and beverage outlets (`fnb`) over a minimally styled polygonal map of planning zones (`mpsz`).
+:::
+:::
 
 #### Financial Services
+
+::: panel-tabset
+##### import
+
 the following code will import the financial services point of interest dataset and assign the correct coordinate reference.
 ```{r}
 finance <- st_read(dsn = '../data/geospatial',
                    layer = 'FinServ') %>%
   st_transform(crs = 3414)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "FinServ" layer (likely representing financial services) from the data source located at `"../data/geospatial"`.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `finance` to 3414.
+:::
 
+##### glimpse
+```{r}
 glimpse(finance)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+##### check duplicates
 next, check for possible duplicates using this code.
 *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
-
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(finance) == nrow(finance), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `finance` data frame.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `finance`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `finance` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
 
 since duplicates is found, we will try to check what are the duplicated value using the following code. 
 ```{r}
@@ -863,6 +913,12 @@ duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE)
 # Display the sorted rows with duplicatew
 kable(head(duplicates, n=20))
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R identifies duplicate elements in a vector or rows in a data frame. Here, it's used to find duplicate rows in the `finance` data frame.
+-   [arrange](https://dplyr.tidyverse.org/reference/arrange.html) from **dplyr** package sorts a data frame by one or more columns. In this case, `arrange` is used to sort the `duplicates` data frame by `POI_NAME` and `POI_ST_NAM`.
+-   [kable](https://www.rdocumentation.org/packages/knitr/versions/1.28/topics/kable) from the **knitr** package creates a simple table from a data frame or matrix. This function is used to display the first 20 rows of the `duplicates` data frame in a markdown table format.
+-   This code snippet identifies, sorts, and displays the first 20 duplicate rows in the `finance` data frame, sorted by the Point of Interest (POI) name and street name.
+:::
 
 Based on the table, we can see that the duplicates does comes from the same financial service point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 3320 to 3058
 ```{r}
@@ -872,6 +928,14 @@ finance <- finance[!duplicated(finance) | duplicated(finance, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(finance)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the entire `finance` data frame to find duplicates.
+-   The subset operation (`finance[...]`) is used to keep only one row for each duplicate in `finance`. The logical condition `!duplicated(finance)` keeps the first occurrence of each duplicate, and `duplicated(finance, fromLast = TRUE)` keeps the last occurrence.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+-   This code snippet removes duplicate rows from the `finance` data frame, retaining only one occurrence of each duplicate, and then provides an overview of the resulting data frame.
+:::
+
+##### distribution map
 next, we try to visualize how does the financial services point of interest distribution looks like in the map using the following code.
 ```{r}
 # visualize the output
@@ -882,30 +946,47 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Financial Service Distribution Map', main.title.position = "center")
 ```
+:::
 
 #### Leisure & Recreation
+
+::: panel-tabset
+##### import
 the following code will import the leisure & recreation point of interest dataset and assign the correct coordinate reference.
 ```{r}
 lnr <- st_read(dsn = '../data/geospatial',
                    layer = 'Liesure&Recreation') %>%
   st_transform(crs = 3414)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "Liesure&Recreation" layer (presumably representing leisure and recreation locations) from the data source located at `"../data/geospatial"`.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `lnr` to 3414.
+:::
 
+##### glimpse
+using glimpse, we can see the structure of the data
+```{r}
 glimpse(lnr)
 ```
 ::: {.callout-note collapse="true" title="Functions"}
--   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` and `lnr` (Leisure & Recreation) datasets.
--   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map. For `mpsz`, the polygons are set with high transparency (`alpha = 0.01`).
--   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots) adds a layer of dots to the map, representing the `lnr` data. The color and identifier (`id`) of the dots are specified.
--   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) customizes the layout of the map, including the main title and its position.
--   This code snippet creates a thematic map displaying the distribution of leisure and recreation points of interest (POIs) over a minimally styled polygonal map of planning zones (`mpsz`).
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+-   This function is used here to display an overview of the `lnr` data frame, which contains spatial data related to leisure and recreation facilities. The output will give insights into the types and structures of the data available in `lnr`, such as column names, data types, and sample values.
 :::
 
+##### check duplicates
 next, check for possible duplicates using this code.
 *considering some leisure & recreation might have branches, the duplicate condition here is only if all column value is the same*
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(lnr) == nrow(lnr), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `lnr` data frame.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `lnr`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `lnr` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
+
+##### distribution map
 since no duplicate is found, we can immediately try to visualize how does the leisure & entertainment point of interest distribution looks like in the map using the following code.
 ```{r}
 # visualize the output
@@ -916,23 +997,56 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Leisure & Recreation Distribution Map', main.title.position = "center")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` and `lnr` (Leisure & Recreation) datasets.
+-   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map. For `mpsz`, the polygons are set with high transparency (`alpha = 0.01`).
+-   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots) adds a layer of dots to the map, representing the `lnr` data. The color and identifier (`id`) of the dots are specified.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) customizes the layout of the map, including the main title and its position.
+-   This code snippet creates a thematic map displaying the distribution of leisure and recreation points of interest (POIs) over a minimally styled polygonal map of planning zones (`mpsz`).
+
+:::
+:::
 
 #### Retails
+
+::: panel-tabset
+
+##### import
 the following code will import the retails point of interest dataset and assign the correct coordinate reference.
 ```{r}
 retails <- st_read(dsn = '../data/geospatial',
                    layer = 'Retails') %>%
   st_transform(crs = 3414)
+```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used to read simple features from a file or database. In this code, it's applied to the `Retails` layer of the `geospatial` data source to import the spatial data as an `sf` object.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package is used to transform the coordinate reference system (CRS) of the `sf` object. In this code, it's applied to the `retails` object to change its CRS to `3414`, which is the code for SVY21 / Singapore TM projection.
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R is used to provide a summary of the `sf` object, including its dimensions, geometry type, CRS, and a summary of each column. It's used to display the summary of the `retails` object after transforming its CRS.
+:::
 
+##### glimpse
+using glimpse, we can see the structure of the data
+```{r}
 glimpse(retails)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+-   This function is used here to display an overview of the `retails` data frame. The output will give insights into the types and structures of the data available in `retails`, such as column names, data types, and sample values. Since the content and structure of the `retails` data frame are not detailed in the prompt, it's assumed to contain retail-related spatial data.
+:::
 
+##### check duplicates
 next, check for possible duplicates using this code.
 *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(retails) == nrow(retails), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `retails` data frame.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `retails`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `retails` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
+
 since duplicates is found, we will try to check what are the duplicated value using the following code. 
 ```{r}
 # Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
@@ -943,6 +1057,13 @@ duplicates <- retails[duplicated(retails) | duplicated(retails, fromLast = TRUE)
 kable(head(duplicates, n=20))
 ```
 
+::: {.callout-note collapse="true" title="Functions"}
+-   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the `retails` data frame to find duplicates.
+-   The subset operation (`retails[...]`) is used to keep only one row for each duplicate in `retails`. The logical condition `duplicated(retails)` keeps the first occurrence of each duplicate, and `duplicated(retails, fromLast = TRUE)` keeps the last occurrence.
+-   [arrange](https://dplyr.tidyverse.org/reference/arrange.html) from **dplyr** package is used to reorder rows by column values. In this code, it's used to sort the `duplicates` data frame by `POI_NAME` and `POI_ST_NAM`.
+-   [kable](https://bookdown.org/yihui/rmarkdown-cookbook/kable.html) from **knitr** package is used to create a markdown table from a data frame. In this code, it's used to display the first 20 rows of the `duplicates` data frame.
+:::
+
 Based on the table, we can see that the duplicates does comes from the same retail point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 37635 to 37463
 ```{r}
 # Keep one row of the duplicates in the original dataset
@@ -951,6 +1072,15 @@ retails <- retails[!duplicated(retails) | duplicated(retails, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(retails)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the entire `retails` data frame to find duplicates.
+-   The subset operation (`retails[...]`) is used to keep only one row for each duplicate in `retails`. The logical condition `!duplicated(retails)` keeps the first occurrence of each duplicate, and `duplicated(retails, fromLast = TRUE)` keeps the last occurrence.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+-   This code snippet removes duplicate rows from the `retails` data frame, retaining only one occurrence of each duplicate, and then provides an overview of the resulting data frame.
+:::
+
+
+##### distribution map
 next, we try to visualize how does the retail point of interest distribution looks like in the map using the following code.
 ```{r}
 # visualize the output
@@ -960,6 +1090,13 @@ tm_shape(mpsz) +
   tm_dots(col = 'lightcoral', id = 'POI_NAME') +
   tm_layout(main.title="Retail Distribution Map", main.title.position = "center")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` (planning zones) and `retails` (retail locations).
+-   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map. For `mpsz`, the polygons are set with high transparency (`alpha = 0.01`).
+-   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots) adds a layer of dots to the map, representing `retails` data. The dots are colored light coral and are identified by `POI_NAME`.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) customizes the layout of the map, including the main title and its position.
+-   This code snippet creates a thematic map displaying the distribution of retail outlets (`retails`) over a minimally styled polygonal map of planning zones (`mpsz`).
+:::
 
 :::
 
@@ -1015,6 +1152,11 @@ hdb <- read_csv("../data/aspatial/hdb.csv")
 # check the data
 glimpse(hdb)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame. In this code, it reads data from a file located at `"../data/aspatial/hdb.csv"`, which likely contains information about Housing Development Board (HDB) properties.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+-   This code snippet imports and provides an overview of the `hdb` data frame, which presumably contains data related to HDB properties.
+:::
 
 To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of HDB across Singapore. 
 
@@ -1348,6 +1490,12 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to retain rows in a data frame based on a specified condition. In this code, it filters the `odb_flow` data frame to keep only the rows where `origin_hex` and `destination_hex` are different.
+-   The `as.character` function from **base** R is used to ensure that the comparison between `origin_hex` and `destination_hex` is done as character strings, likely because these columns are factors or some other class.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+-   This code snippet modifies the `odb_flow` data frame to exclude rows where the origin and destination hexagons are the same, then provides an overview of the resulting data.
+:::
 
 ::: {.callout-note collapse="true" title="Why intra-zonal flows is removed?"}
 The exclusion of intra-zonal flows from the Spatial Interaction Model calibration process is driven by the desire to focus on modeling and understanding interactions between different zones, without interference from flows within the same zone.
@@ -1379,12 +1527,21 @@ flowline <- od2line(flow = odb_flow,
 
 glimpse(flowline)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   `od2line` is function from [od](https://itsleeds.github.io/od/#:~:text=The%20od2line()%20function%2C%20for,movement%20between%20origins%20and%20destinations%3A&text=%23%3E%202%20LINESTRING%20(%2D1.518911%2053.79...)  used for converting origin-destination data (`odb_flow`) into spatial lines. It takes flow data and corresponding spatial zones (`hexagons_with_bus_stops`), and uses a zone identifier (`zone_code` set as 'hexagon_id') to create spatial lines representing the flow between origins and destinations.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
 
 ## 3rd Quantile Trips (175)
 Considering the volume of the flowline, we will try to focus on the most important part of the flows. Firstly, we will try to filter on the 3rd Quantile. To do that, the following code will get the quantile of the trips.
 ```{r}
 summary(flowline$trips)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the `trips` column in the `flowline` data frame.
+-   This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the `trips` column.
+-   This code snippet is useful for getting a quick statistical overview of the `trips` data, such as understanding its distribution, central tendency, and spread.
+:::
 
 We can see that the 3rd quantile is at 175 trips. The number will be used to plot the desire lines on the following code.
 ```{r}
@@ -1426,6 +1583,12 @@ Since filtering on 3rd quantile shows that the map is still hardly distinguishab
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.01), na.rm = TRUE)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `trips` column in the `flowline` data frame.
+-   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
+-   `na.rm = TRUE` indicates that NA (missing) values should be removed before the calculation.
+-   This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the `trips` data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.
+:::
 We can see that distinguishable increase can be seen on the 99th percentile at 6082 trips. The number will be used to plot the desire lines on the following code.
 ```{r}
 tmap_mode('plot')
@@ -1470,6 +1633,12 @@ Next, we will try to show desire lines with a filter on the distance to see wher
 ```{r}
 summary(flowline$distance)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the `distance` column in the `flowline` data frame.
+-   This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the `distance` column.
+-   This code snippet is useful for getting a quick statistical overview of the `distance` data, such as understanding its distribution, central tendency, and spread.
+:::
+
 We can see that the 3rd quantile is at 8923 distant. The number will be used to plot the desire lines on the following code.
 ```{r}
 tmap_mode('plot')
@@ -1550,6 +1719,13 @@ The last desire line map chart will try to see the spread of trips across decile
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.1), na.rm = TRUE)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `distance` column in the `flowline` data frame.
+-   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
+-   `na.rm = TRUE` indicates that NA (missing) values should be removed before the calculation.
+-   This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the `distance` data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.
+:::
+
 Next, we define the breaks and plot the chart that will show the spread of trips across decile of cutoff (with an additional arbitrary cutoff on high increase in trip volume). Then, the following code will also assign the cutoff as a column in the flowline dataframe.
 ```{r}
 flowline <- flowline %>%
@@ -1565,6 +1741,13 @@ flowline <- flowline %>%
 # check the output
 glimpse(flowline)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables or modify existing ones in a data frame. In this code, it adds a `decile` column to the `flowline` data frame.
+-   [cut](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut) from **base** R divides the range of a numeric vector (`trips` in this case) into intervals and codes the values according to which interval they fall. The `breaks` parameter defines the interval boundaries, and `labels` provides labels for these intervals. `ordered_result = TRUE` makes the result an ordered factor.
+-   This code snippet categorizes the `trips` data into deciles based on specified break points and labels each interval accordingly.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column.
+:::
+
 Based on the new ordinal column of decile group, we can plot the following map chart that shows the spread of trips volume.
 ```{r}
 #| eval: false
@@ -1706,6 +1889,28 @@ glimpse(factors_holder)
 -   [mutate_at](https://dplyr.tidyverse.org/reference/mutate_all.html) from **dplyr** package is used to apply a function to multiple columns that match a condition (here, columns that contain "push_est_pop").
 -   [coalesce](https://dplyr.tidyverse.org/reference/coalesce.html) from **dplyr** package replaces `NA` values with a specified value (0.99 in this case).
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+::: {.callout-note collapse="true" title="How does the HDB capacity estimated?"}
+To enhance our dataset with information from [Housing Development Board (HDB)](https://www.hdb.gov.sg/cs/infoweb/homepage) records, it's essential to recognize that HDB residential blocks are designed to house a varying number of residents. This diversity is due to the different types of flats available, each intended to cater to different family sizes and living arrangements. To accurately gauge the population within each HDB block, we employ a methodology that combines the count of dwelling units with an estimated occupancy rate.
+
+The occupancy rate is derived based on standard family compositions associated with each flat type as detailed on the HDB's types of flats page, which outlines the typical configurations offered to residents. Here’s how we estimate the population for each type of flat:
+
+- **1-room flats (sold or rental)**: Generally occupied by a single resident.
+  
+- **2-room flats (sold or rental)**: Typically house two individuals, which may be a couple or two single persons sharing a space.
+  
+- **3-room flats (sold or rental)**: Commonly accommodate a small family unit, presumed to be two adults and one child.
+  
+- **4-room flats and executive flats (sold)**: Usually inhabited by a standard family of four members, such as two adults and two children.
+  
+- **5-room flats (sold)**: Are spacious enough for larger families, presumed to consist of two adults and three children.
+
+- **Multi-generation flats (sold)**: Designed to support extended family living, these are estimated to house six individuals, including a pair of grandparents, a couple, and two children.
+
+- **Studio apartments (sold)**: Intended for elderly residents living alone.
+
+- **Other rental units**: If the categorization is not explicit, a general assumption of two residents is applied.
 :::
 
 ## Pull Factors
