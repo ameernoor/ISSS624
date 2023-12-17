@@ -210,14 +210,12 @@ the content of the following panel explained what aspatial and geospatial data a
 
 #### HDB
 
-The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset.
-The original dataset can be downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/150/view). However, the original dataset does not contain geoidentifier. The geoidentifier in the HDB dataset that is used here was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486).
+The dataset contains comprehensive information about various Housing and Development Board (HDB) blocks situated in Singapore. The dataset not only includes details on the number and types of dwelling units but also crucially provides the geographic coordinates, specifically the longitudes and latitudes, corresponding to each HDB block. This geographical information opens the door to transforming the dataset into a spatial data frame, enabling us to treat the HDB block details as a spatial object. By leveraging these coordinates, we can engage in spatial analysis and visualization, gaining valuable insights into the spatial distribution and relationships among different HDB blocks across Singapore. This spatial perspective enhances the depth of understanding and opens avenues for exploring the geographical patterns inherent in the HDB block dataset. The original dataset can be downloaded from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/150/view). However, the original dataset does not contain geoidentifier. The geoidentifier in the HDB dataset that is used here was provided by [Prof Kam Tin Seong](https://faculty.smu.edu.sg/profile/kam-tin-seong-486).
 
 #### School
+
 The School Directory and Information dataset, sourced from [Singapore's National Open Data Collection](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view), provides valuable information pertinent to the morning period, notably involving students commuting to school. The dataset encompasses details about the locations, implicitly indicated by the 'POSTAL_CODE' field, of MOE kindergartens, primary schools, secondary schools, and junior colleges. Notably, it excludes information on the locations of ITEs, polytechnics, and universities. With a total of 346 records, this dataset serves as a comprehensive resource for understanding the geographical distribution of various educational institutions.
-
 :::
-
 
 ### Geospatial
 
@@ -303,79 +301,94 @@ The following dataset will support as propulsive/attractive factors for the mode
 Before starting with the analysis, we have to load the library and import the data. This section also contains minor checking and setup of the data.
 
 ## Import Library
+
 The following code chunk utilizing [pacman](https://www.rdocumentation.org/packages/pacman/versions/0.5.1) will import the required library (and install it if it does not exist in the environment yet).
+
 ```{r}
 #| code-fold: false
-pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, h3jsr, units, httr, corrplot, gifski)
+pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplanr, reshape2, skimr, performance, plotly, httr, corrplot, gifski)
 ```
 
 ::: {.callout-note collapse="true" title="Packages Explanations"}
-- [tmap](https://cran.r-project.org/web/packages/tmap/): Used for creating thematic maps in R, both static and interactive, with extensive mapping capabilities.
+-   [tmap](https://cran.r-project.org/web/packages/tmap/): Used for creating thematic maps in R, both static and interactive, with extensive mapping capabilities.
 
-- [sf](https://r-spatial.github.io/sf/): Handles and manipulates geospatial data, enabling operations like reading, writing, transforming, and visualizing spatial data.
+-   [sf](https://r-spatial.github.io/sf/): Handles and manipulates geospatial data, enabling operations like reading, writing, transforming, and visualizing spatial data.
 
-- [tidyverse](https://www.tidyverse.org/): A suite of R packages designed for data science tasks, including data manipulation, exploration, and visualization.
+-   [tidyverse](https://www.tidyverse.org/): A suite of R packages designed for data science tasks, including data manipulation, exploration, and visualization.
 
-- [sfdep](https://cran.r-project.org/web/packages/sfdep/index.html): This package provides methods for measuring and diagnosing spatial dependence in linear regression models, particularly when working with spatial econometrics. It is tailored to work with 'sf' objects, which are used to handle spatial data in R. 
+-   [sfdep](https://cran.r-project.org/web/packages/sfdep/index.html): This package provides methods for measuring and diagnosing spatial dependence in linear regression models, particularly when working with spatial econometrics. It is tailored to work with 'sf' objects, which are used to handle spatial data in R.
 
-- [knitr](https://yihui.org/knitr/): Allows for dynamic report generation with R, making it easy to integrate R code into reports and weave together narrative text and code output.
+-   [knitr](https://yihui.org/knitr/): Allows for dynamic report generation with R, making it easy to integrate R code into reports and weave together narrative text and code output.
 
-- [Hmisc](https://cran.r-project.org/web/packages/Hmisc/index.html): Contains many functions useful for data analysis, high-level graphics, utility operations, and functions for dealing with missing values.
+-   [Hmisc](https://cran.r-project.org/web/packages/Hmisc/index.html): Contains many functions useful for data analysis, high-level graphics, utility operations, and functions for dealing with missing values.
 
-- [mapview](https://cran.r-project.org/web/packages/mapview/index.html): Facilitates the interactive viewing of spatial data in R, built on top of Leaflet.js.
+-   [mapview](https://cran.r-project.org/web/packages/mapview/index.html): Facilitates the interactive viewing of spatial data in R, built on top of Leaflet.js.
 
-- [DT](https://rstudio.github.io/DT/): Provides an R interface to the JavaScript library DataTables, useful for creating interactive tables in R markdown documents and Shiny apps.
+-   [DT](https://rstudio.github.io/DT/): Provides an R interface to the JavaScript library DataTables, useful for creating interactive tables in R markdown documents and Shiny apps.
 
-- [sp](https://cran.r-project.org/web/packages/sp/index.html): Provides classes and methods for spatial data, and has been superseded by `sf` but is still widely used for compatibility reasons.
+-   [sp](https://cran.r-project.org/web/packages/sp/index.html): Provides classes and methods for spatial data, and has been superseded by `sf` but is still widely used for compatibility reasons.
 
-- [stplanr](https://cran.r-project.org/web/packages/stplanr/index.html): Offers sustainable transport planning tools for spatial lines, networks, and movement data.
+-   [stplanr](https://cran.r-project.org/web/packages/stplanr/index.html): Offers sustainable transport planning tools for spatial lines, networks, and movement data.
 
-- [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html): An R package that allows you to flexibly reshape data, such as melting and casting data frames.
+-   [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html): An R package that allows you to flexibly reshape data, such as melting and casting data frames.
 
-- [skimr](https://cran.r-project.org/web/packages/skimr/index.html): Summarizes data in a frictionless way and produces a report with useful summary statistics.
+-   [skimr](https://cran.r-project.org/web/packages/skimr/index.html): Summarizes data in a frictionless way and produces a report with useful summary statistics.
 
-- [performance](https://cran.r-project.org/web/packages/performance/index.html): Assesses the quality and performance of statistical models, including checks for assumptions.
+-   [performance](https://cran.r-project.org/web/packages/performance/index.html): Assesses the quality and performance of statistical models, including checks for assumptions.
 
-- [plotly](https://plotly.com/r/): An R package that creates interactive web graphics using the plotly.js library.
+-   [plotly](https://plotly.com/r/): An R package that creates interactive web graphics using the plotly.js library.
 
-- [h3jsr](https://cran.r-project.org/web/packages/h3jsr/index.html): Provides an R interface to Uber's H3 spatial indexing system, allowing for the use of hexagonally-tiled maps.
+-   [httr](https://cran.r-project.org/web/packages/httr/index.html): Simplifies the process of working with HTTP requests, such as API calls.
 
-- [units](https://cran.r-project.org/web/packages/units/index.html): Allows for the symbolic handling of measurement units in R.
-
-- [httr](https://cran.r-project.org/web/packages/httr/index.html): Simplifies the process of working with HTTP requests, such as API calls.
-
-- [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html): Visualizes a correlation matrix, making it easier to understand the relationships between multiple variables.
+-   [gifski](https://cran.r-project.org/web/packages/gifski/index.html): Converts images, plots, or animations into high-quality GIFs using the gifski library.
 :::
 
 ## Data Import and Minor Wrangling
 
-This section will import the required aspatial and geospatial dataset. The process also involves minor data change before going to more complex data wrangling in the next section. 
-
+This section will import the required aspatial and geospatial dataset. The process also **involves minor data change** like **setting the correct reference system**, and **removing duplicates** before going to more complex data wrangling in the next section. 
 
 ### Geospatial
-the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data in general, check for duplicates, and display how the data looks like in Singapore map
 
-::: {.callout-note collapse="true" title="what is CRS Code?"}
+the following panel will show how each geospatial dataset is imported, modify the CRS Code to 3414 to standardize, check on the data in general, check for duplicates, and display how the data looks like in Singapore map.
+
+::: {.callout-note collapse="true" title="What is CRS Code?"}
+A Coordinate Reference System (CRS) Code is a standardized method for locating and describing positions on the Earth's surface. It helps define how geographic data is represented in maps and digital systems.
 :::
-
 
 ::: {.callout-note collapse="true" title="Why 3414?"}
+The CRS code 3414 specifically refers to the coordinate reference system used for geospatial data in Singapore. It's a unique identifier assigned to this specific system, allowing geographers and mapping software to accurately interpret and display location-based information for Singapore.
 :::
 
+::: panel-tabset
 #### MPSZ
-
+the following code will import the masterplan subzone 2019 dataset and assign the correct coordinate reference.
 ```{r}
-mpsz <- st_read(dsn='../data/geospatial',
-                layer='MPSZ-2019') %>% 
-  st_transform(crs=3414)
+# Read spatial data for MPSZ-2019 and transform CRS
+mpsz <- st_read(dsn='../data/geospatial',  # Specify data source directory
+                layer='MPSZ-2019') %>%    # Specify layer to read
+  st_transform(crs=3414)                  # Transform CRS to 3414
 
+# View the structure and contents of the mpsz data frame
 glimpse(mpsz)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package imports spatial vector data into R. It specifies the data source (`dsn`) and layer (`layer`). Here, it reads the 'MPSZ-2019' layer from the specified directory.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of spatial data. In this case, it transforms the CRS of `mpsz` to 3414.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+next, check for possible duplicates using this code.
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(mpsz$SUBZONE_N) == nrow(mpsz), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. In this code, it's used to count the unique values in `mpsz$SUBZONE_N`.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `mpsz`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this context, it checks if the number of unique `SUBZONE_N` values equals the total number of rows in `mpsz`. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
 
+since no duplicate is found, we can immediately try to visualize how does the master plan looks like in the map using the following code.
 ```{r}
 # set tmap mode (plot for lighter rendering, view for analysis)
 tmap_mode('plot')
@@ -385,8 +398,16 @@ tm_shape(mpsz)+
   tm_polygons(alpha = 0.3) +
   tm_layout(main.title = 'Singapore Planning Zone', main.title.position = "center")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. The mode `'plot'` is chosen here for static map plotting, which is typically lighter and faster for rendering compared to the interactive `'view'` mode.
+-   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data (`mpsz` in this case) for plotting.
+-   [tm_polygons](https://rdrr.io/cran/tmap/man/tm_polygons.html) from **tmap** package adds a layer of polygons to the map, with an alpha parameter to adjust the transparency of these polygons.
+-   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) from **tmap** package customizes the layout of the map, including the title and its position.
+-   This code snippet creates a thematic map displaying the Singapore Planning Zone with polygonal areas, each represented with a certain level of transparency.
+:::
 
 #### Bus Stop Location
+the following code will import the bus stop location dataset and assign the correct coordinate reference.
 ```{r}
 busstop <- st_read(dsn = "../data/geospatial",
                    layer = "BusStop") %>%
@@ -395,12 +416,21 @@ busstop <- st_read(dsn = "../data/geospatial",
 # check the data
 glimpse(busstop)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "BusStop" layer from the data source located at `"../data/geospatial"`.
+-   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `busstop` to 3414.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+:::
+
+Next, we will check for duplicates using the following code.
 *BUS_STOP_N is used as the basis for duplicate checking because it will be the reference in joining the data*
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(busstop$BUS_STOP_N) == nrow(busstop), "no duplicates detected", "possible duplicates detected")
 ```
-show the duplicates
+
+Since duplicates is found, we will try to check what are the duplicated value using the following code. 
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- busstop[duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP_N, fromLast = TRUE), ] %>%
@@ -413,7 +443,7 @@ nrow(duplicates)
 kable(head(duplicates, n = 32))
 ```
 
-The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 5161 to 5145.
+Based on the table, we can see that the duplicates does comes from the same bus stop code. Therefore, the folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 5161 to 5145.
 
 ```{r}
 # Keep one row of the duplicates in the original dataset
@@ -436,6 +466,7 @@ tm_shape(mpsz)+
 ```
 
 #### Train Station
+
 ```{r}
 station <- st_read(dsn = '../data/geospatial',
                         layer = 'RapidTransitSystemStation') %>%
@@ -448,11 +479,14 @@ station <- station %>%
 # check the data
 glimpse(station)
 ```
+
 *the duplicate consider geometry as the unique value*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(station$geometry) == nrow(station), "no duplicates detected", "possible duplicates detected")
 ```
+
 all MRT Station location are unique
 
 ```{r}
@@ -466,6 +500,7 @@ tm_shape(mpsz)+
 ```
 
 #### Train Exit
+
 ```{r}
 trainexit <- st_read(dsn = '../data/geospatial',
                      layer = 'Train_Station_Exit_Layer') %>%
@@ -473,11 +508,14 @@ trainexit <- st_read(dsn = '../data/geospatial',
 
 glimpse(trainexit)
 ```
+
 *the duplicate consider geometry as the unique value*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(trainexit$geometry) == nrow(trainexit), "no duplicates detected", "possible duplicates detected")
 ```
+
 all MRT Station Exit location are unique
 
 ```{r}
@@ -491,6 +529,7 @@ tm_shape(mpsz)+
 ```
 
 #### Business
+
 ```{r}
 biz <- st_read(dsn = "../data/geospatial",
                    layer = "Business") %>%
@@ -498,12 +537,16 @@ biz <- st_read(dsn = "../data/geospatial",
 
 glimpse(biz)
 ```
+
 *considering some business might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(biz) == nrow(biz), "no duplicates detected", "possible duplicates detected")
 ```
+
 show the duplicates
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
@@ -512,6 +555,7 @@ duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
 # Display the sorted rows with duplicate BUS_STOP_N
 head(duplicates)
 ```
+
 The output shows that it really is the same business.
 
 The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 6550 to 6549
@@ -523,7 +567,9 @@ biz <- biz[!duplicated(biz) | duplicated(biz, fromLast = TRUE), ]
 # Display the resulting dataset
 glimpse(biz)
 ```
+
 visualize the distribution on the map
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -534,6 +580,7 @@ tm_shape(mpsz)+
 ```
 
 #### Entertainment
+
 ```{r}
 entertn <- st_read(dsn = '../data/geospatial',
                      layer = 'entertn') %>%
@@ -541,12 +588,16 @@ entertn <- st_read(dsn = '../data/geospatial',
 
 glimpse(entertn)
 ```
+
 *considering some entertainment might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(entertn) == nrow(entertn), "no duplicates detected", "possible duplicates detected")
 ```
+
 show the duplicates
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- entertn[duplicated(entertn) | duplicated(entertn, fromLast = TRUE), ] %>%
@@ -555,6 +606,7 @@ duplicates <- entertn[duplicated(entertn) | duplicated(entertn, fromLast = TRUE)
 # Display the sorted rows with duplicateW
 head(duplicates)
 ```
+
 The output shows that it really is the same entertainment
 
 The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 114 to 113
@@ -566,7 +618,9 @@ entertn <- entertn[!duplicated(entertn) | duplicated(entertn, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(entertn)
 ```
+
 visualize the distribution on the map
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -576,7 +630,9 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Entertainment Distribution Map', main.title.position = "center")
 ```
+
 #### Food & Beverage
+
 ```{r}
 fnb <- st_read(dsn = '../data/geospatial',
                      layer = 'F&B') %>%
@@ -584,7 +640,9 @@ fnb <- st_read(dsn = '../data/geospatial',
 
 glimpse(fnb)
 ```
+
 *considering some F & B might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(fnb) == nrow(fnb), "no duplicates detected", "possible duplicates detected")
@@ -601,7 +659,9 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Food & Beverage Distribution Map', main.title.position = "center")
 ```
+
 #### Financial Services
+
 ```{r}
 finance <- st_read(dsn = '../data/geospatial',
                    layer = 'FinServ') %>%
@@ -609,12 +669,16 @@ finance <- st_read(dsn = '../data/geospatial',
 
 glimpse(finance)
 ```
+
 *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(finance) == nrow(finance), "no duplicates detected", "possible duplicates detected")
 ```
+
 show the duplicates
+
 ```{r}
 # Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
 duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE), ] %>%
@@ -623,6 +687,7 @@ duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE)
 # Display the sorted rows with duplicatew
 kable(head(duplicates, n=20))
 ```
+
 The output shows that it really is the same financial service
 
 The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 3320 to 3058
@@ -636,6 +701,7 @@ glimpse(finance)
 ```
 
 visualize the distribution on the map
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -647,6 +713,7 @@ tm_shape(mpsz)+
 ```
 
 #### Leisure & Recreation
+
 ```{r}
 lnr <- st_read(dsn = '../data/geospatial',
                    layer = 'Liesure&Recreation') %>%
@@ -654,6 +721,7 @@ lnr <- st_read(dsn = '../data/geospatial',
 
 glimpse(lnr)
 ```
+
 ```{r}
 n_distinct(lnr$LINK_ID)
 n_distinct(lnr$POI_ID)
@@ -661,11 +729,14 @@ n_distinct(lnr$geometry)
 ```
 
 *considering some leisure & recreation might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(lnr) == nrow(lnr), "no duplicates detected", "possible duplicates detected")
 ```
+
 visualize the distribution on the map
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -677,6 +748,7 @@ tm_shape(mpsz)+
 ```
 
 #### Retails
+
 ```{r}
 retails <- st_read(dsn = '../data/geospatial',
                    layer = 'Retails') %>%
@@ -684,13 +756,16 @@ retails <- st_read(dsn = '../data/geospatial',
 
 glimpse(retails)
 ```
+
 *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(retails) == nrow(retails), "no duplicates detected", "possible duplicates detected")
 ```
 
 show the duplicates
+
 ```{r}
 # Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
 duplicates <- retails[duplicated(retails) | duplicated(retails, fromLast = TRUE), ] %>%
@@ -699,6 +774,7 @@ duplicates <- retails[duplicated(retails) | duplicated(retails, fromLast = TRUE)
 # Display the sorted rows with duplicatew
 kable(head(duplicates, n=20))
 ```
+
 The output indicates that it really is the same retail business
 
 The folowing code chunk will execute the duplicate removal and show the result where number of rows have reduced from 37635 to 37463
@@ -710,7 +786,9 @@ retails <- retails[!duplicated(retails) | duplicated(retails, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(retails)
 ```
+
 visualize the distribution on the map
+
 ```{r}
 # visualize the output
 tm_shape(mpsz) +
@@ -720,18 +798,16 @@ tm_shape(mpsz) +
   tm_layout(main.title="Retail Distribution Map", main.title.position = "center")
 ```
 
-
 :::
-
 
 ### Aspatial
 
 This subsection will import the aspatial data used in this project and check it. The data includes Passenger Volume by Origin Destination Bus Stops and HDB data which explanations can be found in previous section.
 
 #### Passenger Volume
-Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing.
-As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value.
-Finally, the code will generate output of summary statistics of the resulting dataset. 
+
+Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing. As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value. Finally, the code will generate output of summary statistics of the resulting dataset.
+
 ```{r}
 # Load csv file
 odb10 <- read_csv("../data/aspatial/origin_destination_bus_202310.csv.gz")
@@ -753,6 +829,7 @@ odb10 <- odb10 %>%
 # check the summary statistics of resulting dataframe
 describe(odb10)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame.
 -   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables to a data frame or modify existing ones. Here, it converts `ORIGIN_PT_CODE` and `DESTINATION_PT_CODE` to factors.
@@ -767,7 +844,9 @@ The data provides details about the origin and destination points, along with th
 :::
 
 #### HDB
+
 For the HDB dataset
+
 ```{r}
 # Load csv file
 hdb <- read_csv("../data/aspatial/hdb.csv")
@@ -775,7 +854,9 @@ hdb <- read_csv("../data/aspatial/hdb.csv")
 # check the data
 glimpse(hdb)
 ```
+
 visualize the distribution
+
 ```{r}
 hdb_sf <- st_as_sf(hdb,
                    coords = c("lng", "lat"),
@@ -791,8 +872,8 @@ tm_shape(mpsz)+
   tm_layout(main.title = 'HDB Distribution Map', main.title.position = "center")
 ```
 
-
 #### Schools
+
 For the School dataset
 
 Geocoding is the conversion of an address or postal code into geographic coordinates, typically latitude and longitude. The Singapore Land Authority offers the [OneMap API](https://www.onemap.gov.sg/apidocs/), specifically the [Search](https://www.onemap.gov.sg/apidocs/apidocs) API, which retrieves latitude, longitude, and x,y coordinates for a given address or postal code.
@@ -836,6 +917,7 @@ glimpse(schools)
 ```
 
 visualize the distribution
+
 ```{r}
 schools_sf <- schools %>%
   rename(
@@ -866,7 +948,9 @@ tm_shape(mpsz)+
 ```
 
 # Data Wrangling
-## Create Hexagon Layer 
+
+## Create Hexagon Layer
+
 ```{r}
 # Create hexagonal grid based on bus stop locations
 hexagonal_grid <- st_make_grid(busstop,
@@ -889,6 +973,7 @@ glimpse(hexagons_with_bus_stops)
 ```
 
 visualize the output
+
 ```{r}
 # Plot the number of bus stops per hexagon with a color gradient and legend
 tm_shape(hexagons_with_bus_stops) +
@@ -902,7 +987,9 @@ tm_shape(hexagons_with_bus_stops) +
             main.title.position = "center",
             legend.position = c("right", "top"))
 ```
+
 ## Combine Bus Stop and Hexagon
+
 ```{r}
 # Perform a spatial join
 busstop_with_hex_info <- st_join(busstop, hexagons_with_bus_stops, by = NULL, join = st_within)
@@ -917,7 +1004,9 @@ busstop_with_hex_info <- busstop_with_hex_info %>%
 # Display the resulting data
 glimpse(busstop_with_hex_info)
 ```
+
 ## Combine Trips and Hexagon
+
 ```{r}
 # Add origin_hex to odb10
 odb_hex <- odb10 %>%
@@ -945,11 +1034,15 @@ odb_hex <- odb_hex %>%
 # check the output
 glimpse(odb_hex)
 ```
+
 ## Final Duplicate Checking
+
 ```{r}
 if_else(n_distinct(odb_hex) == nrow(odb_hex), "no duplicates detected", "possible duplicates detected")
 ```
+
 ## Construct O-D Matrix
+
 ```{r}
 # Remove rows with missing values
 clean_odb <- odb_hex[complete.cases(odb_hex), ]
@@ -967,6 +1060,7 @@ glimpse(odb_flow)
 ```
 
 ## Create Distance Variable
+
 ```{r}
 # set busstop to spatial
 busstop_sp <- as(busstop_with_hex_info, "Spatial")
@@ -1002,8 +1096,11 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+
 ## Remove Intra-Zonal Flows
+
 the following code chunk will remove intra-zonal flows
+
 ```{r}
 odb_flow <- odb_flow %>%
   filter(as.character(origin_hex) != as.character(destination_hex))
@@ -1011,6 +1108,7 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+
 ::: {.callout-note collapse="true" title="Why intra-zonal flows is removed?"}
 The exclusion of intra-zonal flows from the Spatial Interaction Model calibration process is likely driven by the desire to focus on modeling and understanding interactions between different zones, without interference from flows within the same zone.
 
@@ -1020,6 +1118,7 @@ Including intra-zonal flows in the model might introduce unnecessary complexity 
 :::
 
 # Visualize the Desire Lines
+
 firstly, create the line
 
 There are important arguments in od2line:
@@ -1030,7 +1129,6 @@ zones: The origin and destination of the travels should be passed here.
 
 zone_code: Name of the variable in zones containing the ids of the zones.
 
-
 ```{r}
 flowline <- od2line(flow = odb_flow, 
         zones = hexagons_with_bus_stops,
@@ -1040,10 +1138,13 @@ glimpse(flowline)
 ```
 
 ## 3rd Quantile Trips (175)
+
 ```{r}
 summary(flowline$trips)
 ```
+
 since trips without filter will be too messy, first trial will use the third quantile
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1061,12 +1162,15 @@ flowline %>%
            alpha = 0.2)+
   tm_layout(main.title = 'Weekday Morning Peak Flow for 3rd Quantile Trips', main.title.position = 'center')
 ```
+
 busier in central and east
 
 ## 99th Quantile Trips (6082)
+
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.01), na.rm = TRUE)
 ```
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1084,13 +1188,17 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flow for 99th Percentile Trips', main.title.position = 'center',
             main.title.size = 1.2)
 ```
+
 north-downtown, west-downton, north-east, and short trip becomes more visible
 
 ## 3rd Quantile Distance (8923)
+
 ```{r}
 summary(flowline$distance)
 ```
+
 since trips without filter will be too messy, first trial will use the third quantile
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1109,12 +1217,15 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flowline for 3rd Quantile Distance', main.title.position = 'center',
             main.title.size = 1.2)
 ```
+
 too messy
 
 ## 99th Quantile Distance (18587)
+
 ```{r}
 quantile(flowline$distance, probs = seq(0, 1, 0.01), na.rm = TRUE)
 ```
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1132,9 +1243,11 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile Distance', main.title.position = 'center',
             main.title.size = 1.2)
 ```
+
 more dense from all directions to downtown, and also slightly dense between north and east
 
 ## Spread Across Decile of Trips
+
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.1), na.rm = TRUE)
 ```
@@ -1153,6 +1266,7 @@ flowline <- flowline %>%
 # check the output
 glimpse(flowline)
 ```
+
 ```{r}
 #| eval: false
 trips_spread <- tm_shape(mpsz) +
@@ -1164,23 +1278,23 @@ tm_shape(flowline) +
   tm_facets(along = "decile", free.coords = FALSE)
 
 # Save animation as gif
-tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 1000,
-               outer.margins = NA, restart.delay=1500)
+tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 300,
+               outer.margins = NA, restart.delay=500)
 ```
-![](../images/trips_spread.gif)
-for the first 8 decile, the trips slightly change but still more dense on central.
-on the extra category of >5000, north-downtown, west-downtown, north-east, and short trip becomes more visible
 
-# Assemble Push & Pull Factors
+![](../images/trips_spread.gif) for the first 8 decile, the trips slightly change but still more dense on central. on the extra category of \>5000, north-downtown, west-downtown, north-east, and short trip becomes more visible
 
-## Push
+# Assembling Variables
+
+## Push Factors
+
 HDB, station, trainexit, proxy_pop, busstop
 
 station and trainexit that can function as transit are special case where they might be a push and pull factor. people might come from train station to take a bus or take a bus to go to a train station.
 
-
 ```{r}
-factors_holder <- hexagons_with_bus_stops
+factors_holder <- hexagons_with_bus_stops %>%
+  rename(push_num_bus_stops = num_bus_stops)
 
 # define function to add push poi counts columns
 add_push_poi_counts <- function(factors_holder, poi_datasets) {
@@ -1200,7 +1314,7 @@ add_push_poi_counts <- function(factors_holder, poi_datasets) {
 }
 
 # List of POI dataset names
-push_poi_datasets <- c("busstop", "station", "trainexit", "hdb_sf")
+push_poi_datasets <- c("station", "trainexit", "hdb_sf")
 
 # Call the function
 factors_holder <- add_push_poi_counts(factors_holder, push_poi_datasets)
@@ -1208,6 +1322,7 @@ factors_holder <- add_push_poi_counts(factors_holder, push_poi_datasets)
 # check the output
 glimpse(factors_holder)
 ```
+
 add approximate population of the location, based on estimated hdb capacity
 
 ```{r}
@@ -1229,7 +1344,7 @@ hdb_capacity <- hdb_sf %>%
 # get hexagon_id for hdb, then sum the capacity
 hdb_capacity <- st_join(hdb_capacity, hexagons_with_bus_stops, by = NULL, join = st_within) %>%
   group_by(hexagon_id) %>%
-  summarise(est_pop = sum(capacity)) %>%
+  summarise(push_est_pop = sum(capacity)) %>%
   st_drop_geometry()
 
 # Convert hexagon_id to character in both dataframes
@@ -1239,13 +1354,15 @@ hdb_capacity <- hdb_capacity %>% mutate(hexagon_id = as.character(hexagon_id))
 # Left join factors_holder and hdb_capacity by hexagon_id
 factors_holder <- left_join(factors_holder, hdb_capacity, by = "hexagon_id") %>%
   mutate(hexagon_id = as.factor(hexagon_id)) %>%  # Convert back to factor
-  mutate_at(vars(contains("est_pop")), list(~coalesce(., 0.99)))  # Fill missing values with 0.99 
+  mutate_at(vars(contains("push_est_pop")), list(~coalesce(., 0.99)))  # Fill missing values with 0.99 
 
 glimpse(factors_holder)
 ```
 
-## Pull
+## Pull Factors
+
 station, trainexit, biz, entertn, fnb, finance, lnr, retails, school
+
 ```{r}
 # define function to add pull poi counts columns
 add_pull_poi_counts <- function(factors_holder, poi_datasets) {
@@ -1273,20 +1390,434 @@ factors_holder <- add_pull_poi_counts(factors_holder, pull_poi_datasets)
 glimpse(factors_holder)
 ```
 
+## Final Dataset
+
+```{r}
+glimpse(odb_flow)
+```
+
+```{r}
+final_df <- left_join(odb_flow, factors_holder %>% select(starts_with("push_"), hexagon_id), by = c("origin_hex" = "hexagon_id"))
+
+final_df <- left_join(final_df, factors_holder %>% select(starts_with("pull_"), hexagon_id), by = c("destination_hex" = "hexagon_id"))
+
+final_df <- final_df %>%
+  select(-hex_grid.x, -hex_grid.y)
+
+# Assuming "final_df" is your data frame
+final_df <- final_df %>%
+  mutate(push_est_pop = ifelse(push_est_pop == 0, 0.99, push_est_pop))
+
+# Check the output
+glimpse(final_df)
+```
+
+```{r}
+#| eval: false
+write_rds(final_df, "../data/rds/final_df_the2.rds")
+```
+
 # Spatial Interaction Model
+
+first, re-import the data
+
+```{r}
+final_df <- read_rds("../data/rds/final_df_the2.rds")
+glimpse(final_df)
+```
+
+GLM model does not have a built in R2 value, therefore we build a function to calculate the R2. 
+```{r}
+CalcRSquared <- function(observed, estimated){
+  r <- cor(observed, estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+As explained in previous [section](Spatial Interaction Modeling) and [The Method], the Spatial Interaction Model used here are various type of the Gravity Model.
+
 ## Correlation Analysis
 
-## Run the Model
+Before running the model, its a good practice to check collinearity between the variables to prevent bumping into multicollinearity problem in the model.
+
+```{r}
+# Calculate correlation
+correlation_matrix <- cor(final_df[,3:18])
+
+# Generate correlation plot
+corrplot.mixed(correlation_matrix,
+               lower = "color",      # Use ellipse for lower part
+               upper = "number",     # Display correlation numbers in the upper part
+               tl.pos = "lt",        # Place variable names to the left and top
+               tl.col = "black",     # Set variable names color to black
+               tl.cex = 0.7,         # Set variable names font size
+               number.cex = 0.4      # Set correlation numbers font size
+               )
+```
+
+Upon examining the correlation matrix, using a conservative threshold of correlation value above 0.7, the highly correlated variables are as follows:
+
+1.  all station count and train exit count for each push and pull respectively have a strong positive correlation, suggesting that areas with a higher number of stations also tend to have a higher count of train exits. This result is quite expected.
+
+2.  push_hdb_sf_count and push_est_pop also show a strong positive correlation, which may imply that regions with a higher number of HDB (Housing Development Board) flats tend to have a larger estimated population, a logical relationship given that the data is derived from the same source. Nevertheless, this result might also be caused by many of the hexagonal grid actually do not have HDB in the vicinity.
+
+3.  pull_finance_count and pull_train_exit_count.
+
+4.  pull_fnb_count and pull_finance_count.
+
+5.  pull_fnb_count and pull_lnr_count.
+
+6.  pull_fnr_count and pull_retails_count
+
+::: {.notebox .lightbulb data-latex="lightbulb"}
+this finding will be considered as basis for eliminating some variables in the model. Nevertheless, for experimental and comparison purpose, models without variables elimination will also be run in the next section.
+:::
+
+## The 4 Models Without Elimination
+
+::: panel-tabset
+### Unconstrained
+```{r}
+uncSIM <- glm(formula = trips ~ 
+                log(push_num_bus_stops) +
+                log(push_station_count) +
+                log(push_trainexit_count) +
+                log(push_hdb_sf_count) +
+                log(push_est_pop) +
+                log(pull_station_count) +
+                log(pull_trainexit_count) +
+                log(pull_biz_count) +
+                log(pull_entertn_count) +
+                log(pull_fnb_count) +
+                log(pull_finance_count) +
+                log(pull_lnr_count) +
+                log(pull_retails_count) +
+                log(pull_schools_sf_count) +
+                log(distance),
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(uncSIM)
+CalcRSquared(uncSIM$data$trips, uncSIM$fitted.values)
+```
+
+### Origin Constrained
+```{r}
+orcSIM <- glm(formula = trips ~
+                log(pull_station_count) +
+                log(pull_trainexit_count) +
+                log(pull_biz_count) +
+                log(pull_entertn_count) +
+                log(pull_fnb_count) +
+                log(pull_finance_count) +
+                log(pull_lnr_count) +
+                log(pull_retails_count) +
+                log(pull_schools_sf_count) +
+                log(distance) +
+                origin_hex,
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(orcSIM)
+CalcRSquared(orcSIM$data$trips, orcSIM$fitted.values)
+```
+
+### Destination Constrained
+```{r}
+decSIM <- glm(formula = trips ~ 
+                log(push_num_bus_stops) +
+                log(push_station_count) +
+                log(push_trainexit_count) +
+                log(push_hdb_sf_count) +
+                log(push_est_pop) +
+                log(distance) +
+                destination_hex,
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(decSIM)
+CalcRSquared(decSIM$data$trips, decSIM$fitted.values)
+```
+
+### Doubly Constrained
+```{r}
+docSIM <- glm(formula = trips ~ 
+                origin_hex +
+                destination_hex +
+                log(distance),
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(docSIM)
+CalcRSquared(docSIM$data$trips, docSIM$fitted.values)
+```
+
+:::
+
+## The 3 Models With Elimination
+
+::: panel-tabset
+### Unconstrained
+```{r}
+uncSIM2 <- glm(formula = trips ~ 
+                log(push_num_bus_stops) +
+                #log(push_station_count) +
+                log(push_trainexit_count) +
+                #log(push_hdb_sf_count) +
+                log(push_est_pop) +
+                #log(pull_station_count) +
+                log(pull_trainexit_count) +
+                log(pull_biz_count) +
+                log(pull_entertn_count) +
+                log(pull_fnb_count) +
+                #log(pull_finance_count) +
+                #log(pull_lnr_count) +
+                #log(pull_retails_count) +
+                log(pull_schools_sf_count) +
+                log(distance),
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(uncSIM2)
+CalcRSquared(uncSIM2$data$trips, uncSIM2$fitted.values)
+```
+
+### Origin Constrained
+```{r}
+orcSIM2 <- glm(formula = trips ~
+                #log(pull_station_count) +
+                log(pull_trainexit_count) +
+                log(pull_biz_count) +
+                log(pull_entertn_count) +
+                log(pull_fnb_count) +
+                #log(pull_finance_count) +
+                #log(pull_lnr_count) +
+                #log(pull_retails_count) +
+                log(pull_schools_sf_count) +
+                log(distance) +
+                origin_hex,
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(orcSIM2)
+CalcRSquared(orcSIM2$data$trips, orcSIM2$fitted.values)
+```
+
+### Destination Constrained
+```{r}
+decSIM2 <- glm(formula = trips ~ 
+                log(push_num_bus_stops) +
+                #log(push_station_count) +
+                log(push_trainexit_count) +
+                #log(push_hdb_sf_count) +
+                log(push_est_pop) +
+                log(distance) +
+                destination_hex,
+              family = poisson(link = "log"),
+              data = final_df,
+              na.action = na.exclude)
+
+summary(decSIM2)
+CalcRSquared(decSIM2$data$trips, decSIM2$fitted.values)
+```
+:::
 
 ## Compare The Result
-add R2 on top of RMSE
-## Visualize the Result
-Fitted Value
 
-Log it 
+```{r}
+model_list <- list(
+  Unconstrained = uncSIM,
+  Origin_Constrained = orcSIM,
+  Destination_Constrained = decSIM,
+  Doubly_Constrained = docSIM,
+  Unconstrained_with_Elimination = uncSIM2,
+  Origin_Constrained_ith_Elimination = orcSIM2,
+  Destination_Constrained_with_Elimination = decSIM2
+)
+
+# Compare performance with multiple metrics
+compare_performance(model_list, metrics = c("AIC", "BIC", "RMSE"))
+```
+
+## Visualize the Result
+```{r}
+orcSIM_fitted <- as.data.frame(orcSIM$fitted.values) %>%
+  round(digits = 0)
+
+decSIM_fitted <- as.data.frame(decSIM$fitted.values) %>%
+  round(digits = 0)
+
+docSIM_fitted <- as.data.frame(docSIM$fitted.values) %>%
+  round(digits = 0)
+
+flow_attr <- flow_attr %>%
+  cbind(
+    orcSIM_fitted,
+    decSIM_fitted,
+    docSIM_fitted
+  ) %>%
+  rename(
+    orcSIM_trips = orcSIM.fitted.values,
+    decSIM_trips = decSIM.fitted.values,
+    docSIM_trips = docSIM.fitted.values
+  )
+
+
+
+p_orc <- ggplot(
+          data = flow_attr,
+          aes(x = orc_trips,
+              y = trips)
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    alpha = .6
+  ) +
+  xlim(0, 50000) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Origin-constrained") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+p_destc <- ggplot(
+            data = flow_attr,
+            aes(x = destc_trips,
+                y = trips)
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    color = "#4d5887",
+    alpha = .6
+  ) +
+  xlim(0, 50000) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Destination-constrained") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+p_dbc <- ggplot(
+          data = flow_attr,
+          aes(x = dbc_trips,
+              y = trips)
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    color = "#6D435A",
+    alpha = .6
+  ) +
+  xlim(0, 50000) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Doubly-constrained") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+p_orc + p_destc + p_dbc
+
+```
+
+
+
+
+log_orc <- ggplot(
+          data = flow_attr,
+          aes(x = log(orc_trips),
+              y = log(trips))
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    alpha = .6
+  ) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Log(Origin-constrained)") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+log_destc <- ggplot(
+            data = flow_attr,
+            aes(x = log(destc_trips),
+                y = log(trips))
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    color = "#4d5887",
+    alpha = .6
+  ) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Log(Destination-constrained)") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+log_dbc <- ggplot(
+          data = flow_attr,
+          aes(x = log(dbc_trips),
+              y = log(trips))
+  ) +
+  geom_point(
+    size = flow_attr$trips/10000,
+    color = "#6D435A",
+    alpha = .6
+  ) +
+  geom_smooth(
+    method = lm,
+    se = TRUE
+  ) +
+  labs(title = "Log(Doubly-constrained)") +
+  theme(
+    plot.title = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+log_orc + log_destc + log_dbc
+
 
 ## Conclusion
-
 
 # References
 
