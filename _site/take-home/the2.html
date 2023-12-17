@@ -261,9 +261,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#th-quantile-distance-18587" id="toc-th-quantile-distance-18587" class="nav-link" data-scroll-target="#th-quantile-distance-18587"><span class="header-section-number">4.4</span> 99th Quantile Distance (18587)</a></li>
   <li><a href="#spread-across-decile-of-trips" id="toc-spread-across-decile-of-trips" class="nav-link" data-scroll-target="#spread-across-decile-of-trips"><span class="header-section-number">4.5</span> Spread Across Decile of Trips</a></li>
   </ul></li>
-  <li><a href="#adding-push-pull-factors" id="toc-adding-push-pull-factors" class="nav-link" data-scroll-target="#adding-push-pull-factors"><span class="header-section-number">5</span> Adding Push &amp; Pull Factors</a>
+  <li><a href="#assemble-push-pull-factors" id="toc-assemble-push-pull-factors" class="nav-link" data-scroll-target="#assemble-push-pull-factors"><span class="header-section-number">5</span> Assemble Push &amp; Pull Factors</a>
   <ul class="collapse">
   <li><a href="#push" id="toc-push" class="nav-link" data-scroll-target="#push"><span class="header-section-number">5.1</span> Push</a></li>
+  <li><a href="#pull" id="toc-pull" class="nav-link" data-scroll-target="#pull"><span class="header-section-number">5.2</span> Pull</a></li>
   </ul></li>
   <li><a href="#spatial-interaction-model" id="toc-spatial-interaction-model" class="nav-link" data-scroll-target="#spatial-interaction-model"><span class="header-section-number">6</span> Spatial Interaction Model</a>
   <ul class="collapse">
@@ -2358,8 +2359,8 @@ $ REGION_C              &lt;chr&gt; "CR", "ER", "CR", "ER", "ER", "CR", "CR", "C
 </div>
 </div>
 </section>
-<section id="school-1" class="level4">
-<h4 class="anchored" data-anchor-id="school-1">School</h4>
+<section id="schools" class="level4">
+<h4 class="anchored" data-anchor-id="schools">Schools</h4>
 <p>For the School dataset</p>
 <p>Geocoding is the conversion of an address or postal code into geographic coordinates, typically latitude and longitude. The Singapore Land Authority offers the <a href="https://www.onemap.gov.sg/apidocs/">OneMap API</a>, specifically the <a href="https://www.onemap.gov.sg/apidocs/apidocs">Search</a> API, which retrieves latitude, longitude, and x,y coordinates for a given address or postal code.</p>
 <p>To perform geocoding using the <a href="https://www.onemap.gov.sg/docs/#onemap-rest-apis">SLA OneMap API</a>, the provided code, written in R, reads input data from a CSV file using the <em>read_csv</em> function from the <strong>readr</strong> package. The <strong>httr</strong> package’s HTTP call functions are then used to send individual records to the OneMap geocoding server.</p>
@@ -3036,22 +3037,169 @@ $ decile          &lt;ord&gt; 661-5000, 661-5000, 125-254, 254-661, 21-38, 38-67
 <span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
 <span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(flowline) <span class="sc">+</span></span>
 <span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_lines</span>(<span class="at">lwd =</span> <span class="st">"trips"</span>, <span class="at">scale =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">"coral"</span>, <span class="at">alpha =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
-<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="st">"Weekday Morning Peak Traffic Flow"</span>) <span class="sc">+</span></span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="st">"Weekday Morning Peak Traffic Flow"</span>, <span class="at">title.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"top"</span>)) <span class="sc">+</span></span>
 <span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_facets</span>(<span class="at">along =</span> <span class="st">"decile"</span>, <span class="at">free.coords =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Save animation as gif</span></span>
-<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_animation</span>(trips_spread, <span class="st">"../images/trips_spread.gif"</span>, <span class="at">loop =</span> <span class="cn">TRUE</span>, <span class="at">delay =</span> <span class="dv">500</span>,</span>
-<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">outer.margins =</span> <span class="cn">NA</span>, <span class="at">restart.delay=</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_animation</span>(trips_spread, <span class="st">"../images/trips_spread.gif"</span>, <span class="at">loop =</span> <span class="cn">TRUE</span>, <span class="at">delay =</span> <span class="dv">1000</span>,</span>
+<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">outer.margins =</span> <span class="cn">NA</span>, <span class="at">restart.delay=</span><span class="dv">1500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p><img src="../images/trips_spread.gif" class="img-fluid"> for the first 8th decile, the trips slightly change but still more dense on central. on the extra category of &gt;5000, north-downtown, west-downtown, north-east, and short trip becomes more visible</p>
+<p><img src="../images/trips_spread.gif" class="img-fluid"> for the first 8 decile, the trips slightly change but still more dense on central. on the extra category of &gt;5000, north-downtown, west-downtown, north-east, and short trip becomes more visible</p>
 </section>
 </section>
-<section id="adding-push-pull-factors" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Adding Push &amp; Pull Factors</h1>
+<section id="assemble-push-pull-factors" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Assemble Push &amp; Pull Factors</h1>
 <section id="push" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="push"><span class="header-section-number">5.1</span> Push</h2>
-<p>show flow vs variables ## Pull show flow vs variables</p>
+<p>HDB, station, trainexit, proxy_pop, busstop</p>
+<p>station and trainexit that can function as transit are special case where they might be a push and pull factor. people might come from train station to take a bus or take a bus to go to a train station.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a>factors_holder <span class="ot">&lt;-</span> hexagons_with_bus_stops</span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-3"><a href="#cb141-3" aria-hidden="true" tabindex="-1"></a><span class="co"># define function to add push poi counts columns</span></span>
+<span id="cb141-4"><a href="#cb141-4" aria-hidden="true" tabindex="-1"></a>add_push_poi_counts <span class="ot">&lt;-</span> <span class="cf">function</span>(factors_holder, poi_datasets) {</span>
+<span id="cb141-5"><a href="#cb141-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each POI dataset</span></span>
+<span id="cb141-6"><a href="#cb141-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (poi_name <span class="cf">in</span> poi_datasets) {</span>
+<span id="cb141-7"><a href="#cb141-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a new column with the count using st_intersects and lengths</span></span>
+<span id="cb141-8"><a href="#cb141-8" aria-hidden="true" tabindex="-1"></a>    factors_holder[[<span class="fu">paste0</span>(<span class="st">"push_"</span>, poi_name, <span class="st">"_count"</span>)]] <span class="ot">&lt;-</span> </span>
+<span id="cb141-9"><a href="#cb141-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(</span>
+<span id="cb141-10"><a href="#cb141-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(factors_holder, <span class="fu">get</span>(poi_name))) <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb141-11"><a href="#cb141-11" aria-hidden="true" tabindex="-1"></a>        <span class="fl">0.99</span>,</span>
+<span id="cb141-12"><a href="#cb141-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(factors_holder, <span class="fu">get</span>(poi_name)))</span>
+<span id="cb141-13"><a href="#cb141-13" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb141-14"><a href="#cb141-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb141-15"><a href="#cb141-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb141-16"><a href="#cb141-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the updated factors_holder dataframe</span></span>
+<span id="cb141-17"><a href="#cb141-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(factors_holder)</span>
+<span id="cb141-18"><a href="#cb141-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb141-19"><a href="#cb141-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-20"><a href="#cb141-20" aria-hidden="true" tabindex="-1"></a><span class="co"># List of POI dataset names</span></span>
+<span id="cb141-21"><a href="#cb141-21" aria-hidden="true" tabindex="-1"></a>push_poi_datasets <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"busstop"</span>, <span class="st">"station"</span>, <span class="st">"trainexit"</span>, <span class="st">"hdb_sf"</span>)</span>
+<span id="cb141-22"><a href="#cb141-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-23"><a href="#cb141-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Call the function</span></span>
+<span id="cb141-24"><a href="#cb141-24" aria-hidden="true" tabindex="-1"></a>factors_holder <span class="ot">&lt;-</span> <span class="fu">add_push_poi_counts</span>(factors_holder, push_poi_datasets)</span>
+<span id="cb141-25"><a href="#cb141-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-26"><a href="#cb141-26" aria-hidden="true" tabindex="-1"></a><span class="co"># check the output</span></span>
+<span id="cb141-27"><a href="#cb141-27" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(factors_holder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 834
+Columns: 7
+$ hex_grid             &lt;POLYGON [m]&gt; POLYGON ((3970.122 27348.13..., POLYGON (…
+$ hexagon_id           &lt;int&gt; 23, 44, 46, 66, 67, 68, 86, 87, 88, 89, 90, 109, …
+$ num_bus_stops        &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, 1…
+$ push_busstop_count   &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, 1…
+$ push_station_count   &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ push_trainexit_count &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ push_hdb_sf_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…</code></pre>
+</div>
+</div>
+<p>add approximate population of the location, based on estimated hdb capacity</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a>hdb_capacity <span class="ot">&lt;-</span> hdb_sf <span class="sc">%&gt;%</span></span>
+<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">capacity =</span> <span class="st">`</span><span class="at">1room_sold</span><span class="st">`</span> <span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">2room_sold</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">2</span><span class="sc">+</span></span>
+<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">3room_sold</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">3</span><span class="sc">+</span></span>
+<span id="cb143-5"><a href="#cb143-5" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">4room_sold</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">4</span><span class="sc">+</span></span>
+<span id="cb143-6"><a href="#cb143-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">5room_sold</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">5</span><span class="sc">+</span></span>
+<span id="cb143-7"><a href="#cb143-7" aria-hidden="true" tabindex="-1"></a>           exec_sold <span class="sc">*</span> <span class="dv">4</span><span class="sc">+</span></span>
+<span id="cb143-8"><a href="#cb143-8" aria-hidden="true" tabindex="-1"></a>           multigen_sold <span class="sc">*</span> <span class="dv">6</span><span class="sc">+</span></span>
+<span id="cb143-9"><a href="#cb143-9" aria-hidden="true" tabindex="-1"></a>           studio_apartment_sold <span class="sc">*</span><span class="dv">1</span><span class="sc">+</span></span>
+<span id="cb143-10"><a href="#cb143-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">1room_rental</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">1</span><span class="sc">+</span></span>
+<span id="cb143-11"><a href="#cb143-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">2room_rental</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">2</span><span class="sc">+</span></span>
+<span id="cb143-12"><a href="#cb143-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">`</span><span class="at">3room_rental</span><span class="st">`</span> <span class="sc">*</span> <span class="dv">3</span><span class="sc">+</span></span>
+<span id="cb143-13"><a href="#cb143-13" aria-hidden="true" tabindex="-1"></a>           other_room_rental <span class="sc">*</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb143-14"><a href="#cb143-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(blk_no, geometry, capacity)</span>
+<span id="cb143-15"><a href="#cb143-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-16"><a href="#cb143-16" aria-hidden="true" tabindex="-1"></a><span class="co"># get hexagon_id for hdb, then sum the capacity</span></span>
+<span id="cb143-17"><a href="#cb143-17" aria-hidden="true" tabindex="-1"></a>hdb_capacity <span class="ot">&lt;-</span> <span class="fu">st_join</span>(hdb_capacity, hexagons_with_bus_stops, <span class="at">by =</span> <span class="cn">NULL</span>, <span class="at">join =</span> st_within) <span class="sc">%&gt;%</span></span>
+<span id="cb143-18"><a href="#cb143-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(hexagon_id) <span class="sc">%&gt;%</span></span>
+<span id="cb143-19"><a href="#cb143-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">est_pop =</span> <span class="fu">sum</span>(capacity)) <span class="sc">%&gt;%</span></span>
+<span id="cb143-20"><a href="#cb143-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb143-21"><a href="#cb143-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-22"><a href="#cb143-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert hexagon_id to character in both dataframes</span></span>
+<span id="cb143-23"><a href="#cb143-23" aria-hidden="true" tabindex="-1"></a>factors_holder <span class="ot">&lt;-</span> factors_holder <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">hexagon_id =</span> <span class="fu">as.character</span>(hexagon_id))</span>
+<span id="cb143-24"><a href="#cb143-24" aria-hidden="true" tabindex="-1"></a>hdb_capacity <span class="ot">&lt;-</span> hdb_capacity <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">hexagon_id =</span> <span class="fu">as.character</span>(hexagon_id))</span>
+<span id="cb143-25"><a href="#cb143-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-26"><a href="#cb143-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Left join factors_holder and hdb_capacity by hexagon_id</span></span>
+<span id="cb143-27"><a href="#cb143-27" aria-hidden="true" tabindex="-1"></a>factors_holder <span class="ot">&lt;-</span> <span class="fu">left_join</span>(factors_holder, hdb_capacity, <span class="at">by =</span> <span class="st">"hexagon_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb143-28"><a href="#cb143-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hexagon_id =</span> <span class="fu">as.factor</span>(hexagon_id)) <span class="sc">%&gt;%</span>  <span class="co"># Convert back to factor</span></span>
+<span id="cb143-29"><a href="#cb143-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(<span class="fu">contains</span>(<span class="st">"est_pop"</span>)), <span class="fu">list</span>(<span class="sc">~</span><span class="fu">coalesce</span>(., <span class="fl">0.99</span>)))  <span class="co"># Fill missing values with 0.99 </span></span>
+<span id="cb143-30"><a href="#cb143-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-31"><a href="#cb143-31" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(factors_holder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 834
+Columns: 8
+$ hexagon_id           &lt;fct&gt; 23, 44, 46, 66, 67, 68, 86, 87, 88, 89, 90, 109, …
+$ num_bus_stops        &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, 1…
+$ push_busstop_count   &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, 1…
+$ push_station_count   &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ push_trainexit_count &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ push_hdb_sf_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ est_pop              &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0…
+$ hex_grid             &lt;POLYGON [m]&gt; POLYGON ((3970.122 27348.13..., POLYGON (…</code></pre>
+</div>
+</div>
+</section>
+<section id="pull" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="pull"><span class="header-section-number">5.2</span> Pull</h2>
+<p>station, trainexit, biz, entertn, fnb, finance, lnr, retails, school</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define function to add pull poi counts columns</span></span>
+<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a>add_pull_poi_counts <span class="ot">&lt;-</span> <span class="cf">function</span>(factors_holder, poi_datasets) {</span>
+<span id="cb145-3"><a href="#cb145-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each POI dataset</span></span>
+<span id="cb145-4"><a href="#cb145-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (poi_name <span class="cf">in</span> poi_datasets) {</span>
+<span id="cb145-5"><a href="#cb145-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a new column with the count using st_intersects and lengths</span></span>
+<span id="cb145-6"><a href="#cb145-6" aria-hidden="true" tabindex="-1"></a>    factors_holder[[<span class="fu">paste0</span>(<span class="st">"pull_"</span>, poi_name, <span class="st">"_count"</span>)]] <span class="ot">&lt;-</span> </span>
+<span id="cb145-7"><a href="#cb145-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(</span>
+<span id="cb145-8"><a href="#cb145-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(factors_holder, <span class="fu">get</span>(poi_name))) <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb145-9"><a href="#cb145-9" aria-hidden="true" tabindex="-1"></a>        <span class="fl">0.99</span>,</span>
+<span id="cb145-10"><a href="#cb145-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(factors_holder, <span class="fu">get</span>(poi_name)))</span>
+<span id="cb145-11"><a href="#cb145-11" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb145-12"><a href="#cb145-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb145-13"><a href="#cb145-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb145-14"><a href="#cb145-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the updated factors_holder dataframe</span></span>
+<span id="cb145-15"><a href="#cb145-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(factors_holder)</span>
+<span id="cb145-16"><a href="#cb145-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb145-17"><a href="#cb145-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-18"><a href="#cb145-18" aria-hidden="true" tabindex="-1"></a><span class="co"># List of POI dataset names</span></span>
+<span id="cb145-19"><a href="#cb145-19" aria-hidden="true" tabindex="-1"></a>pull_poi_datasets <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"station"</span>, <span class="st">"trainexit"</span>, <span class="st">"biz"</span>, <span class="st">"entertn"</span>, <span class="st">"fnb"</span>, <span class="st">"finance"</span>, <span class="st">"lnr"</span>, <span class="st">"retails"</span>, <span class="st">"schools_sf"</span>)</span>
+<span id="cb145-20"><a href="#cb145-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-21"><a href="#cb145-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Call the function</span></span>
+<span id="cb145-22"><a href="#cb145-22" aria-hidden="true" tabindex="-1"></a>factors_holder <span class="ot">&lt;-</span> <span class="fu">add_pull_poi_counts</span>(factors_holder, pull_poi_datasets)</span>
+<span id="cb145-23"><a href="#cb145-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-24"><a href="#cb145-24" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(factors_holder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 834
+Columns: 17
+$ hexagon_id            &lt;fct&gt; 23, 44, 46, 66, 67, 68, 86, 87, 88, 89, 90, 109,…
+$ num_bus_stops         &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, …
+$ push_busstop_count    &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, …
+$ push_station_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ push_trainexit_count  &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ push_hdb_sf_count     &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ est_pop               &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ hex_grid              &lt;POLYGON [m]&gt; POLYGON ((3970.122 27348.13..., POLYGON …
+$ pull_station_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ pull_trainexit_count  &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ pull_biz_count        &lt;dbl&gt; 0.99, 5.00, 4.00, 1.00, 50.00, 27.00, 3.00, 3.00…
+$ pull_entertn_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ pull_fnb_count        &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ pull_finance_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 1.00, 0.99, 0.99, 0.99, …
+$ pull_lnr_count        &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …
+$ pull_retails_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 5.00, 0.99, 0.99, 0.99, …
+$ pull_schools_sf_count &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="spatial-interaction-model" class="level1" data-number="6">

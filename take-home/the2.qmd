@@ -792,7 +792,7 @@ tm_shape(mpsz)+
 ```
 
 
-#### School
+#### Schools
 For the School dataset
 
 Geocoding is the conversion of an address or postal code into geographic coordinates, typically latitude and longitude. The Singapore Land Authority offers the [OneMap API](https://www.onemap.gov.sg/apidocs/), specifically the [Search](https://www.onemap.gov.sg/apidocs/apidocs) API, which retrieves latitude, longitude, and x,y coordinates for a given address or postal code.
@@ -834,6 +834,7 @@ schools[schools$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LONGITUDE"]
 # check the output
 glimpse(schools)
 ```
+
 visualize the distribution
 ```{r}
 schools_sf <- schools %>%
@@ -886,6 +887,7 @@ hexagons_with_bus_stops <- filter(hex_grid_sf, num_bus_stops > 0)
 # check the output
 glimpse(hexagons_with_bus_stops)
 ```
+
 visualize the output
 ```{r}
 # Plot the number of bus stops per hexagon with a color gradient and legend
@@ -1158,23 +1160,118 @@ trips_spread <- tm_shape(mpsz) +
   tm_borders(col = "black", lwd = .5) +
 tm_shape(flowline) +
   tm_lines(lwd = "trips", scale = 1.5, col = "coral", alpha = .7) +
-  tm_layout(title = "Weekday Morning Peak Traffic Flow") +
+  tm_layout(title = "Weekday Morning Peak Traffic Flow", title.position = c("right", "top")) +
   tm_facets(along = "decile", free.coords = FALSE)
 
 # Save animation as gif
-tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 500,
-               outer.margins = NA, restart.delay=1000)
+tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 1000,
+               outer.margins = NA, restart.delay=1500)
 ```
 ![](../images/trips_spread.gif)
-for the first 8th decile, the trips slightly change but still more dense on central.
+for the first 8 decile, the trips slightly change but still more dense on central.
 on the extra category of >5000, north-downtown, west-downtown, north-east, and short trip becomes more visible
 
-# Adding Push & Pull Factors
+# Assemble Push & Pull Factors
 
 ## Push
-show flow vs variables
+HDB, station, trainexit, proxy_pop, busstop
+
+station and trainexit that can function as transit are special case where they might be a push and pull factor. people might come from train station to take a bus or take a bus to go to a train station.
+
+
+```{r}
+factors_holder <- hexagons_with_bus_stops
+
+# define function to add push poi counts columns
+add_push_poi_counts <- function(factors_holder, poi_datasets) {
+  # Loop through each POI dataset
+  for (poi_name in poi_datasets) {
+    # Add a new column with the count using st_intersects and lengths
+    factors_holder[[paste0("push_", poi_name, "_count")]] <- 
+      ifelse(
+        lengths(st_intersects(factors_holder, get(poi_name))) == 0,
+        0.99,
+        lengths(st_intersects(factors_holder, get(poi_name)))
+      )
+  }
+  
+  # Return the updated factors_holder dataframe
+  return(factors_holder)
+}
+
+# List of POI dataset names
+push_poi_datasets <- c("busstop", "station", "trainexit", "hdb_sf")
+
+# Call the function
+factors_holder <- add_push_poi_counts(factors_holder, push_poi_datasets)
+
+# check the output
+glimpse(factors_holder)
+```
+add approximate population of the location, based on estimated hdb capacity
+
+```{r}
+hdb_capacity <- hdb_sf %>%
+  mutate(capacity = `1room_sold` *1 +
+           `2room_sold` * 2+
+           `3room_sold` * 3+
+           `4room_sold` * 4+
+           `5room_sold` * 5+
+           exec_sold * 4+
+           multigen_sold * 6+
+           studio_apartment_sold *1+
+           `1room_rental` * 1+
+           `2room_rental` * 2+
+           `3room_rental` * 3+
+           other_room_rental * 2) %>%
+  select(blk_no, geometry, capacity)
+
+# get hexagon_id for hdb, then sum the capacity
+hdb_capacity <- st_join(hdb_capacity, hexagons_with_bus_stops, by = NULL, join = st_within) %>%
+  group_by(hexagon_id) %>%
+  summarise(est_pop = sum(capacity)) %>%
+  st_drop_geometry()
+
+# Convert hexagon_id to character in both dataframes
+factors_holder <- factors_holder %>% mutate(hexagon_id = as.character(hexagon_id))
+hdb_capacity <- hdb_capacity %>% mutate(hexagon_id = as.character(hexagon_id))
+
+# Left join factors_holder and hdb_capacity by hexagon_id
+factors_holder <- left_join(factors_holder, hdb_capacity, by = "hexagon_id") %>%
+  mutate(hexagon_id = as.factor(hexagon_id)) %>%  # Convert back to factor
+  mutate_at(vars(contains("est_pop")), list(~coalesce(., 0.99)))  # Fill missing values with 0.99 
+
+glimpse(factors_holder)
+```
+
 ## Pull
-show flow vs variables
+station, trainexit, biz, entertn, fnb, finance, lnr, retails, school
+```{r}
+# define function to add pull poi counts columns
+add_pull_poi_counts <- function(factors_holder, poi_datasets) {
+  # Loop through each POI dataset
+  for (poi_name in poi_datasets) {
+    # Add a new column with the count using st_intersects and lengths
+    factors_holder[[paste0("pull_", poi_name, "_count")]] <- 
+      ifelse(
+        lengths(st_intersects(factors_holder, get(poi_name))) == 0,
+        0.99,
+        lengths(st_intersects(factors_holder, get(poi_name)))
+      )
+  }
+  
+  # Return the updated factors_holder dataframe
+  return(factors_holder)
+}
+
+# List of POI dataset names
+pull_poi_datasets <- c("station", "trainexit", "biz", "entertn", "fnb", "finance", "lnr", "retails", "schools_sf")
+
+# Call the function
+factors_holder <- add_pull_poi_counts(factors_holder, pull_poi_datasets)
+
+glimpse(factors_holder)
+```
 
 # Spatial Interaction Model
 ## Correlation Analysis
