@@ -37,7 +37,7 @@ website:
         menu:
           - text: 1 - Geospatial Analytics for Public Goods
             href: take-home/the1.html
-          - text: 2 - Applied Spatial Interaction Models (WIP)
+          - text: 2 - Applied Spatial Interaction Models
             href: take-home/the2.html
     right:
       - href: index.qmd
