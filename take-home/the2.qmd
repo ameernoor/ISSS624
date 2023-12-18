@@ -345,7 +345,7 @@ pacman::p_load(tmap, sf, tidyverse, sfdep, knitr, Hmisc, mapview, DT, sp, stplan
 
 ## Data Import and Minor Wrangling
 
-This section will import the required aspatial and geospatial dataset. The process also **involves minor data change** like **setting the correct reference system**, and **removing duplicates** before going to more complex data wrangling in the next section. 
+This section will import the required aspatial and geospatial dataset. The process also **involves minor data change** like **setting the correct reference system**, and **removing duplicates** before going to more complex data wrangling in the next section.
 
 ### Geospatial
 
@@ -360,39 +360,48 @@ The CRS code 3414 specifically refers to the coordinate reference system used fo
 :::
 
 ::: panel-tabset
+
 #### MPSZ
 
 ::: panel-tabset
-
 ##### import
+
 the following code will import the masterplan subzone 2019 dataset and assign the correct coordinate reference.
+
 ```{r}
 # Read spatial data for MPSZ-2019 and transform CRS
 mpsz <- st_read(dsn='../data/geospatial',  # Specify data source directory
                 layer='MPSZ-2019') %>%    # Specify layer to read
   st_transform(crs=3414)                  # Transform CRS to 3414
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package imports spatial vector data into R. It specifies the data source (`dsn`) and layer (`layer`). Here, it reads the 'MPSZ-2019' layer from the specified directory.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of spatial data. In this case, it transforms the CRS of `mpsz` to 3414.
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 # View the structure and contents of the mpsz data frame
 glimpse(mpsz)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ##### duplicate checking
+
 next, check for possible duplicates using this code.
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(mpsz$SUBZONE_N) == nrow(mpsz), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. In this code, it's used to count the unique values in `mpsz$SUBZONE_N`.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `mpsz`.
@@ -400,7 +409,9 @@ if_else(n_distinct(mpsz$SUBZONE_N) == nrow(mpsz), "no duplicates detected", "pos
 :::
 
 ##### distribution map
+
 since no duplicate is found, we can immediately try to visualize how does the master plan looks like in the map using the following code.
+
 ```{r}
 # set tmap mode (plot for lighter rendering, view for analysis)
 tmap_mode('plot')
@@ -410,6 +421,7 @@ tm_shape(mpsz)+
   tm_polygons(alpha = 0.3) +
   tm_layout(main.title = 'Singapore Planning Zone', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. The mode `'plot'` is chosen here for static map plotting, which is typically lighter and faster for rendering compared to the interactive `'view'` mode.
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data (`mpsz` in this case) for plotting.
@@ -422,43 +434,51 @@ tm_shape(mpsz)+
 #### Bus Stop Location
 
 ::: panel-tabset
-
 ##### import
+
 the following code will import the bus stop location dataset and assign the correct coordinate reference.
+
 ```{r}
 busstop <- st_read(dsn = "../data/geospatial",
                    layer = "BusStop") %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package imports spatial vector data into R. It specifies the data source (`dsn`) and layer (`layer`). Here, it reads the 'BusStop' layer from the specified directory.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of spatial data. In this case, it transforms the CRS of `busstop` to 3414.
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 # check the data
 glimpse(busstop)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ##### duplicate checking
-Next, we will check for duplicates using the following code.
-*BUS_STOP_N is used as the basis for duplicate checking because it will be the reference in joining the data*
+
+Next, we will check for duplicates using the following code. *BUS_STOP_N is used as the basis for duplicate checking because it will be the reference in joining the data*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(busstop$BUS_STOP_N) == nrow(busstop), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "BusStop" layer from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `busstop` to 3414.
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
-Since duplicates is found, we will try to check what are the duplicated value using the following code. 
+Since duplicates is found, we will try to check what are the duplicated value using the following code.
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- busstop[duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP_N, fromLast = TRUE), ] %>%
@@ -470,6 +490,7 @@ nrow(duplicates)
 # Display the sorted rows with duplicate BUS_STOP_N
 kable(head(duplicates, n = 32))
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R identifies duplicate elements in a vector or rows in a data frame. Here, it's used to find duplicate values in the `BUS_STOP_N` column of the `busstop` data frame.
 -   [arrange](https://dplyr.tidyverse.org/reference/arrange.html) from **dplyr** package sorts a data frame by one or more columns. In this code, `arrange` is used to sort the `duplicates` data frame by `BUS_STOP_N`.
@@ -478,6 +499,7 @@ kable(head(duplicates, n = 32))
 :::
 
 Based on the table, we can see that the duplicates does comes from the same bus stop code. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 5161 to 5145.
+
 ```{r}
 # Keep one row of the duplicates in the original dataset
 busstop <- busstop[!duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP_N, fromLast = TRUE), ]
@@ -485,6 +507,7 @@ busstop <- busstop[!duplicated(busstop$BUS_STOP_N) | duplicated(busstop$BUS_STOP
 # Display the resulting dataset
 glimpse(busstop)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the `BUS_STOP_N` column of the `busstop` data frame to find duplicates.
 -   The subset operation (`busstop[...]`) is used to keep only one row for each duplicate in `busstop`. The logical condition `!duplicated(busstop$BUS_STOP_N)` keeps the first occurrence of each duplicate, and `duplicated(busstop$BUS_STOP_N, fromLast = TRUE)` keeps the last occurrence.
@@ -492,7 +515,9 @@ glimpse(busstop)
 :::
 
 ##### distribution map
+
 next, we try to visualize how does the bus stop distribution looks like in the map using the following code.
+
 ```{r}
 # set tmap mode (plot for lighter rendering, view for analysis)
 tmap_mode('plot')
@@ -504,6 +529,7 @@ tm_shape(mpsz)+
   tm_dots() +
   tm_layout(main.title = 'Bus Stop Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. The mode `'plot'` is chosen for static map plotting, which is typically faster and lighter for rendering than the interactive `'view'` mode.
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used twice in this code: first for the `mpsz` dataset and then for `busstop`.
@@ -515,9 +541,12 @@ tm_shape(mpsz)+
 :::
 
 #### Train Station
+
 ::: panel-tabset
 ##### import
+
 the following code will import the train station dataset and assign the correct coordinate reference.
+
 ```{r}
 station <- st_read(dsn = '../data/geospatial',
                         layer = 'RapidTransitSystemStation') %>%
@@ -527,6 +556,7 @@ station <- st_read(dsn = '../data/geospatial',
 station <- station %>%
   filter(st_is_valid(.))
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://www.rdocumentation.org/packages/sf/versions/0.9-8/topics/st_read) from the **sf** package is used to read spatial data from a file, database, or web service. In this code, it's used to read the 'RapidTransitSystemStation' layer from the geospatial data located at '../data/geospatial'.
 -   [st_transform](https://www.rdocumentation.org/packages/sf/versions/0.9-8/topics/st_transform) from the **sf** package is used to transform or convert coordinates of simple feature. Here, it's used to transform the coordinates of the `station` data to the coordinate reference system (CRS) with the EPSG code 3414.
@@ -544,30 +574,37 @@ By using `filter(st_is_valid(.))`, we are keeping only the valid geometries in t
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 # check the data
 glimpse(station)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from the **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column. It's used to display the structure of the `station` data frame after the transformations.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*the duplicate consider geometry as the unique value as different MRT station should have different location*
+
+next, check for possible duplicates using this code. *the duplicate consider geometry as the unique value as different MRT station should have different location*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(station$geometry) == nrow(station), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. In this code, it's used to count the unique `geometry` values in the `station` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. It's used to get the total number of rows in `station`.
 -   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this context, it checks if the number of unique `geometry` values equals the total number of rows in `station`. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
 :::
 
-##### distribution map 
+##### distribution map
+
 since no duplicate is found, we can immediately try to visualize how does the master plan looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -589,35 +626,42 @@ tm_shape(mpsz)+
 #### Train Exit
 
 ::: panel-tabset
-
 ##### import
+
 the following code will import the train exit location dataset and assign the correct coordinate reference.
+
 ```{r}
 trainexit <- st_read(dsn = '../data/geospatial',
                      layer = 'Train_Station_Exit_Layer') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://www.rdocumentation.org/packages/sf/versions/0.9-8/topics/st_read) from the **sf** package is used to read spatial data from a file, database, or web service. In this code, it's used to read the 'Train_Station_Exit_Layer' layer from the geospatial data located at '../data/geospatial'.
 -   [st_transform](https://www.rdocumentation.org/packages/sf/versions/0.9-8/topics/st_transform) from the **sf** package is used to transform or convert coordinates of simple feature. Here, it's used to transform the coordinates of the `trainexit` data to the coordinate reference system (CRS) with the EPSG code 3414.
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(trainexit)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from the **dplyr** package provides a quick overview of the data frame's structure, including column types and the first few entries in each column. It's used to display the structure of the `trainexit` data frame after the transformations.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*the duplicate consider geometry as the unique value as different MRT exit should have different location*
+
+next, check for possible duplicates using this code. *the duplicate consider geometry as the unique value as different MRT exit should have different location*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(trainexit$geometry) == nrow(trainexit), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://www.rdocumentation.org/packages/dplyr/versions/0.8.5/topics/n_distinct) from the **dplyr** package is used to count the number of unique values in a vector. In this code, it's used to count the number of unique geometries in the `trainexit` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R is used to get the number of rows in a data frame. Here, it's used to get the number of rows in the `trainexit` data frame.
@@ -625,7 +669,9 @@ if_else(n_distinct(trainexit$geometry) == nrow(trainexit), "no duplicates detect
 :::
 
 ##### distribution map
+
 since no duplicate is found, we can immediately try to visualize how does the master plan looks like in the map using the following code.
+
 ```{r}
 # visualize the data
 tm_shape(mpsz)+
@@ -635,6 +681,7 @@ tm_shape(mpsz)+
           id = 'exit_id') +
   tm_layout(main.title = 'Train Station Exit Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` and `trainexit` datasets.
 -   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map, with an alpha parameter to adjust the transparency of these polygons for `mpsz`.
@@ -645,41 +692,52 @@ tm_shape(mpsz)+
 :::
 
 #### Business
+
 ::: panel-tabset
 ##### import
+
 the following code will import the business point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 biz <- st_read(dsn = "../data/geospatial",
                    layer = "Business") %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "Business" layer from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `biz` to 3414.
 :::
+
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(biz)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some business might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some business might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(biz) == nrow(biz), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://www.rdocumentation.org/packages/dplyr/versions/0.8.5/topics/n_distinct) from the **dplyr** package is used to count the number of unique values in a vector. In this code, it's used to count the number of unique geometries in the `trainexit` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R is used to get the number of rows in a data frame. Here, it's used to get the number of rows in the `trainexit` data frame.
 -   [if_else](https://www.rdocumentation.org/packages/dplyr/versions/0.8.5/topics/if_else) from the **dplyr** package is a vectorized conditional function that returns a value based on whether a condition is true or false. In this code, it's used to check if the number of unique geometries is equal to the number of rows in `trainexit`. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
 :::
 
-since duplicates is found, we will try to check what are the duplicated value using the following code. 
+since duplicates is found, we will try to check what are the duplicated value using the following code.
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
@@ -688,6 +746,7 @@ duplicates <- biz[duplicated(biz) | duplicated(biz, fromLast = TRUE), ] %>%
 # Display the sorted rows with duplicate BUS_STOP_N
 head(duplicates)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the `biz` data frame to find duplicates. The logical condition `duplicated(biz) | duplicated(biz, fromLast = TRUE)` keeps both the first and last occurrence of each duplicate.
 -   The subset operation (`biz[...]`) is used to keep only the rows for each duplicate in `biz`.
@@ -704,6 +763,7 @@ biz <- biz[!duplicated(biz) | duplicated(biz, fromLast = TRUE), ]
 # Display the resulting dataset
 glimpse(biz)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the `biz` data frame to find duplicates. The logical condition `!duplicated(biz) | duplicated(biz, fromLast = TRUE)` keeps both the first and last occurrence of each duplicate.
 -   The subset operation (`biz[...]`) is used to keep only one row for each duplicate in `biz`.
@@ -711,7 +771,9 @@ glimpse(biz)
 :::
 
 ##### distribution map
+
 after cleaning the duplicates, now we can visualize the distribution of business point of interest using the following code
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -732,14 +794,16 @@ tm_shape(mpsz)+
 #### Entertainment
 
 ::: panel-tabset
-
 ##### import
+
 the following code will import the entertainment point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 entertn <- st_read(dsn = '../data/geospatial',
                      layer = 'entertn') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "entertn" layer from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `entertn` to 3414.
@@ -747,25 +811,30 @@ entertn <- st_read(dsn = '../data/geospatial',
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(entertn)
 ```
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some entertainment might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some entertainment might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(entertn) == nrow(entertn), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `entertn` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `entertn`.
 -   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `entertn` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
 :::
 
-since duplicates is found, we will try to check what are the duplicated value using the following code. 
+since duplicates is found, we will try to check what are the duplicated value using the following code.
+
 ```{r}
 # Subset rows where BUS_STOP_N has duplicates and arrange by BUS_STOP_N
 duplicates <- entertn[duplicated(entertn) | duplicated(entertn, fromLast = TRUE), ] %>%
@@ -776,6 +845,7 @@ head(duplicates)
 ```
 
 Based on the table, we can see that the duplicates does comes from the same entertainment point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 114 to 113
+
 ```{r}
 # Keep one row of the duplicates in the original dataset
 entertn <- entertn[!duplicated(entertn) | duplicated(entertn, fromLast = TRUE), ]
@@ -783,6 +853,7 @@ entertn <- entertn[!duplicated(entertn) | duplicated(entertn, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(entertn)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R identifies duplicate elements in a vector or rows in a data frame. Here, it's used to find duplicate rows in the `entertn` data frame.
 -   [arrange](https://dplyr.tidyverse.org/reference/arrange.html) from **dplyr** package sorts a data frame by one or more columns. In this case, `arrange` is used to sort the `duplicates` data frame by `POI_NAME`.
@@ -791,7 +862,9 @@ glimpse(entertn)
 :::
 
 ##### distribution map
+
 next, we try to visualize how does the entertainment point of interest distribution looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -808,39 +881,47 @@ tm_shape(mpsz)+
 -   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/3.3-1/topics/tm_dots) is used to create a dots layer. The `col` parameter is used to specify the color of the dots, and the `id` parameter is used to label the dots.
 -   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/3.3-1/topics/tm_layout) is used to set the layout parameters. In this code, it's used to set the main title of the map and its position.
 :::
-
 :::
 
 #### Food & Beverage
+
 ::: panel-tabset
 ##### import
+
 the following code will import the F&B point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 fnb <- st_read(dsn = '../data/geospatial',
                      layer = 'F&B') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "F&B" layer (likely representing food and beverage establishments) from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `fnb` to 3414.
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(fnb)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some F & B might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some F & B might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(fnb) == nrow(fnb), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `fnb` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `fnb`.
@@ -848,7 +929,9 @@ if_else(n_distinct(fnb) == nrow(fnb), "no duplicates detected", "possible duplic
 :::
 
 ##### distribution map
+
 since no duplicate is found, we can immediately try to visualize how does the F&B distribution looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -858,6 +941,7 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Food & Beverage Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for both `mpsz` (planning zones) and `fnb` (food and beverage locations).
 -   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map, with the alpha parameter setting the transparency for the `mpsz` polygons.
@@ -873,38 +957,45 @@ tm_shape(mpsz)+
 ##### import
 
 the following code will import the financial services point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 finance <- st_read(dsn = '../data/geospatial',
                    layer = 'FinServ') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "FinServ" layer (likely representing financial services) from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `finance` to 3414.
 :::
 
 ##### glimpse
+
 ```{r}
 glimpse(finance)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(finance) == nrow(finance), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `finance` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `finance`.
 -   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `finance` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
 :::
 
-since duplicates is found, we will try to check what are the duplicated value using the following code. 
+since duplicates is found, we will try to check what are the duplicated value using the following code.
+
 ```{r}
 # Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
 duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE), ] %>%
@@ -913,6 +1004,7 @@ duplicates <- finance[duplicated(finance) | duplicated(finance, fromLast = TRUE)
 # Display the sorted rows with duplicatew
 kable(head(duplicates, n=20))
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R identifies duplicate elements in a vector or rows in a data frame. Here, it's used to find duplicate rows in the `finance` data frame.
 -   [arrange](https://dplyr.tidyverse.org/reference/arrange.html) from **dplyr** package sorts a data frame by one or more columns. In this case, `arrange` is used to sort the `duplicates` data frame by `POI_NAME` and `POI_ST_NAM`.
@@ -921,6 +1013,7 @@ kable(head(duplicates, n=20))
 :::
 
 Based on the table, we can see that the duplicates does comes from the same financial service point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 3320 to 3058
+
 ```{r}
 # Keep one row of the duplicates in the original dataset
 finance <- finance[!duplicated(finance) | duplicated(finance, fromLast = TRUE), ]
@@ -928,6 +1021,7 @@ finance <- finance[!duplicated(finance) | duplicated(finance, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(finance)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the entire `finance` data frame to find duplicates.
 -   The subset operation (`finance[...]`) is used to keep only one row for each duplicate in `finance`. The logical condition `!duplicated(finance)` keeps the first occurrence of each duplicate, and `duplicated(finance, fromLast = TRUE)` keeps the last occurrence.
@@ -936,7 +1030,9 @@ glimpse(finance)
 :::
 
 ##### distribution map
+
 next, we try to visualize how does the financial services point of interest distribution looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -952,34 +1048,42 @@ tm_shape(mpsz)+
 
 ::: panel-tabset
 ##### import
+
 the following code will import the leisure & recreation point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 lnr <- st_read(dsn = '../data/geospatial',
                    layer = 'Liesure&Recreation') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used for reading spatial vector data into R. It imports data from a specified data source (`dsn`) and layer (`layer`). In this code, it reads the "Liesure&Recreation" layer (presumably representing leisure and recreation locations) from the data source located at `"../data/geospatial"`.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package transforms the coordinate reference system (CRS) of a spatial object. Here, it transforms the CRS of `lnr` to 3414.
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(lnr)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 -   This function is used here to display an overview of the `lnr` data frame, which contains spatial data related to leisure and recreation facilities. The output will give insights into the types and structures of the data available in `lnr`, such as column names, data types, and sample values.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some leisure & recreation might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some leisure & recreation might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(lnr) == nrow(lnr), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `lnr` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `lnr`.
@@ -987,7 +1091,9 @@ if_else(n_distinct(lnr) == nrow(lnr), "no duplicates detected", "possible duplic
 :::
 
 ##### distribution map
+
 since no duplicate is found, we can immediately try to visualize how does the leisure & entertainment point of interest distribution looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz)+
@@ -997,27 +1103,29 @@ tm_shape(mpsz)+
           id = 'POI_NAME') +
   tm_layout(main.title = 'Leisure & Recreation Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` and `lnr` (Leisure & Recreation) datasets.
 -   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map. For `mpsz`, the polygons are set with high transparency (`alpha = 0.01`).
 -   [tm_dots](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots) adds a layer of dots to the map, representing the `lnr` data. The color and identifier (`id`) of the dots are specified.
 -   [tm_layout](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout) customizes the layout of the map, including the main title and its position.
 -   This code snippet creates a thematic map displaying the distribution of leisure and recreation points of interest (POIs) over a minimally styled polygonal map of planning zones (`mpsz`).
-
 :::
 :::
 
 #### Retails
 
 ::: panel-tabset
-
 ##### import
+
 the following code will import the retails point of interest dataset and assign the correct coordinate reference.
+
 ```{r}
 retails <- st_read(dsn = '../data/geospatial',
                    layer = 'Retails') %>%
   st_transform(crs = 3414)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_read](https://r-spatial.github.io/sf/reference/st_read.html) from **sf** package is used to read simple features from a file or database. In this code, it's applied to the `Retails` layer of the `geospatial` data source to import the spatial data as an `sf` object.
 -   [st_transform](https://r-spatial.github.io/sf/reference/st_transform.html) from **sf** package is used to transform the coordinate reference system (CRS) of the `sf` object. In this code, it's applied to the `retails` object to change its CRS to `3414`, which is the code for SVY21 / Singapore TM projection.
@@ -1025,29 +1133,35 @@ retails <- st_read(dsn = '../data/geospatial',
 :::
 
 ##### glimpse
+
 using glimpse, we can see the structure of the data
+
 ```{r}
 glimpse(retails)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 -   This function is used here to display an overview of the `retails` data frame. The output will give insights into the types and structures of the data available in `retails`, such as column names, data types, and sample values. Since the content and structure of the `retails` data frame are not detailed in the prompt, it's assumed to contain retail-related spatial data.
 :::
 
 ##### check duplicates
-next, check for possible duplicates using this code.
-*considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
+next, check for possible duplicates using this code. *considering some financial services might have branches, the duplicate condition here is only if all column value is the same*
+
 ```{r}
 # check for duplicates based on unique id
 if_else(n_distinct(retails) == nrow(retails), "no duplicates detected", "possible duplicates detected")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `retails` data frame.
 -   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `retails`.
 -   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `retails` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
 :::
 
-since duplicates is found, we will try to check what are the duplicated value using the following code. 
+since duplicates is found, we will try to check what are the duplicated value using the following code.
+
 ```{r}
 # Subset rows for duplicates and arrange by POI_NAME and POI_ST_NAM
 duplicates <- retails[duplicated(retails) | duplicated(retails, fromLast = TRUE), ] %>%
@@ -1065,6 +1179,7 @@ kable(head(duplicates, n=20))
 :::
 
 Based on the table, we can see that the duplicates does comes from the same retail point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 37635 to 37463
+
 ```{r}
 # Keep one row of the duplicates in the original dataset
 retails <- retails[!duplicated(retails) | duplicated(retails, fromLast = TRUE), ]
@@ -1072,6 +1187,7 @@ retails <- retails[!duplicated(retails) | duplicated(retails, fromLast = TRUE), 
 # Display the resulting dataset
 glimpse(retails)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [duplicated](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated) from **base** R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it's applied to the entire `retails` data frame to find duplicates.
 -   The subset operation (`retails[...]`) is used to keep only one row for each duplicate in `retails`. The logical condition `!duplicated(retails)` keeps the first occurrence of each duplicate, and `duplicated(retails, fromLast = TRUE)` keeps the last occurrence.
@@ -1079,9 +1195,10 @@ glimpse(retails)
 -   This code snippet removes duplicate rows from the `retails` data frame, retaining only one occurrence of each duplicate, and then provides an overview of the resulting data frame.
 :::
 
-
 ##### distribution map
+
 next, we try to visualize how does the retail point of interest distribution looks like in the map using the following code.
+
 ```{r}
 # visualize the output
 tm_shape(mpsz) +
@@ -1090,6 +1207,7 @@ tm_shape(mpsz) +
   tm_dots(col = 'lightcoral', id = 'POI_NAME') +
   tm_layout(main.title="Retail Distribution Map", main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape) from **tmap** package prepares spatial data for plotting. It's used here for `mpsz` (planning zones) and `retails` (retail locations).
 -   [tm_polygons](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons) adds a layer of polygons to the map. For `mpsz`, the polygons are set with high transparency (`alpha = 0.01`).
@@ -1100,11 +1218,14 @@ tm_shape(mpsz) +
 
 :::
 
+:::
+
 ### Aspatial
 
 This subsection will import the aspatial data used in this project and check it. The data includes Passenger Volume by Origin Destination Bus Stops, HDB data which explanations can be found in [Overview] section.
 
 #### Passenger Volume
+
 Firstly, the following code will import the Passenger Volume by Origin Destination Bus Stops dataset. At the same time, it will also set the reference bus stop code data type to `factor` for easing compatibility issue and more efficient processing. As previously mentioned, this project will focus on weekday morning peak, so the code will also filter the data by that criteria, grouping it using the reference column, while summing the total trip for each unique grouped reference value. Finally, the code will generate output of summary statistics of the resulting dataset.
 
 ```{r}
@@ -1145,6 +1266,7 @@ The data provides details about the origin and destination points, along with th
 #### HDB
 
 the following code will import the HDB dataset and check the data frame.
+
 ```{r}
 # Load csv file
 hdb <- read_csv("../data/aspatial/hdb.csv")
@@ -1152,13 +1274,14 @@ hdb <- read_csv("../data/aspatial/hdb.csv")
 # check the data
 glimpse(hdb)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame. In this code, it reads data from a file located at `"../data/aspatial/hdb.csv"`, which likely contains information about Housing Development Board (HDB) properties.
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 -   This code snippet imports and provides an overview of the `hdb` data frame, which presumably contains data related to HDB properties.
 :::
 
-To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of HDB across Singapore. 
+To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of HDB across Singapore.
 
 ```{r}
 hdb_sf <- st_as_sf(hdb,
@@ -1174,11 +1297,12 @@ tm_shape(mpsz)+
           id = 'building') +
   tm_layout(main.title = 'HDB Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
-- The `hdb` data frame, which contains information on the HDB buildings, is converted to a spatial data frame using the `st_as_sf` function from the **sf** package. The `coords` argument specifies the columns that contain the longitude and latitude coordinates, and the `crs` argument specifies the coordinate reference system (CRS) of the data. The CRS is then transformed to 3414, which is the EPSG code for the SVY21 projection used in Singapore.
-- The `mpsz` data frame, which contains information on the subzones in Singapore, is also a spatial data frame. It is used as the base layer for the map, and the `tm_polygons` function from the **tmap** package is used to draw the polygons of the subzones. The `col` argument sets the color of the polygons to white, and the `alpha` argument sets the transparency to 0.01, making them barely visible.
-- The `hdb_sf` data frame, which contains the spatial information on the HDB buildings, is used as the overlay layer for the map, and the `tm_dots` function from the **tmap** package is used to draw the points representing the buildings. The `col` argument sets the color of the points to light blue, and the `id` argument sets the column that contains the building names.
-- The `tm_layout` function from the **tmap** package is used to customize the layout of the map. The `main.title` argument sets the title of the map to "HDB Distribution Map", and the `main.title.position` argument sets the position of the title to center.
+-   The `hdb` data frame, which contains information on the HDB buildings, is converted to a spatial data frame using the `st_as_sf` function from the **sf** package. The `coords` argument specifies the columns that contain the longitude and latitude coordinates, and the `crs` argument specifies the coordinate reference system (CRS) of the data. The CRS is then transformed to 3414, which is the EPSG code for the SVY21 projection used in Singapore.
+-   The `mpsz` data frame, which contains information on the subzones in Singapore, is also a spatial data frame. It is used as the base layer for the map, and the `tm_polygons` function from the **tmap** package is used to draw the polygons of the subzones. The `col` argument sets the color of the polygons to white, and the `alpha` argument sets the transparency to 0.01, making them barely visible.
+-   The `hdb_sf` data frame, which contains the spatial information on the HDB buildings, is used as the overlay layer for the map, and the `tm_dots` function from the **tmap** package is used to draw the points representing the buildings. The `col` argument sets the color of the points to light blue, and the `id` argument sets the column that contains the building names.
+-   The `tm_layout` function from the **tmap** package is used to customize the layout of the map. The `main.title` argument sets the title of the map to "HDB Distribution Map", and the `main.title.position` argument sets the position of the title to center.
 :::
 
 #### Schools
@@ -1211,6 +1335,7 @@ for(postcode in postcodes){
 
 glimpse(found)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [read_csv](https://readr.tidyverse.org/reference/read_delim.html) from **readr** package reads a CSV file into R, converting it to a data frame.
 -   [GET](https://httr.r-lib.org/reference/GET.html) from **httr** package sends an HTTP GET request to a specified URL. In this code, it's used to query a web API for each postcode.
@@ -1222,6 +1347,7 @@ glimpse(found)
 :::
 
 From previous in-class exercise, we already know that the not found data consist of Zhenghua Secondary School. Therefore, the following code will merge the data from previous process, then manually input the latitude and longitude data of the school.
+
 ```{r}
 schools = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
 
@@ -1232,13 +1358,15 @@ schools[schools$school_name == "ZHENGHUA SECONDARY SCHOOL", "results.LONGITUDE"]
 # check the output
 glimpse(schools)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [merge](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/merge) from **base** R combines two data frames by matching rows based on specified columns. In this code, `csv` and `found` are merged using `postal_code` from `csv` and `results.POSTAL` from `found`, with the `all = TRUE` option to include all rows from both data frames.
 -   Manual data assignment is used to add specific latitude and longitude values for "ZHENGHUA SECONDARY SCHOOL" using base R's subsetting and assignment operations.
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
-To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of Schools across Singapore. 
+To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of Schools across Singapore.
+
 ```{r}
 schools_sf <- schools %>%
   rename(
@@ -1267,6 +1395,7 @@ tm_shape(mpsz)+
           id = 'building') +
   tm_layout(main.title = 'Schools Distribution Map', main.title.position = "center")
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [rename](https://dplyr.tidyverse.org/reference/rename.html) from **dplyr** package changes the names of specific columns in a data frame for clarity. Here, it renames columns in `schools` to `latitude` and `longitude`.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package subsets specific columns from a data frame, retaining only `postal_code`, `school_name`, `latitude`, and `longitude`.
@@ -1279,12 +1408,16 @@ tm_shape(mpsz)+
 -   This code snippet creates a thematic map showing the distribution of schools over a map with minimal polygon representation.
 :::
 
-
 # Data Wrangling
+
+::: panel-tabset
+
 The following section will do various data wrangling from creating the hexagon layer, combining the data, duplicate checking, constructing Origin-Destination matrix, creating distance variable, and removing intra-zonal flows.
 
 ## Create Hexagon Layer
+
 In this part, the following code will create honeycomb grid with hexagons with a distance of 375m from the center to the midpoint of the edge as the traffic analysis zone (TAZ). These hexagons will be the zones for the analysis. Simultaneously, the code will also intersect the grid with the bus stop data, and filter out grid that does not have any bus stop.
+
 ```{r}
 # Create hexagonal grid based on bus stop locations
 hexagonal_grid <- st_make_grid(busstop,
@@ -1305,6 +1438,7 @@ hexagons_with_bus_stops <- filter(hex_grid_sf, num_bus_stops > 0)
 # check the output
 glimpse(hexagons_with_bus_stops)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_make_grid](https://r-spatial.github.io/sf/reference/st_make_grid.html) from **sf** package creates a grid over a spatial object (`busstop`). Here, it generates a hexagonal grid with a specified cell size, forming polygons instead of squares.
 -   [st_sf](https://r-spatial.github.io/sf/reference/st_sf.html) from **sf** package converts the hexagonal grid into an `sf` (simple features) object.
@@ -1316,6 +1450,7 @@ glimpse(hexagons_with_bus_stops)
 :::
 
 Next, we will visualize the distribution of bus stop across Singapore.
+
 ```{r}
 # Plot the number of bus stops per hexagon with a color gradient and legend
 tm_shape(hexagons_with_bus_stops) +
@@ -1329,6 +1464,7 @@ tm_shape(hexagons_with_bus_stops) +
             main.title.position = "center",
             legend.position = c("right", "top"))
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_make_grid](https://r-spatial.github.io/sf/reference/st_make_grid.html) from **sf** package is used to create a grid over a spatial object (`busstop`). Here, it generates a hexagonal grid with a specified cell size.
 -   [st_sf](https://r-spatial.github.io/sf/reference/st_sf.html) from **sf** package converts the hexagonal grid into an `sf` (simple features) object.
@@ -1340,7 +1476,9 @@ tm_shape(hexagons_with_bus_stops) +
 :::
 
 ## Combine Bus Stop and Hexagon
+
 In this step, the following code will join the bus stop and hexagon data, and filter out only the required columns for following sections.
+
 ```{r}
 # Perform a spatial join
 busstop_with_hex_info <- st_join(busstop, hexagons_with_bus_stops, by = NULL, join = st_within)
@@ -1355,6 +1493,7 @@ busstop_with_hex_info <- busstop_with_hex_info %>%
 # Display the resulting data
 glimpse(busstop_with_hex_info)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [st_join](https://r-spatial.github.io/sf/reference/st_join.html) from **sf** package performs a spatial join between two spatial objects. In this case, it joins `busstop` with `hexagons_with_bus_stops`. The `join = st_within` argument specifies that bus stops are joined with hexagons in which they are located.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package subsets specific columns from the joined spatial data frame. This code retains columns like `BUS_STOP_N`, `BUS_ROOF_N`, `LOC_DESC`, `hexagon_id`, and `geometry`.
@@ -1363,7 +1502,9 @@ glimpse(busstop_with_hex_info)
 :::
 
 ## Combine Trips and Hexagon
+
 now, we will finally join the passenger trip data with the hex and bus stop data. considering that the data have origin and destination bus stop, we will also have hex for both.
+
 ```{r}
 # Add origin_hex to odb10
 odb_hex <- odb10 %>%
@@ -1391,6 +1532,7 @@ odb_hex <- odb_hex %>%
 # check the output
 glimpse(odb_hex)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [left_join](https://dplyr.tidyverse.org/reference/join.html) from **dplyr** package merges two data frames by matching values in specified columns. Here, it's used twice to merge `busstop_with_hex_info` with `odb10`, first for origin and then for destination bus stops, based on matching bus stop codes.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package subsets specific columns from a data frame. It's used to select `BUS_STOP_N` and `hexagon_id` from `busstop_with_hex_info`.
@@ -1401,13 +1543,22 @@ glimpse(odb_hex)
 :::
 
 ## Final Duplicate Checking
+
 Before going into the next step, the following code will firstly make sure that there are no duplicates in the dataset.
+
 ```{r}
 if_else(n_distinct(odb_hex) == nrow(odb_hex), "no duplicates detected", "possible duplicates detected")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [n_distinct](https://dplyr.tidyverse.org/reference/n_distinct.html) from **dplyr** package calculates the number of unique values in a vector. Here, it's used to count the unique values in the entire `odb_hex` data frame.
+-   [nrow](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow) from **base** R returns the number of rows in a data frame. Here, it's used to get the total number of rows in `odb_hex`.
+-   [if_else](https://dplyr.tidyverse.org/reference/if_else.html) from **dplyr** package performs a vectorized conditional operation. In this code, it checks if the number of unique values in `odb_hex` equals the total number of rows. If they are equal, it returns "no duplicates detected"; otherwise, it returns "possible duplicates detected".
+:::
 
 ## Construct O-D Matrix
+
 Next, using the following code, we will build the O-D matrix which represent various which aggregate the trips on a one on one origin vs destination basis.
+
 ```{r}
 # Remove rows with missing values
 clean_odb <- odb_hex[complete.cases(odb_hex), ]
@@ -1423,6 +1574,7 @@ odb_flow <- clean_odb %>%
 # check the output
 glimpse(odb_flow)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [complete.cases](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/complete.cases) from **base** R finds rows with no missing values (`NA`). Here, it's used to filter `odb_hex` and remove rows with missing data.
 -   [group_by](https://dplyr.tidyverse.org/reference/group_by.html) from **dplyr** package groups the data by specified columns, here by `origin_hex` and `destination_hex`.
@@ -1432,7 +1584,9 @@ glimpse(odb_flow)
 :::
 
 ## Create Distance Variable
+
 After getting the origin-destination matrix, we need to calculate the distance between each origin and destination pair which will be used later for creating desire lines. The following code chunk will execute the required steps.
+
 ```{r}
 # set busstop to spatial
 busstop_sp <- as(busstop_with_hex_info, "Spatial")
@@ -1468,6 +1622,7 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [as](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as) from **base** R converts an object from one class to another, here converting `busstop_with_hex_info` to a Spatial object (`Spatial`).
 -   [spDists](https://www.rdocumentation.org/packages/sp/versions/1.4-2/topics/spDists) from **sp** package calculates distances between points in a spatial object. The `longlat = FALSE` parameter indicates that the coordinates are in a planar projection.
@@ -1483,6 +1638,7 @@ glimpse(odb_flow)
 ## Remove Intra-Zonal Flows
 
 This analysis is focused on the traffic between zones. Therefore the following code chunk will remove intra-zonal flows.
+
 ```{r}
 odb_flow <- odb_flow %>%
   filter(as.character(origin_hex) != as.character(destination_hex))
@@ -1490,6 +1646,7 @@ odb_flow <- odb_flow %>%
 # check the output
 glimpse(odb_flow)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [filter](https://dplyr.tidyverse.org/reference/filter.html) from **dplyr** package is used to retain rows in a data frame based on a specified condition. In this code, it filters the `odb_flow` data frame to keep only the rows where `origin_hex` and `destination_hex` are different.
 -   The `as.character` function from **base** R is used to ensure that the comparison between `origin_hex` and `destination_hex` is done as character strings, likely because these columns are factors or some other class.
@@ -1505,18 +1662,17 @@ Intra-zonal flows, representing movements within a single zone, may not contribu
 Including intra-zonal flows in the model might introduce unnecessary complexity or noise, potentially affecting the accuracy and interpretability of the model's results. Therefore, excluding intra-zonal flows is a methodological choice to streamline the analysis and enhance the model's ability to capture meaningful inter-zonal interactions.
 :::
 
+:::
+
 # Visualize the Desire Lines
 
 The od2line function plays a pivotal role in transforming origin-destination data into a format suitable for generating flow lines on a map. This function requires three essential arguments: flow, zones, and zone_code.
 
-1. **flow:**
-This is a data frame that encapsulates the origin-destination data. The first column of this data frame should align with the first column of the data present in the zones dataframe. In the context of the provided R code snippet, the variable 'odb_flow' is used as the flow data frame.
+1.  **flow:** This is a data frame that encapsulates the origin-destination data. The first column of this data frame should align with the first column of the data present in the zones dataframe. In the context of the provided R code snippet, the variable 'odb_flow' is used as the flow data frame.
 
-2. **zones:**
-Here, the origin and destination points of the travels are specified. This argument is crucial for mapping out the flow lines accurately. The actual geographical data, represented by the dataframe 'hexagons_with_bus_stops,' is employed as the zones dataframe in the given code.
+2.  **zones:** Here, the origin and destination points of the travels are specified. This argument is crucial for mapping out the flow lines accurately. The actual geographical data, represented by the dataframe 'hexagons_with_bus_stops,' is employed as the zones dataframe in the given code.
 
-3. **zone_code:**
-This parameter involves providing the name of the variable within the 'zones' dataframe that contains the unique identifiers (IDs) of the zones. In the presented R code, the variable 'hexagon_id' serves this purpose, linking the flow data with the corresponding geographical zones.
+3.  **zone_code:** This parameter involves providing the name of the variable within the 'zones' dataframe that contains the unique identifiers (IDs) of the zones. In the presented R code, the variable 'hexagon_id' serves this purpose, linking the flow data with the corresponding geographical zones.
 
 To demonstrate the practical implementation of the od2line function, the provided code snippet utilizes the 'odb_flow' as the origin-destination data, 'hexagons_with_bus_stops' as the geographical zones, and designates 'hexagon_id' as the variable containing zone IDs. The resulting flowline object is then explored using the 'glimpse' function, offering a concise overview of its structure and contents.
 
@@ -1527,16 +1683,20 @@ flowline <- od2line(flow = odb_flow,
 
 glimpse(flowline)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
--   `od2line` is function from [od](https://itsleeds.github.io/od/#:~:text=The%20od2line()%20function%2C%20for,movement%20between%20origins%20and%20destinations%3A&text=%23%3E%202%20LINESTRING%20(%2D1.518911%2053.79...)  used for converting origin-destination data (`odb_flow`) into spatial lines. It takes flow data and corresponding spatial zones (`hexagons_with_bus_stops`), and uses a zone identifier (`zone_code` set as 'hexagon_id') to create spatial lines representing the flow between origins and destinations.
+-   `od2line` is function from \[od\](https://itsleeds.github.io/od/#:\~:text=The%20od2line()%20function%2C%20for,movement%20between%20origins%20and%20destinations%3A&text=%23%3E%202%20LINESTRING%20(%2D1.518911%2053.79...) used for converting origin-destination data (`odb_flow`) into spatial lines. It takes flow data and corresponding spatial zones (`hexagons_with_bus_stops`), and uses a zone identifier (`zone_code` set as 'hexagon_id') to create spatial lines representing the flow between origins and destinations.
 -   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
 :::
 
 ## 3rd Quantile Trips (175)
+
 Considering the volume of the flowline, we will try to focus on the most important part of the flows. Firstly, we will try to filter on the 3rd Quantile. To do that, the following code will get the quantile of the trips.
+
 ```{r}
 summary(flowline$trips)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the `trips` column in the `flowline` data frame.
 -   This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the `trips` column.
@@ -1544,6 +1704,7 @@ summary(flowline$trips)
 :::
 
 We can see that the 3rd quantile is at 175 trips. The number will be used to plot the desire lines on the following code.
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1561,6 +1722,7 @@ flowline %>%
            alpha = 0.2)+
   tm_layout(main.title = 'Weekday Morning Peak Flow for 3rd Quantile Trips', main.title.position = 'center')
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tmap_mode) and [tmap_options](https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tmap_options) from **tmap** package are used to set up the mode and options for thematic maps.
 -   [tm_shape](https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tm_shape) is used to specify the spatial object to be visualized.
@@ -1579,17 +1741,22 @@ The eastern region, possibly including areas like Changi and the vicinity of the
 The map also shows a relatively lighter flow in the northern and western regions, suggesting either fewer bus trips or lower volumes within the 3rd quantile range.
 
 ## 99th Percentile Trips (6082)
+
 Since filtering on 3rd quantile shows that the map is still hardly distinguishable, next we will try to use percentile. The following code will show the cutoff for the percentiles.
+
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.01), na.rm = TRUE)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `trips` column in the `flowline` data frame.
 -   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
 -   `na.rm = TRUE` indicates that NA (missing) values should be removed before the calculation.
 -   This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the `trips` data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.
 :::
+
 We can see that distinguishable increase can be seen on the 99th percentile at 6082 trips. The number will be used to plot the desire lines on the following code.
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1607,6 +1774,7 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flow for 99th Percentile Trips', main.title.position = 'center',
             main.title.size = 1.2)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. Here, the mode is set to `'plot'` for static map rendering.
 -   [tmap_options](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_options) configures options for tmap functions. The `check.and.fix = TRUE` option is used to automatically check and fix invalid polygons in spatial data.
@@ -1629,10 +1797,19 @@ The north-eastern region also exhibits a strong flow towards the central areas, 
 Short trips within regions have become more visible at this percentile, indicating that there are specific short-distance routes that are heavily utilized and might be of interest for targeted transport planning.
 
 ## 3rd Quantile Distance (8923)
+
 Next, we will try to show desire lines with a filter on the distance to see where are the longer distant travels happening. Firstly, we need to check the quantile cutoff with the following code.
+
 ```{r}
 summary(flowline$distance)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `distance` column in the `flowline` data frame.
+-   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
+-   `na.rm = TRUE` indicates that NA (missing) values should be removed before the calculation.
+-   This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the `distance` data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.
+:::
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the `distance` column in the `flowline` data frame.
 -   This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the `distance` column.
@@ -1640,6 +1817,7 @@ summary(flowline$distance)
 :::
 
 We can see that the 3rd quantile is at 8923 distant. The number will be used to plot the desire lines on the following code.
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1675,11 +1853,21 @@ The gray hexagonal overlay helps to provide context regarding the distribution o
 Although the map is crowded, the saturated areas of flow could signal potential bottlenecks or areas that may benefit from transportation infrastructure improvements, such as increased bus services or the development of express routes.
 
 ## 99th Percentile Distance (18587)
+
 Since the previous filtering on 3rd quantile resulting in hardly distinguishable pattern, we will try to use percentile next. The following code will check what are the percentile for distance.
+
 ```{r}
 quantile(flowline$distance, probs = seq(0, 1, 0.01), na.rm = TRUE)
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `distance` column in the `flowline` data frame.
+-   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
+-   `na.rm = TRUE` indicates that NA (missing) values should be removed before the calculation.
+-   This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the `distance` data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.
+:::
+
 Following the previous filter, we also use 99th percentile at 18587 distance for the following plot.
+
 ```{r}
 tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
@@ -1697,6 +1885,7 @@ flowline %>%
   tm_layout(main.title = 'Weekday Morning Peak Flowline for 99th Percentile Distance', main.title.position = 'center',
             main.title.size = 1.2)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [tmap_mode](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode) from **tmap** package sets the mode for creating maps. Here, the mode is set to `'plot'` for static map rendering.
 -   [tmap_options](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_options) configures options for tmap functions. The `check.and.fix = TRUE` option is used to automatically check and fix invalid polygons in spatial data.
@@ -1715,10 +1904,13 @@ The flow between the north and east regions also shows a heightened density, sug
 The map, with its dense coral lines, indicates that even at the 99th percentile for distance, there are numerous long-distance routes with substantial ridership, underlining the importance of these bus services in the overall transportation network.
 
 ## Spread Across Decile of Trips
+
 The last desire line map chart will try to see the spread of trips across decile. Firstly, we check the decile cutoff of trips using the following code.
+
 ```{r}
 quantile(flowline$trips, probs = seq(0, 1, 0.1), na.rm = TRUE)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [quantile](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile) from **stats** package in base R computes sample quantiles for a given set of data. In this code, it's used to calculate quantiles for the `distance` column in the `flowline` data frame.
 -   `probs = seq(0, 1, 0.01)` specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).
@@ -1727,6 +1919,7 @@ quantile(flowline$trips, probs = seq(0, 1, 0.1), na.rm = TRUE)
 :::
 
 Next, we define the breaks and plot the chart that will show the spread of trips across decile of cutoff (with an additional arbitrary cutoff on high increase in trip volume). Then, the following code will also assign the cutoff as a column in the flowline dataframe.
+
 ```{r}
 flowline <- flowline %>%
   mutate(
@@ -1741,6 +1934,7 @@ flowline <- flowline %>%
 # check the output
 glimpse(flowline)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables or modify existing ones in a data frame. In this code, it adds a `decile` column to the `flowline` data frame.
 -   [cut](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut) from **base** R divides the range of a numeric vector (`trips` in this case) into intervals and codes the values according to which interval they fall. The `breaks` parameter defines the interval boundaries, and `labels` provides labels for these intervals. `ordered_result = TRUE` makes the result an ordered factor.
@@ -1749,6 +1943,7 @@ glimpse(flowline)
 :::
 
 Based on the new ordinal column of decile group, we can plot the following map chart that shows the spread of trips volume.
+
 ```{r}
 #| eval: false
 trips_spread <- tm_shape(mpsz) +
@@ -1764,7 +1959,6 @@ tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 
                outer.margins = NA, restart.delay=500)
 ```
 
-
 ![](../images/trips_spread.gif) for the first 8 decile, the trips slightly change but still more dense on central. on the extra category of \>5000, north-downtown, west-downtown, north-east, and short trip becomes more visible
 
 ::: {.callout-note collapse="true" title="Functions"}
@@ -1777,14 +1971,15 @@ tmap_animation(trips_spread, "../images/trips_spread.gif", loop = TRUE, delay = 
 -   This code creates an animated map visualizing "Weekday Morning Peak Traffic Flow" across different deciles, saved as a GIF file.
 :::
 
-Initial Deciles (<2 to 125-254): In the earlier frames representing the lower deciles, the trip volumes show gradual changes, with a consistent pattern of denser traffic in the central region. This likely reflects a stable flow of bus trips in the heart of the city, where there is a concentration of work, education, and commercial activities.
+Initial Deciles (\<2 to 125-254): In the earlier frames representing the lower deciles, the trip volumes show gradual changes, with a consistent pattern of denser traffic in the central region. This likely reflects a stable flow of bus trips in the heart of the city, where there is a concentration of work, education, and commercial activities.
 
-Higher Deciles (254-661 to >5000): As the deciles increase, the traffic flow becomes more pronounced, particularly in routes leading from the north, west, and northeast towards downtown. These routes exhibit significant growth in trip volumes, highlighting key commuter corridors.
+Higher Deciles (254-661 to \>5000): As the deciles increase, the traffic flow becomes more pronounced, particularly in routes leading from the north, west, and northeast towards downtown. These routes exhibit significant growth in trip volumes, highlighting key commuter corridors.
 
-Extreme Volume Category (>5000): In the final frames, where the cutoff is for volumes greater than 5000 trips, the visualization emphasizes the most heavily utilized routes. The north to downtown, west to downtown, northeast, and certain short-distance routes stand out more distinctly, showing where the highest demand for bus transport exists.
+Extreme Volume Category (\>5000): In the final frames, where the cutoff is for volumes greater than 5000 trips, the visualization emphasizes the most heavily utilized routes. The north to downtown, west to downtown, northeast, and certain short-distance routes stand out more distinctly, showing where the highest demand for bus transport exists.
 
 # Assembling Variables
-To better design our Spatial Interaction Model performance, we need to assemble the variables that. In the gravity model, those variables include distance, and push and pull factors. 
+
+To better design our Spatial Interaction Model performance, we need to assemble the variables that. In the gravity model, those variables include distance, and push and pull factors.
 
 ## Push Factors
 
@@ -1803,6 +1998,7 @@ Proxy Population Data using HDB Sales: While not a direct count of population, H
 :::
 
 The following code will create a dataframe to hold all the factors before merged into the main dataframe. Then it assign all the common push factors count to the dataframe.
+
 ```{r}
 factors_holder <- hexagons_with_bus_stops %>%
   rename(push_num_bus_stops = num_bus_stops)
@@ -1833,6 +2029,7 @@ factors_holder <- add_push_poi_counts(factors_holder, push_poi_datasets)
 # check the output
 glimpse(factors_holder)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables or modify existing ones in a data frame. Here, it creates a `capacity` column based on a calculation involving various room types.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to subset specific columns in the data frame.
@@ -1846,6 +2043,7 @@ glimpse(factors_holder)
 :::
 
 Next, we will try to approximate population of the location, based on estimated hdb capacity, and assign it as a push factor as well.
+
 ```{r}
 hdb_capacity <- hdb_sf %>%
   mutate(capacity = `1room_sold` *1 +
@@ -1879,6 +2077,7 @@ factors_holder <- left_join(factors_holder, hdb_capacity, by = "hexagon_id") %>%
 
 glimpse(factors_holder)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [mutate](https://dplyr.tidyverse.org/reference/mutate.html) from **dplyr** package is used to add new variables or modify existing ones in a data frame. Here, it creates a `capacity` column based on a calculation involving various room types.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to subset specific columns in the data frame.
@@ -1894,23 +2093,23 @@ glimpse(factors_holder)
 ::: {.callout-note collapse="true" title="How does the HDB capacity estimated?"}
 To enhance our dataset with information from [Housing Development Board (HDB)](https://www.hdb.gov.sg/cs/infoweb/homepage) records, it's essential to recognize that HDB residential blocks are designed to house a varying number of residents. This diversity is due to the different types of flats available, each intended to cater to different family sizes and living arrangements. To accurately gauge the population within each HDB block, we employ a methodology that combines the count of dwelling units with an estimated occupancy rate.
 
-The occupancy rate is derived based on standard family compositions associated with each flat type as detailed on the HDB's types of flats page, which outlines the typical configurations offered to residents. Here’s how we estimate the population for each type of flat:
+The occupancy rate is derived based on standard family compositions associated with each flat type as detailed on the HDB's types of flats page, which outlines the typical configurations offered to residents. Here's how we estimate the population for each type of flat:
 
-- **1-room flats (sold or rental)**: Generally occupied by a single resident.
-  
-- **2-room flats (sold or rental)**: Typically house two individuals, which may be a couple or two single persons sharing a space.
-  
-- **3-room flats (sold or rental)**: Commonly accommodate a small family unit, presumed to be two adults and one child.
-  
-- **4-room flats and executive flats (sold)**: Usually inhabited by a standard family of four members, such as two adults and two children.
-  
-- **5-room flats (sold)**: Are spacious enough for larger families, presumed to consist of two adults and three children.
+-   **1-room flats (sold or rental)**: Generally occupied by a single resident.
 
-- **Multi-generation flats (sold)**: Designed to support extended family living, these are estimated to house six individuals, including a pair of grandparents, a couple, and two children.
+-   **2-room flats (sold or rental)**: Typically house two individuals, which may be a couple or two single persons sharing a space.
 
-- **Studio apartments (sold)**: Intended for elderly residents living alone.
+-   **3-room flats (sold or rental)**: Commonly accommodate a small family unit, presumed to be two adults and one child.
 
-- **Other rental units**: If the categorization is not explicit, a general assumption of two residents is applied.
+-   **4-room flats and executive flats (sold)**: Usually inhabited by a standard family of four members, such as two adults and two children.
+
+-   **5-room flats (sold)**: Are spacious enough for larger families, presumed to consist of two adults and three children.
+
+-   **Multi-generation flats (sold)**: Designed to support extended family living, these are estimated to house six individuals, including a pair of grandparents, a couple, and two children.
+
+-   **Studio apartments (sold)**: Intended for elderly residents living alone.
+
+-   **Other rental units**: If the categorization is not explicit, a general assumption of two residents is applied.
 :::
 
 ## Pull Factors
@@ -1936,6 +2135,7 @@ Counts of Schools: Schools play a pivotal role in shaping travel patterns, parti
 :::
 
 The following code will assign all the common pull factors count to the dataframe.
+
 ```{r}
 # define function to add pull poi counts columns
 add_pull_poi_counts <- function(factors_holder, poi_datasets) {
@@ -1962,6 +2162,7 @@ factors_holder <- add_pull_poi_counts(factors_holder, pull_poi_datasets)
 
 glimpse(factors_holder)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   The `add_pull_poi_counts` function is a custom-defined function. It is used to add new columns to the `factors_holder` data frame, each representing the count of points of interest (POIs) nearby.
 -   The function loops through each POI dataset name provided in `poi_datasets` (a vector of dataset names like "station", "trainexit", etc.).
@@ -1976,6 +2177,7 @@ glimpse(factors_holder)
 ## Final Dataset
 
 After assembling all the pull and push factors, next we will merge the factors to the main dataset. The push factors will be merged by using origin_hex, while the pull factors will be merged by using destination_hex. The following code will execute the task.
+
 ```{r}
 final_df <- left_join(odb_flow, factors_holder %>% select(starts_with("push_"), hexagon_id), by = c("origin_hex" = "hexagon_id"))
 
@@ -1990,6 +2192,7 @@ final_df <- final_df %>%
 # Check the output
 glimpse(final_df)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [left_join](https://dplyr.tidyverse.org/reference/join.html) from **dplyr** package merges two data frames based on matching values in specified columns. Here, it's used twice: first to join `odb_flow` with `push` columns from `factors_holder`, and then to join `pull` columns to the resulting data frame.
 -   [select](https://dplyr.tidyverse.org/reference/select.html) from **dplyr** package is used to subset specific columns from a data frame. `starts_with` is a helper used within `select` to choose columns that start with certain strings.
@@ -2000,25 +2203,40 @@ glimpse(final_df)
 :::
 
 To avoid redundant processing on running this qmd file or in rendering it, we can save the final processed data to rds file, then import it on the later step. The following code will write the rds file.
+
 ```{r}
 #| eval: false
 write_rds(final_df, "../data/rds/final_df_the2.rds")
 ```
+::: {.callout-note collapse="true" title="Functions"}
+-   [write_rds](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS) from **base** R saves an R object (in this case, the `final_df` data frame) to a file in R's binary RDS format. This format is specific to R and allows for efficient storage of R objects.
+-   The first argument is the object to be saved (`final_df`), and the second argument is the file path where the object will be saved (`"../data/rds/final_df_the2.rds"`).
+-   The `#| eval: false` at the beginning of the code is likely an instruction for an R Markdown document or similar tool, indicating that this line of code should not be evaluated when the document is run.
+-   This code snippet saves the `final_df` data frame as an RDS file for future use, providing a convenient way to store and later reload the data frame in its current state.
+:::
+
 ::: {.callout-note collapse="true" title="What & Why RDS Format?"}
 The RDS format in R is a specialized file format used for storing single R objects. It's a compact binary format that preserves the exact structure of the saved object, including metadata. This format is particularly efficient for saving and loading objects in R, as it ensures that the object is restored exactly as it was when saved, without any need for reformatting or reassembling data.
 
 Using the RDS format is beneficial because it allows for fast and efficient storage and retrieval of R objects, making it ideal for situations where you need to save an object and reload it later in another session without any loss of information. The functions `write_rds` and `read_rds` (or `writeRDS` and `readRDS` in base R) are used for saving to and reading from this format, respectively. RDS is especially useful for large datasets or complex objects where preservation of structure is crucial.
 :::
 
-
 # Spatial Interaction Model
 
 As explained in [Overview] section, the Spatial Interaction Model used here are various type of the Gravity Model. Firstly, based on the previous saved data, this will be the checkpoint on importing the final dataset for the modelling.
+
 ```{r}
 final_df <- read_rds("../data/rds/final_df_the2.rds")
 glimpse(final_df)
 ```
-Another thing to note before starting, is that the `glm` model function that will be used does not have a built in R2 value calculation. Therefore the following code will build a function to calculate the R2. 
+::: {.callout-note collapse="true" title="Functions"}
+-   [read_rds](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS) from **base** R loads an R object saved in RDS format. In this code, it's used to read the `final_df` data frame from a file located at `"../data/rds/final_df_the2.rds"`.
+-   [glimpse](https://dplyr.tidyverse.org/reference/glimpse.html) from **dplyr** package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.
+-   This code snippet loads `final_df` from an RDS file and provides an overview of its structure, which is useful for understanding the types and arrangement of data contained in the data frame after it has been reloaded.
+:::
+
+Another thing to note before starting, is that the `glm` model function that will be used does not have a built in R2 value calculation. Therefore the following code will build a function to calculate the R2.
+
 ```{r}
 CalcRSquared <- function(observed, estimated){
   r <- cor(observed, estimated)
@@ -2045,6 +2263,7 @@ In the context of spatial interaction modeling using the `glm` function in R Stu
 ## Correlation Analysis
 
 Before running the model, its a good practice to check collinearity between the variables to prevent bumping into multicollinearity problem in the model.
+
 ```{r}
 # Calculate correlation
 correlation_matrix <- cor(final_df[,3:18])
@@ -2086,9 +2305,8 @@ this finding will be considered as basis for eliminating some variables in the m
 
 ## The 4 Models Without Elimination
 
-::: panel-tabset
-
 ### Unconstrained
+
 ```{r}
 uncSIM <- glm(formula = trips ~ 
                 log(push_num_bus_stops) +
@@ -2113,36 +2331,36 @@ uncSIM <- glm(formula = trips ~
 summary(uncSIM)
 CalcRSquared(uncSIM$data$trips, uncSIM$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** package in base R fits generalized linear models. Here, `orcSIM` is a Poisson regression model with a log link function, predicting `trips` based on various `pull_*_count` variables, `log(distance)`, and `origin_hex`. The `log` function is applied to the count variables and distance, indicating a log-linear relationship.
 -   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a detailed summary of the model's fit, including coefficients, statistical significance, and other diagnostics.
--   `CalcRSquared` is  a customfunction for calculating the R-squared value of the model. It's used here to calculate R-squared using the actual `trips` data and the fitted values from `orcSIM`.
+-   `CalcRSquared` is a customfunction for calculating the R-squared value of the model. It's used here to calculate R-squared using the actual `trips` data and the fitted values from `orcSIM`.
 :::
 
-**Key Coefficients:**
-The estimated coefficients reveal the impact of various predictor variables on the logarithm of trip counts. Notably, a positive coefficient (e.g., log(push_num_bus_stops)) suggests that an increase in the corresponding variable is associated with a higher number of trips, while a negative coefficient (e.g., log(push_station_count)) implies a negative influence. The large z-values and highly significant p-values (<2e-16) underscore the robustness and statistical significance of these associations.
+**Key Coefficients:** The estimated coefficients reveal the impact of various predictor variables on the logarithm of trip counts. Notably, a positive coefficient (e.g., log(push_num_bus_stops)) suggests that an increase in the corresponding variable is associated with a higher number of trips, while a negative coefficient (e.g., log(push_station_count)) implies a negative influence. The large z-values and highly significant p-values (\<2e-16) underscore the robustness and statistical significance of these associations.
 
-- **Intercept:** 13.24 (p < 2e-16)
-- **log(push_num_bus_stops):** 0.302 (p < 2e-16)
-- **log(push_station_count):** -0.600 (p < 2e-16)
-- **log(push_trainexit_count):** 0.389 (p < 2e-16)
-- **log(push_hdb_sf_count):** 0.454 (p < 2e-16)
-- **log(push_est_pop):** -0.051 (p < 2e-16)
-- **log(pull_station_count):** -0.469 (p < 2e-16)
-- **log(pull_trainexit_count):** 0.670 (p < 2e-16)
-- **log(pull_biz_count):** 0.089 (p < 2e-16)
-- **log(pull_entertn_count):** -0.054 (p < 2e-16)
-- **log(pull_fnb_count):** -0.166 (p < 2e-16)
-- **log(pull_finance_count):** 0.267 (p < 2e-16)
-- **log(pull_lnr_count):** -0.228 (p < 2e-16)
-- **log(pull_retails_count):** 0.039 (p < 2e-16)
-- **log(pull_schools_sf_count):** 0.258 (p < 2e-16)
-- **log(distance):** -1.180 (p < 2e-16)
+-   **Intercept:** 13.24 (p \< 2e-16)
+-   **log(push_num_bus_stops):** 0.302 (p \< 2e-16)
+-   **log(push_station_count):** -0.600 (p \< 2e-16)
+-   **log(push_trainexit_count):** 0.389 (p \< 2e-16)
+-   **log(push_hdb_sf_count):** 0.454 (p \< 2e-16)
+-   **log(push_est_pop):** -0.051 (p \< 2e-16)
+-   **log(pull_station_count):** -0.469 (p \< 2e-16)
+-   **log(pull_trainexit_count):** 0.670 (p \< 2e-16)
+-   **log(pull_biz_count):** 0.089 (p \< 2e-16)
+-   **log(pull_entertn_count):** -0.054 (p \< 2e-16)
+-   **log(pull_fnb_count):** -0.166 (p \< 2e-16)
+-   **log(pull_finance_count):** 0.267 (p \< 2e-16)
+-   **log(pull_lnr_count):** -0.228 (p \< 2e-16)
+-   **log(pull_retails_count):** 0.039 (p \< 2e-16)
+-   **log(pull_schools_sf_count):** 0.258 (p \< 2e-16)
+-   **log(distance):** -1.180 (p \< 2e-16)
 
-**Model Fit:**
-The coefficient of determination (R-squared) for the model is 0.188, indicating that approximately 18.8% of the variability in trip counts can be explained by the selected predictor variables. While this suggests a moderate level of explanatory power, it also highlights the existence of unaccounted factors influencing trip counts. The significance of the individual coefficients supports the model's ability to capture meaningful relationships within the dataset, despite the overall modest R-squared value.
+**Model Fit:** The coefficient of determination (R-squared) for the model is 0.188, indicating that approximately 18.8% of the variability in trip counts can be explained by the selected predictor variables. While this suggests a moderate level of explanatory power, it also highlights the existence of unaccounted factors influencing trip counts. The significance of the individual coefficients supports the model's ability to capture meaningful relationships within the dataset, despite the overall modest R-squared value.
 
 ### Origin Constrained
+
 ```{r}
 orcSIM <- glm(formula = trips ~
                 log(pull_station_count) +
@@ -2163,6 +2381,7 @@ orcSIM <- glm(formula = trips ~
 summary(orcSIM)
 CalcRSquared(orcSIM$data$trips, orcSIM$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it's applied to the `trips` as the response variable and a set of predictor variables in the `final_df` data frame.
 -   The formula `trips ~ log(push_num_bus_stops) + log(push_station_count) + log(push_trainexit_count) + log(push_hdb_sf_count) + log(push_est_pop) + log(distance) + destination_hex` specifies that `trips` is modeled as a function of `push_num_bus_stops`, `push_station_count`, `push_trainexit_count`, `push_hdb_sf_count`, `push_est_pop`, `distance`, and `destination_hex`. The `log` function is applied to transform the predictor variables.
@@ -2172,30 +2391,29 @@ CalcRSquared(orcSIM$data$trips, orcSIM$fitted.values)
 -   `CalcRSquared` is a user-defined function which is used to calculate the R-squared value of the fitted model. It takes the observed values `decSIM$data$trips` and the fitted values `decSIM$fitted.values` as inputs.
 :::
 
-**Key Coefficients:**
-The estimated coefficients from the Poisson regression model provide insights into the relationship between predictor variables and the logarithm of trip counts. Each coefficient represents the change in the log count of trips associated with a one-unit change in the corresponding predictor, holding other variables constant. Highly significant p-values (< 2e-16) emphasize the robustness of these associations.
+**Key Coefficients:** The estimated coefficients from the Poisson regression model provide insights into the relationship between predictor variables and the logarithm of trip counts. Each coefficient represents the change in the log count of trips associated with a one-unit change in the corresponding predictor, holding other variables constant. Highly significant p-values (\< 2e-16) emphasize the robustness of these associations.
 
-- **Intercept:** 13.44 (p < 2e-16)
-- **log(pull_station_count):** -0.403 (p < 2e-16)
-- **log(pull_trainexit_count):** 0.662 (p < 2e-16)
-- **log(pull_biz_count):** 0.108 (p < 2e-16)
-- **log(pull_entertn_count):** -0.089 (p < 2e-16)
-- **log(pull_fnb_count):** -0.134 (p < 2e-16)
-- **log(pull_finance_count):** 0.265 (p < 2e-16)
-- **log(pull_lnr_count):** -0.166 (p < 2e-16)
-- **log(pull_retails_count):** 0.060 (p < 2e-16)
-- **log(pull_schools_sf_count):** 0.230 (p < 2e-16)
-- **log(distance):** -1.239 (p < 2e-16)
-- **origin_hex1003:** 2.486 (p < 2e-16)
-- **origin_hex1004:** 3.300 (p < 2e-16)
-- **origin_hex1011:** -0.784 (p < 2e-16)
-- **origin_hex1012:** -0.841 (p < 2e-16)
-- and various other dummy origin variables in which many are statistically significant.
+-   **Intercept:** 13.44 (p \< 2e-16)
+-   **log(pull_station_count):** -0.403 (p \< 2e-16)
+-   **log(pull_trainexit_count):** 0.662 (p \< 2e-16)
+-   **log(pull_biz_count):** 0.108 (p \< 2e-16)
+-   **log(pull_entertn_count):** -0.089 (p \< 2e-16)
+-   **log(pull_fnb_count):** -0.134 (p \< 2e-16)
+-   **log(pull_finance_count):** 0.265 (p \< 2e-16)
+-   **log(pull_lnr_count):** -0.166 (p \< 2e-16)
+-   **log(pull_retails_count):** 0.060 (p \< 2e-16)
+-   **log(pull_schools_sf_count):** 0.230 (p \< 2e-16)
+-   **log(distance):** -1.239 (p \< 2e-16)
+-   **origin_hex1003:** 2.486 (p \< 2e-16)
+-   **origin_hex1004:** 3.300 (p \< 2e-16)
+-   **origin_hex1011:** -0.784 (p \< 2e-16)
+-   **origin_hex1012:** -0.841 (p \< 2e-16)
+-   and various other dummy origin variables in which many are statistically significant.
 
-**Model Fit:**
-The coefficient of determination (R-squared) for the model is 0.283, indicating that approximately 28.3% of the variability in trip counts can be explained by the selected predictor variables. The significance of individual coefficients and the model's goodness-of-fit metrics, such as the residual deviance and AIC, support its effectiveness in capturing patterns within the dataset. The p-values associated with each coefficient highlight their statistical significance in influencing trip counts.
+**Model Fit:** The coefficient of determination (R-squared) for the model is 0.283, indicating that approximately 28.3% of the variability in trip counts can be explained by the selected predictor variables. The significance of individual coefficients and the model's goodness-of-fit metrics, such as the residual deviance and AIC, support its effectiveness in capturing patterns within the dataset. The p-values associated with each coefficient highlight their statistical significance in influencing trip counts.
 
 ### Destination Constrained
+
 ```{r}
 decSIM <- glm(formula = trips ~ 
                 log(push_num_bus_stops) +
@@ -2212,36 +2430,36 @@ decSIM <- glm(formula = trips ~
 summary(decSIM)
 CalcRSquared(decSIM$data$trips, decSIM$fitted.values)
 ```
-**Key Coefficients:**
-The Poisson regression model provides estimates of the coefficients, shedding light on the relationship between predictor variables and the logarithm of trip counts. Significant p-values (< 2e-16) highlight the importance of each predictor in influencing trip counts.
 
-- **Intercept:** 13.90 (p < 2e-16)
-- **log(push_num_bus_stops):** 0.320 (p < 2e-16)
-- **log(push_station_count):** -0.548 (p < 2e-16)
-- **log(push_trainexit_count):** 0.455 (p < 2e-16)
-- **log(push_hdb_sf_count):** 0.398 (p < 2e-16)
-- **log(push_est_pop):** -0.019 (p < 2e-16)
-- **log(distance):** -1.260 (p < 2e-16)
-- **destination_hex1003:** 1.793 (p < 2e-16)
-- **destination_hex1004:** 0.856 (p < 2e-16)
-- **destination_hex1011:** -0.046 (p = 0.0165)
-- **destination_hex1012:** 1.545 (p < 2e-16)
-- **destination_hex1013:** 0.134 (p = 3.71e-15)
-- **destination_hex1014:** -1.525 (p < 2e-16)
-- **destination_hex1015:** 1.265 (p < 2e-16)
-- **destination_hex1016:** 1.288 (p < 2e-16)
-- **destination_hex1018:** -0.200 (p < 2e-16)
-- **destination_hex1019:** 0.308 (p < 2e-16)
-- **destination_hex1023:** -0.778 (p < 2e-16)
-- **destination_hex1024:** 0.413 (p < 2e-16)
-- **destination_hex1025:** -3.483 (p < 2e-16)
-- **destination_hex1033:** 0.481 (p < 2e-16)
-- and various other dummy destination variables in which many are statistically significant.
+**Key Coefficients:** The Poisson regression model provides estimates of the coefficients, shedding light on the relationship between predictor variables and the logarithm of trip counts. Significant p-values (\< 2e-16) highlight the importance of each predictor in influencing trip counts.
 
-**Model Fit:**
-The R-squared value for the model is approximately 0.367, indicating that around 36.7% of the variability in trip counts can be explained by the selected predictor variables. The model's goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor's p-value underscores its significance in explaining the observed variation in trip counts.
+-   **Intercept:** 13.90 (p \< 2e-16)
+-   **log(push_num_bus_stops):** 0.320 (p \< 2e-16)
+-   **log(push_station_count):** -0.548 (p \< 2e-16)
+-   **log(push_trainexit_count):** 0.455 (p \< 2e-16)
+-   **log(push_hdb_sf_count):** 0.398 (p \< 2e-16)
+-   **log(push_est_pop):** -0.019 (p \< 2e-16)
+-   **log(distance):** -1.260 (p \< 2e-16)
+-   **destination_hex1003:** 1.793 (p \< 2e-16)
+-   **destination_hex1004:** 0.856 (p \< 2e-16)
+-   **destination_hex1011:** -0.046 (p = 0.0165)
+-   **destination_hex1012:** 1.545 (p \< 2e-16)
+-   **destination_hex1013:** 0.134 (p = 3.71e-15)
+-   **destination_hex1014:** -1.525 (p \< 2e-16)
+-   **destination_hex1015:** 1.265 (p \< 2e-16)
+-   **destination_hex1016:** 1.288 (p \< 2e-16)
+-   **destination_hex1018:** -0.200 (p \< 2e-16)
+-   **destination_hex1019:** 0.308 (p \< 2e-16)
+-   **destination_hex1023:** -0.778 (p \< 2e-16)
+-   **destination_hex1024:** 0.413 (p \< 2e-16)
+-   **destination_hex1025:** -3.483 (p \< 2e-16)
+-   **destination_hex1033:** 0.481 (p \< 2e-16)
+-   and various other dummy destination variables in which many are statistically significant.
+
+**Model Fit:** The R-squared value for the model is approximately 0.367, indicating that around 36.7% of the variability in trip counts can be explained by the selected predictor variables. The model's goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor's p-value underscores its significance in explaining the observed variation in trip counts.
 
 ### Doubly Constrained
+
 ```{r}
 docSIM <- glm(formula = trips ~ 
                 origin_hex +
@@ -2254,40 +2472,37 @@ docSIM <- glm(formula = trips ~
 summary(docSIM)
 CalcRSquared(docSIM$data$trips, docSIM$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** package in base R fits generalized linear models. In this code, `docSIM` is a Poisson regression model with a log link function. The model predicts `trips` based on `origin_hex`, `destination_hex`, and the logarithm of `distance`.
 -   [summary](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) from **base** R provides a summary of the model's fit, including coefficients, statistical significance, and other diagnostics.
 -   `CalcRSquared` is a custom function for calculating the R-squared value of the model.
 :::
 
-**Key Coefficients:**
-This Poisson regression model explores the relationship between trip counts and predictor variables, including origin, destination, and the logarithm of distance. The estimated coefficients, accompanied by their p-values, reveal the significance of each predictor in influencing trip counts.
+**Key Coefficients:** This Poisson regression model explores the relationship between trip counts and predictor variables, including origin, destination, and the logarithm of distance. The estimated coefficients, accompanied by their p-values, reveal the significance of each predictor in influencing trip counts.
 
-- **Intercept:** 14.34 (p < 2e-16)
-- **origin_hex1003:** 2.59 (p < 2e-16)
-- **origin_hex1004:** 3.41 (p < 2e-16)
-- **origin_hex1011:** -1.06 (p < 2e-16)
-- **origin_hex1012:** -0.91 (p < 2e-16)
-- **origin_hex1013:** -0.27 (p < 2e-16)
-- **origin_hex1014:** 0.36 (p < 2e-16)
-- **origin_hex1015:** -0.44 (p < 2e-16)
-- **origin_hex1016:** 1.34 (p < 2e-16)
-- **origin_hex1018:** 1.91 (p < 2e-16)
-- and various other dummy origin and destination variables in which many are statistically significant.
+-   **Intercept:** 14.34 (p \< 2e-16)
+-   **origin_hex1003:** 2.59 (p \< 2e-16)
+-   **origin_hex1004:** 3.41 (p \< 2e-16)
+-   **origin_hex1011:** -1.06 (p \< 2e-16)
+-   **origin_hex1012:** -0.91 (p \< 2e-16)
+-   **origin_hex1013:** -0.27 (p \< 2e-16)
+-   **origin_hex1014:** 0.36 (p \< 2e-16)
+-   **origin_hex1015:** -0.44 (p \< 2e-16)
+-   **origin_hex1016:** 1.34 (p \< 2e-16)
+-   **origin_hex1018:** 1.91 (p \< 2e-16)
+-   and various other dummy origin and destination variables in which many are statistically significant.
 
-**Model Fit:**
-The model's R-squared value is approximately 0.534, indicating that around 53.4% of the variability in trip counts is explained by the selected predictor variables. The goodness-of-fit metrics, including the residual deviance and AIC, support the model's effectiveness in capturing patterns within the dataset. The p-values for each predictor underscore their significance in explaining the observed variation in trip counts.
-:::
+**Model Fit:** The model's R-squared value is approximately 0.534, indicating that around 53.4% of the variability in trip counts is explained by the selected predictor variables. The goodness-of-fit metrics, including the residual deviance and AIC, support the model's effectiveness in capturing patterns within the dataset. The p-values for each predictor underscore their significance in explaining the observed variation in trip counts.
 
 ::: {.notebox .lightbulb data-latex="lightbulb"}
-Note that `push_est_pop` which represent proxy for population in the origin location counterintuitively have a negative coefficient. Nevertheless,it might simply be a symptomps of **multicollinearity**. As we can see, the `push_hdb_sf_count` which previously was identified to be highly correlated with `push_hdb_sf_count`, have positive coefficient. This in a way suggest that **the impact of the two offset each other to some extent, and the net effect most likely be positive**. We can see on the later whether this hunch is correct in the next section, where highly correlated variables are eliminated from the model. 
+Note that `push_est_pop` which represent proxy for population in the origin location counterintuitively have a negative coefficient. Nevertheless,it might simply be a symptomps of **multicollinearity**. As we can see, the `push_hdb_sf_count` which previously was identified to be highly correlated with `push_hdb_sf_count`, have positive coefficient. This in a way suggest that **the impact of the two offset each other to some extent, and the net effect most likely be positive**. We can see on the later whether this hunch is correct in the next section, where highly correlated variables are eliminated from the model.
 :::
 
 ## The 3 Models With Elimination
 
-::: panel-tabset
-
 ### Unconstrained
+
 ```{r}
 uncSIM2 <- glm(formula = trips ~ 
                 log(push_num_bus_stops) +
@@ -2312,6 +2527,7 @@ uncSIM2 <- glm(formula = trips ~
 summary(uncSIM2)
 CalcRSquared(uncSIM2$data$trips, uncSIM2$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it's applied to the `trips` as the response variable and a set of predictor variables in the `final_df` data frame.
 -   The formula `trips ~ log(pull_trainexit_count) + log(pull_biz_count) + log(pull_entertn_count) + log(pull_fnb_count) + log(pull_schools_sf_count) + log(distance) + origin_hex` specifies that `trips` is modeled as a function of `pull_trainexit_count`, `pull_biz_count`, `pull_entertn_count`, `pull_fnb_count`, `pull_schools_sf_count`, `distance`, and `origin_hex`. The `log` function is applied to transform the predictor variables.
@@ -2321,25 +2537,23 @@ CalcRSquared(uncSIM2$data$trips, uncSIM2$fitted.values)
 -   `CalcRSquared` is user-defined function , which is used to calculate the R-squared value of the fitted model. It takes the observed values `orcSIM2$data$trips` and the fitted values `orcSIM2$fitted.values` as inputs.
 :::
 
-**Key Coefficients:**
-The Poisson regression model reveals crucial coefficients that help interpret the impact of predictor variables on the logarithm of trip counts. With highly significant p-values (< 2e-16), each coefficient contributes significantly to explaining the variability in trip counts.
+**Key Coefficients:** The Poisson regression model reveals crucial coefficients that help interpret the impact of predictor variables on the logarithm of trip counts. With highly significant p-values (\< 2e-16), each coefficient contributes significantly to explaining the variability in trip counts.
 
-- **Intercept:** 13.22 (p < 2e-16)
-- **log(push_num_bus_stops):** 0.383 (p < 2e-16)
-- **log(push_trainexit_count):** 0.164 (p < 2e-16)
-- **log(push_est_pop):** 0.130 (p < 2e-16)
-- **log(pull_trainexit_count):** 0.780 (p < 2e-16)
-- **log(pull_biz_count):** 0.073 (p < 2e-16)
-- **log(pull_entertn_count):** -0.240 (p < 2e-16)
-- **log(pull_fnb_count):** -0.193 (p < 2e-16)
-- **log(pull_schools_sf_count):** 0.303 (p < 2e-16)
-- **log(distance):** -1.169 (p < 2e-16)
+-   **Intercept:** 13.22 (p \< 2e-16)
+-   **log(push_num_bus_stops):** 0.383 (p \< 2e-16)
+-   **log(push_trainexit_count):** 0.164 (p \< 2e-16)
+-   **log(push_est_pop):** 0.130 (p \< 2e-16)
+-   **log(pull_trainexit_count):** 0.780 (p \< 2e-16)
+-   **log(pull_biz_count):** 0.073 (p \< 2e-16)
+-   **log(pull_entertn_count):** -0.240 (p \< 2e-16)
+-   **log(pull_fnb_count):** -0.193 (p \< 2e-16)
+-   **log(pull_schools_sf_count):** 0.303 (p \< 2e-16)
+-   **log(distance):** -1.169 (p \< 2e-16)
 
-**Model Fit:**
-The R-squared value for the model is approximately 0.131, suggesting that the selected predictor variables collectively explain around 13.1% of the variability in trip counts. The goodness-of-fit metrics, including the residual deviance and AIC, demonstrate the model's efficacy in capturing patterns within the data. Notably, all predictor variables exhibit highly significant p-values, emphasizing their importance in explaining the observed variation in trip counts.
-
+**Model Fit:** The R-squared value for the model is approximately 0.131, suggesting that the selected predictor variables collectively explain around 13.1% of the variability in trip counts. The goodness-of-fit metrics, including the residual deviance and AIC, demonstrate the model's efficacy in capturing patterns within the data. Notably, all predictor variables exhibit highly significant p-values, emphasizing their importance in explaining the observed variation in trip counts.
 
 ### Origin Constrained
+
 ```{r}
 orcSIM2 <- glm(formula = trips ~
                 #log(pull_station_count) +
@@ -2360,6 +2574,7 @@ orcSIM2 <- glm(formula = trips ~
 summary(orcSIM2)
 CalcRSquared(orcSIM2$data$trips, orcSIM2$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it's applied to the `trips` as the response variable and a set of predictor variables in the `final_df` data frame.
 -   The formula `trips ~ log(push_num_bus_stops) + log(push_trainexit_count) + log(push_est_pop) + log(distance) + destination_hex` specifies that `trips` is modeled as a function of `push_num_bus_stops`, `push_trainexit_count`, `push_est_pop`, `distance`, and `destination_hex`. The `log` function is applied to transform the predictor variables.
@@ -2369,29 +2584,28 @@ CalcRSquared(orcSIM2$data$trips, orcSIM2$fitted.values)
 -   `CalcRSquared` is a user-defined function which is used to calculate the R-squared value of the fitted model. It takes the observed values `decSIM2$data$trips` and the fitted values `decSIM2$fitted.values` as inputs.
 :::
 
-**Key Coefficients:**
-The Poisson regression model reveals insights into the relationship between predictor variables and the logarithm of trip counts. The following coefficients are statistically significant (p < 2e-16), indicating their importance in explaining variations in trip counts:
+**Key Coefficients:** The Poisson regression model reveals insights into the relationship between predictor variables and the logarithm of trip counts. The following coefficients are statistically significant (p \< 2e-16), indicating their importance in explaining variations in trip counts:
 
-- **Intercept:** 13.56
-- **log(pull_trainexit_count):** 0.831
-- **log(pull_biz_count):** 0.0971
-- **log(pull_entertn_count):** -0.1845
-- **log(pull_fnb_count):** -0.102
-- **log(pull_schools_sf_count):** 0.2595
-- **log(distance):** -1.2396
-- **origin_hex1003:** 2.632
-- **origin_hex1004:** 3.491
-- **origin_hex1011:** -0.5583
-- **origin_hex1012:** -0.6222
-- **origin_hex1013:** -0.0155
-- **origin_hex1014:** 0.4643
-- **origin_hex1015:** -0.1897
-- and various other dummy origin variables in which many are statistically significant.
+-   **Intercept:** 13.56
+-   **log(pull_trainexit_count):** 0.831
+-   **log(pull_biz_count):** 0.0971
+-   **log(pull_entertn_count):** -0.1845
+-   **log(pull_fnb_count):** -0.102
+-   **log(pull_schools_sf_count):** 0.2595
+-   **log(distance):** -1.2396
+-   **origin_hex1003:** 2.632
+-   **origin_hex1004:** 3.491
+-   **origin_hex1011:** -0.5583
+-   **origin_hex1012:** -0.6222
+-   **origin_hex1013:** -0.0155
+-   **origin_hex1014:** 0.4643
+-   **origin_hex1015:** -0.1897
+-   and various other dummy origin variables in which many are statistically significant.
 
-**Model Fit:**
-The R-squared value for the model is approximately 0.250, indicating that around 25% of the variability in trip counts can be explained by the selected predictor variables. The model's goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor's p-value underscores its significance in explaining the observed variation in trip counts. The non-significant p-value like **origin_hex1013** suggests that this variable may not be a strong predictor of trip counts in this context.
+**Model Fit:** The R-squared value for the model is approximately 0.250, indicating that around 25% of the variability in trip counts can be explained by the selected predictor variables. The model's goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor's p-value underscores its significance in explaining the observed variation in trip counts. The non-significant p-value like **origin_hex1013** suggests that this variable may not be a strong predictor of trip counts in this context.
 
 ### Destination Constrained
+
 ```{r}
 decSIM2 <- glm(formula = trips ~ 
                 log(push_num_bus_stops) +
@@ -2408,6 +2622,7 @@ decSIM2 <- glm(formula = trips ~
 summary(decSIM2)
 CalcRSquared(decSIM2$data$trips, decSIM2$fitted.values)
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   [glm](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm) from **stats** R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it's applied to the `trips` as the response variable and a set of predictor variables in the `final_df` data frame.
 -   The formula `trips ~ log(push_num_bus_stops) + log(push_trainexit_count) + log(push_est_pop) + log(distance) + destination_hex` specifies that `trips` is modeled as a function of `push_num_bus_stops`, `push_trainexit_count`, `push_est_pop`, `distance`, and `destination_hex`. The `log` function is applied to transform the predictor variables.
@@ -2417,32 +2632,30 @@ CalcRSquared(decSIM2$data$trips, decSIM2$fitted.values)
 -   `CalcRSquared` is a user-defined function which is used to calculate the R-squared value of the fitted model. It takes the observed values `decSIM2$data$trips` and the fitted values `decSIM2$fitted.values` as inputs.
 :::
 
-**Key Coefficients:**
-The Poisson regression model reveals insightful coefficients, offering a glimpse into the relationships between predictor variables and the logarithm of trip counts. Each predictor's significance is denoted by the associated p-values, all indicating high statistical significance (< 2e-16).
+**Key Coefficients:** The Poisson regression model reveals insightful coefficients, offering a glimpse into the relationships between predictor variables and the logarithm of trip counts. Each predictor's significance is denoted by the associated p-values, all indicating high statistical significance (\< 2e-16).
 
-- **Intercept:** 13.64 (p < 2e-16)
-- **log(push_num_bus_stops):** 0.395 (p < 2e-16)
-- **log(push_trainexit_count):** 0.291 (p < 2e-16)
-- **log(push_est_pop):** 0.137 (p < 2e-16)
-- **log(distance):** -1.254 (p < 2e-16)
-- **destination_hex1003:** 1.820 (p < 2e-16)
-- **destination_hex1004:** 0.917 (p < 2e-16)
-- **destination_hex1011:** -0.072 (p = 0.000194)
-- **destination_hex1012:** 1.443 (p < 2e-16)
-- **destination_hex1013:** 0.059 (p = 0.000490)
-- **destination_hex1014:** -1.564 (p < 2e-16)
-- **destination_hex1015:** 1.247 (p < 2e-16)
-- **destination_hex1016:** 1.292 (p < 2e-16)
-- **destination_hex1018:** -0.196 (p < 2e-16)
-- and various other dummy destination variables in which many are statistically significant.
+-   **Intercept:** 13.64 (p \< 2e-16)
+-   **log(push_num_bus_stops):** 0.395 (p \< 2e-16)
+-   **log(push_trainexit_count):** 0.291 (p \< 2e-16)
+-   **log(push_est_pop):** 0.137 (p \< 2e-16)
+-   **log(distance):** -1.254 (p \< 2e-16)
+-   **destination_hex1003:** 1.820 (p \< 2e-16)
+-   **destination_hex1004:** 0.917 (p \< 2e-16)
+-   **destination_hex1011:** -0.072 (p = 0.000194)
+-   **destination_hex1012:** 1.443 (p \< 2e-16)
+-   **destination_hex1013:** 0.059 (p = 0.000490)
+-   **destination_hex1014:** -1.564 (p \< 2e-16)
+-   **destination_hex1015:** 1.247 (p \< 2e-16)
+-   **destination_hex1016:** 1.292 (p \< 2e-16)
+-   **destination_hex1018:** -0.196 (p \< 2e-16)
+-   and various other dummy destination variables in which many are statistically significant.
 
-**Model Fit:**
-The model's R-squared value is approximately 0.346, indicating that around 34.6% of the variability in trip counts can be explained by the selected predictor variables. The goodness-of-fit metrics, such as the residual deviance and AIC, support the model's effectiveness in capturing patterns within the dataset. All predictor variables demonstrate statistical significance, emphasizing their roles in explaining the observed variation in trip counts.
-
-:::
+**Model Fit:** The model's R-squared value is approximately 0.346, indicating that around 34.6% of the variability in trip counts can be explained by the selected predictor variables. The goodness-of-fit metrics, such as the residual deviance and AIC, support the model's effectiveness in capturing patterns within the dataset. All predictor variables demonstrate statistical significance, emphasizing their roles in explaining the observed variation in trip counts.
 
 ## Compare The Result
+
 ### Performance Table
+
 ```{r}
 model_list <- list(
   Unconstrained = uncSIM,
@@ -2457,6 +2670,7 @@ model_list <- list(
 # Compare performance with multiple metrics
 compare_performance(model_list, metrics = c("AIC", "BIC", "RMSE"))
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
 -   The `list` function from **base** R is used to create a list named `model_list` that contains seven elements. Each element is a model simulation, and they are named as follows: 'Unconstrained', 'Unconstrained_with_Elimination', 'Origin_Constrained', 'Origin_Constrained_with_Elimination', 'Destination_Constrained', 'Destination_Constrained_with_Elimination', and 'Doubly_Constrained'. The values of these elements are the corresponding model simulations (`uncSIM`, `uncSIM2`, `orcSIM`, `orcSIM2`, `decSIM`, `decSIM2`, `docSIM`).
 -   The `compare_performance` function is then used to compare the performance of the models in `model_list` using multiple metrics. The `metrics` argument is set to a vector containing "AIC", "BIC", and "RMSE". This means that the function will calculate the Akaike Information Criterion (AIC), Bayesian Information Criterion (BIC), and Root Mean Square Error (RMSE) for each model in `model_list`.
@@ -2489,7 +2703,9 @@ The **Root Mean Square Error (RMSE)** is a frequently used measure of the differ
 :::
 
 ### Visualized Fitted Value
-Next, we will visualize to compare the predicted value against the original value for each of the seven models that we trained previously using the following code chunk. 
+
+Next, we will visualize to compare the predicted value against the original value for each of the seven models that we trained previously using the following code chunk.
+
 ```{r}
 # Function to round fitted values and create a data frame
 round_and_rename <- function(sim_data, sim_name) {
@@ -2547,8 +2763,9 @@ p_dec2 <- generate_ggplot(final_df_viz, "decSIM2_trips", "black", "Destination-c
 # Combine the plots using patchwork
 p_unc + p_unc2 + p_orc + p_orc2 + p_dec + p_dec2+ p_doc 
 ```
+
 ::: {.callout-note collapse="true" title="Functions"}
--   The `round_and_rename` function is a user-defined function that takes two arguments: `sim_data` and `sim_name`. It rounds the fitted values in `sim_data` to 0 decimal places, converts them to a data frame, and renames the column using `sim_name`. The new column name is the concatenation of `sim_name` and "_trips".
+-   The `round_and_rename` function is a user-defined function that takes two arguments: `sim_data` and `sim_name`. It rounds the fitted values in `sim_data` to 0 decimal places, converts them to a data frame, and renames the column using `sim_name`. The new column name is the concatenation of `sim_name` and "\_trips".
 -   The `round_and_rename` function is then applied to each simulation data (`orcSIM`, `decSIM`, `docSIM`, `orcSIM2`, `decSIM2`) to round and rename the fitted values. The results are stored in new variables (`uncSIM_fitted`, `orcSIM_fitted`, `decSIM_fitted`, `docSIM_fitted`, `uncSIM2_fitted`, `orcSIM2_fitted`, `decSIM2_fitted`).
 -   The `cbind` function from **base** R is used to combine the rounded and renamed fitted values into a new data frame `final_df_viz`.
 -   The `generate_ggplot` function is another user-defined function that takes four arguments: `data`, `x_col`, `color`, and `title`. It generates a ggplot of `data` with `x_col` on the x-axis and `trips` on the y-axis. The points are sized according to `trips` and shaped as hollow circles (`shape = 21`). A linear model is fitted to the data (`method = lm`), and the smooth line color is set to blue. The title of the plot is set to `title`, and the text size, axis text, and axis title are customized using the `theme` function.
@@ -2558,41 +2775,41 @@ p_unc + p_unc2 + p_orc + p_orc2 + p_dec + p_dec2+ p_doc
 
 Summary analysis of each model's fitted values compared to the original trips:
 
-- **Unconstrained Model**: This model shows a broad dispersion of points, with many falling far from the line of best fit. This suggests the model may not be very accurate in predicting the original trips, as indicated by the spread of fitted values.
+-   **Unconstrained Model**: This model shows a broad dispersion of points, with many falling far from the line of best fit. This suggests the model may not be very accurate in predicting the original trips, as indicated by the spread of fitted values.
 
-- **Unconstrained with Elimination**: A similar pattern to the unconstrained model, but with a slight shift in the points, indicating that variable elimination may not have significantly improved the model's predictive ability.
+-   **Unconstrained with Elimination**: A similar pattern to the unconstrained model, but with a slight shift in the points, indicating that variable elimination may not have significantly improved the model's predictive ability.
 
-- **Origin-Constrained Model**: Points are more aligned with the trend line compared to the unconstrained model, suggesting a better fit for predicting the number of trips.
+-   **Origin-Constrained Model**: Points are more aligned with the trend line compared to the unconstrained model, suggesting a better fit for predicting the number of trips.
 
-- **Origin-Constrained with Elimination**: The scatter is close to the trend line, much like the origin-constrained model, implying that variable elimination has little effect on improving this model's fit.
+-   **Origin-Constrained with Elimination**: The scatter is close to the trend line, much like the origin-constrained model, implying that variable elimination has little effect on improving this model's fit.
 
-- **Destination-Constrained Model**: The concentration of points around the line of best fit is even tighter here, indicating an improved accuracy over the origin-constrained models.
+-   **Destination-Constrained Model**: The concentration of points around the line of best fit is even tighter here, indicating an improved accuracy over the origin-constrained models.
 
-- **Destination-Constrained with Elimination**: This shows a pattern similar to the destination-constrained model, with a close clustering of points around the trend line, suggesting a good model fit.
+-   **Destination-Constrained with Elimination**: This shows a pattern similar to the destination-constrained model, with a close clustering of points around the trend line, suggesting a good model fit.
 
-- **Doubly-Constrained Model**: This model exhibits the tightest clustering of points along the line, indicating the highest predictive accuracy and the best fit among all models presented.
+-   **Doubly-Constrained Model**: This model exhibits the tightest clustering of points along the line, indicating the highest predictive accuracy and the best fit among all models presented.
 
 The size of the points, representing the number of trips, varies across models, with the doubly-constrained model showing the most consistent scaling in relation to the trend line, suggesting this model's superior capability in capturing the trip distribution pattern in the data.
 
 ## Conclusion
+
 In this study, various Spatial Interaction Models (SIMs) were constructed to understand and predict bus commuter flow during the Weekday Morning Peak in Singapore. The models included Unconstrained, Origin-Constrained, Destination-Constrained, and Doubly-Constrained versions, each incorporating multiple features such as bus stops, train stations, HDB units, and more. This project also tried to experiment with inclusion of highly correlated variables and without its inclusion.
 
 Based on the goodness-of-fit and linearity were conducted, revealing consistent outperformance of the Doubly-Constrained SIM over Origin-Constrained, Destination-Constrained, and Unconstrained SIMs. Key observations and conclusions include:
 
-- **Model Complexity:** The Doubly-Constrained SIM is consistently outperfoming the other models. Nevertheless, it might be ***simply be due to the complexity*** of the models since it contains thousands of classes from two categorical variables, which are the origin hex and the destination hex. In a way, this simply suggests that ***uniqueness of each origin and destination hex is the best predictor of the amount of trips***
+-   **Model Complexity:** The Doubly-Constrained SIM is consistently outperfoming the other models. Nevertheless, it might be ***simply be due to the complexity*** of the models since it contains thousands of classes from two categorical variables, which are the origin hex and the destination hex. In a way, this simply suggests that ***uniqueness of each origin and destination hex is the best predictor of the amount of trips***
 
-- **Push and Pull Factor Significance:** All push and pull factor variables becomes significant explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Those variables includes counts of bus stop, train station exits, business, schools, entertainment, food & beverages, and schools. This is ***inline with the gravity model theory***. Nevertheless, some of these variables unexpectedly have ***inconsistent coefficients*** across the models (it came as negative sometimes, which is counterintuitive). This indicates ***spurious regression*** and/or multicollinearity exists, even among those variables that were observed to be not highly correlated. 
+-   **Push and Pull Factor Significance:** All push and pull factor variables becomes significant explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Those variables includes counts of bus stop, train station exits, business, schools, entertainment, food & beverages, and schools. This is ***inline with the gravity model theory***. Nevertheless, some of these variables unexpectedly have ***inconsistent coefficients*** across the models (it came as negative sometimes, which is counterintuitive). This indicates ***spurious regression*** and/or multicollinearity exists, even among those variables that were observed to be not highly correlated.
 
-- **Distance Significance:** Distance between zones emerged as the crucial explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Shorter distances correlated with higher trip numbers, highlighting the dominant role of distance in commuter behavior. This is also ***inline with the gravity model theory***.
+-   **Distance Significance:** Distance between zones emerged as the crucial explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Shorter distances correlated with higher trip numbers, highlighting the dominant role of distance in commuter behavior. This is also ***inline with the gravity model theory***.
 
-- **Push and Pull Factor Significance:** Distance between zones emerged as significant explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Shorter distances correlated with higher trip numbers, highlighting the dominant role of distance in commuter behavior. This is ***inline with the gravity model theory***.
+-   **Push and Pull Factor Significance:** Distance between zones emerged as significant explanatory variable influencing the number of trips during Weekday Morning Peak Periods. Shorter distances correlated with higher trip numbers, highlighting the dominant role of distance in commuter behavior. This is ***inline with the gravity model theory***.
 
-Despite the relatively good predictive performance of the best model (>50% explained variance), the better result of Doubly-Constrained SIM also might simply suggests that ***uniqueness of each origin and destination hex is the best predictor of the amount of trips***. This implied various things for future research, such as:
-- The current best model (doubly-constrained) might have ***reduced performance in the future if the condition in some hexagon grid changed***, as it relies on it as the variable. Therefore, future modelling should consider ***relying more on the push and pull factors variables***.
+Despite the relatively good predictive performance of the best model (\>50% explained variance), the better result of Doubly-Constrained SIM also might simply suggests that ***uniqueness of each origin and destination hex is the best predictor of the amount of trips***. This implied various things for future research, such as: - The current best model (doubly-constrained) might have ***reduced performance in the future if the condition in some hexagon grid changed***, as it relies on it as the variable. Therefore, future modelling should consider ***relying more on the push and pull factors variables***.
 
-- The current push and pull factors variables are ***currently not good enough to represent the uniqueness*** that each hexagon grid has in determining trips. This might be due to various factors such as ***point of interest that is not yet identified***, and each ***point of interest might also have different characteristic that affect the magnitude*** of it as a push or pull factors. For example, business and schools might have different capacities which in turn translated into different amount of commuters. Another important factor that might be improved is the estimated population of each hexagon. If the estimated population can be more accurate, it might yield better result.
+-   The current push and pull factors variables are ***currently not good enough to represent the uniqueness*** that each hexagon grid has in determining trips. This might be due to various factors such as ***point of interest that is not yet identified***, and each ***point of interest might also have different characteristic that affect the magnitude*** of it as a push or pull factors. For example, business and schools might have different capacities which in turn translated into different amount of commuters. Another important factor that might be improved is the estimated population of each hexagon. If the estimated population can be more accurate, it might yield better result.
 
-- Lastly, future project can also consider to use ***Spatial Econometric Interaction Models*** where factors can be given spatial weight. This might in turn be better to represent the characteristic of various geospatial conditions.
+-   Lastly, future project can also consider to use ***Spatial Econometric Interaction Models*** where factors can be given spatial weight. This might in turn be better to represent the characteristic of various geospatial conditions.
 
 ::: {.callout-note collapse="true" title="What is Spurious Regression?"}
 Spurious regression occurs when two unrelated variables show a strong statistical relationship in a regression analysis, even though there is no true cause-and-effect connection between them. In other words, the apparent relationship is misleading and arises by chance. This phenomenon can mislead researchers into thinking they have discovered a meaningful connection when, in fact, there is none. It's a cautionary concept, reminding us to carefully consider the theoretical basis and real-world relevance of variables before concluding that they are genuinely related based solely on statistical results.
@@ -2603,7 +2820,6 @@ A Spatial Econometric Interaction Model is a statistical tool used to analyze ho
 
 Imagine you want to study housing prices in different neighborhoods. A Spatial Econometric Interaction Model would not only consider local factors like the number of bedrooms and neighborhood amenities but also account for how prices in one neighborhood might be influenced by prices in nearby neighborhoods. It helps capture the idea that economic conditions in one area can spill over and impact neighboring areas, providing a more realistic and accurate analysis of regional economic relationships.
 :::
-
 
 # References
 

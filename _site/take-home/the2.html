@@ -243,16 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#aspatial-1" id="toc-aspatial-1" class="nav-link" data-scroll-target="#aspatial-1">Aspatial</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">3</span> Data Wrangling</a>
-  <ul class="collapse">
-  <li><a href="#create-hexagon-layer" id="toc-create-hexagon-layer" class="nav-link" data-scroll-target="#create-hexagon-layer"><span class="header-section-number">3.1</span> Create Hexagon Layer</a></li>
-  <li><a href="#combine-bus-stop-and-hexagon" id="toc-combine-bus-stop-and-hexagon" class="nav-link" data-scroll-target="#combine-bus-stop-and-hexagon"><span class="header-section-number">3.2</span> Combine Bus Stop and Hexagon</a></li>
-  <li><a href="#combine-trips-and-hexagon" id="toc-combine-trips-and-hexagon" class="nav-link" data-scroll-target="#combine-trips-and-hexagon"><span class="header-section-number">3.3</span> Combine Trips and Hexagon</a></li>
-  <li><a href="#final-duplicate-checking" id="toc-final-duplicate-checking" class="nav-link" data-scroll-target="#final-duplicate-checking"><span class="header-section-number">3.4</span> Final Duplicate Checking</a></li>
-  <li><a href="#construct-o-d-matrix" id="toc-construct-o-d-matrix" class="nav-link" data-scroll-target="#construct-o-d-matrix"><span class="header-section-number">3.5</span> Construct O-D Matrix</a></li>
-  <li><a href="#create-distance-variable" id="toc-create-distance-variable" class="nav-link" data-scroll-target="#create-distance-variable"><span class="header-section-number">3.6</span> Create Distance Variable</a></li>
-  <li><a href="#remove-intra-zonal-flows" id="toc-remove-intra-zonal-flows" class="nav-link" data-scroll-target="#remove-intra-zonal-flows"><span class="header-section-number">3.7</span> Remove Intra-Zonal Flows</a></li>
-  </ul></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">3</span> Data Wrangling</a></li>
   <li><a href="#visualize-the-desire-lines" id="toc-visualize-the-desire-lines" class="nav-link" data-scroll-target="#visualize-the-desire-lines"><span class="header-section-number">4</span> Visualize the Desire Lines</a>
   <ul class="collapse">
   <li><a href="#rd-quantile-trips-175" id="toc-rd-quantile-trips-175" class="nav-link" data-scroll-target="#rd-quantile-trips-175"><span class="header-section-number">4.1</span> 3rd Quantile Trips (175)</a></li>
@@ -270,8 +261,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#spatial-interaction-model" id="toc-spatial-interaction-model" class="nav-link" data-scroll-target="#spatial-interaction-model"><span class="header-section-number">6</span> Spatial Interaction Model</a>
   <ul class="collapse">
   <li><a href="#correlation-analysis" id="toc-correlation-analysis" class="nav-link" data-scroll-target="#correlation-analysis"><span class="header-section-number">6.1</span> Correlation Analysis</a></li>
-  <li><a href="#the-4-models-without-elimination" id="toc-the-4-models-without-elimination" class="nav-link" data-scroll-target="#the-4-models-without-elimination"><span class="header-section-number">6.2</span> The 4 Models Without Elimination</a></li>
-  <li><a href="#the-3-models-with-elimination" id="toc-the-3-models-with-elimination" class="nav-link" data-scroll-target="#the-3-models-with-elimination"><span class="header-section-number">6.3</span> The 3 Models With Elimination</a></li>
+  <li><a href="#the-4-models-without-elimination" id="toc-the-4-models-without-elimination" class="nav-link" data-scroll-target="#the-4-models-without-elimination"><span class="header-section-number">6.2</span> The 4 Models Without Elimination</a>
+  <ul class="collapse">
+  <li><a href="#unconstrained" id="toc-unconstrained" class="nav-link" data-scroll-target="#unconstrained">Unconstrained</a></li>
+  <li><a href="#origin-constrained" id="toc-origin-constrained" class="nav-link" data-scroll-target="#origin-constrained">Origin Constrained</a></li>
+  <li><a href="#destination-constrained" id="toc-destination-constrained" class="nav-link" data-scroll-target="#destination-constrained">Destination Constrained</a></li>
+  <li><a href="#doubly-constrained" id="toc-doubly-constrained" class="nav-link" data-scroll-target="#doubly-constrained">Doubly Constrained</a></li>
+  </ul></li>
+  <li><a href="#the-3-models-with-elimination" id="toc-the-3-models-with-elimination" class="nav-link" data-scroll-target="#the-3-models-with-elimination"><span class="header-section-number">6.3</span> The 3 Models With Elimination</a>
+  <ul class="collapse">
+  <li><a href="#unconstrained-1" id="toc-unconstrained-1" class="nav-link" data-scroll-target="#unconstrained-1">Unconstrained</a></li>
+  <li><a href="#origin-constrained-1" id="toc-origin-constrained-1" class="nav-link" data-scroll-target="#origin-constrained-1">Origin Constrained</a></li>
+  <li><a href="#destination-constrained-1" id="toc-destination-constrained-1" class="nav-link" data-scroll-target="#destination-constrained-1">Destination Constrained</a></li>
+  </ul></li>
   <li><a href="#compare-the-result" id="toc-compare-the-result" class="nav-link" data-scroll-target="#compare-the-result"><span class="header-section-number">6.4</span> Compare The Result</a>
   <ul class="collapse">
   <li><a href="#performance-table" id="toc-performance-table" class="nav-link" data-scroll-target="#performance-table">Performance Table</a></li>
@@ -883,7 +885,10 @@ Why 3414?
 </div>
 </div>
 </div>
-<p>::: panel-tabset #### MPSZ</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-16-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-1" role="tab" aria-controls="tabset-16-1" aria-selected="true">MPSZ</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-2" role="tab" aria-controls="tabset-16-2" aria-selected="false">Bus Stop Location</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-3" role="tab" aria-controls="tabset-16-3" aria-selected="false">Train Station</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-4" role="tab" aria-controls="tabset-16-4" aria-selected="false">Train Exit</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-5" role="tab" aria-controls="tabset-16-5" aria-selected="false">Business</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-6" role="tab" aria-controls="tabset-16-6" aria-selected="false">Entertainment</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-7" role="tab" aria-controls="tabset-16-7" aria-selected="false">Food &amp; Beverage</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-8-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-8" role="tab" aria-controls="tabset-16-8" aria-selected="false">Financial Services</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-9-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-9" role="tab" aria-controls="tabset-16-9" aria-selected="false">Leisure &amp; Recreation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-10-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-10" role="tab" aria-controls="tabset-16-10" aria-selected="false">Retails</a></li></ul>
+<div class="tab-content">
+<div id="tabset-16-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-16-1-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">duplicate checking</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-4" role="tab" aria-controls="tabset-6-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -1038,8 +1043,8 @@ Functions
 </div>
 </div>
 </div>
-<section id="bus-stop-location-1" class="level4">
-<h4 class="anchored" data-anchor-id="bus-stop-location-1">Bus Stop Location</h4>
+</div>
+<div id="tabset-16-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-2-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">duplicate checking</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -1473,9 +1478,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="train-station" class="level4">
-<h4 class="anchored" data-anchor-id="train-station">Train Station</h4>
+</div>
+<div id="tabset-16-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-3-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-4" role="tab" aria-controls="tabset-8-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -1653,9 +1657,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="train-exit" class="level4">
-<h4 class="anchored" data-anchor-id="train-exit">Train Exit</h4>
+</div>
+<div id="tabset-16-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-4-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -1805,9 +1808,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="business" class="level4">
-<h4 class="anchored" data-anchor-id="business">Business</h4>
+</div>
+<div id="tabset-16-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-5-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-4" role="tab" aria-controls="tabset-10-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2037,9 +2039,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="entertainment" class="level4">
-<h4 class="anchored" data-anchor-id="entertainment">Entertainment</h4>
+</div>
+<div id="tabset-16-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-6-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-3" role="tab" aria-controls="tabset-11-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-4" role="tab" aria-controls="tabset-11-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2235,9 +2236,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="food-beverage" class="level4">
-<h4 class="anchored" data-anchor-id="food-beverage">Food &amp; Beverage</h4>
+</div>
+<div id="tabset-16-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-7-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-3" role="tab" aria-controls="tabset-12-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-4" role="tab" aria-controls="tabset-12-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2387,9 +2387,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="financial-services" class="level4">
-<h4 class="anchored" data-anchor-id="financial-services">Financial Services</h4>
+</div>
+<div id="tabset-16-8" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-8-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-3" role="tab" aria-controls="tabset-13-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-4" role="tab" aria-controls="tabset-13-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2731,9 +2730,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="leisure-recreation" class="level4">
-<h4 class="anchored" data-anchor-id="leisure-recreation">Leisure &amp; Recreation</h4>
+</div>
+<div id="tabset-16-9" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-9-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-3" role="tab" aria-controls="tabset-14-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-4" role="tab" aria-controls="tabset-14-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2851,6 +2849,26 @@ Functions
 <pre><code>[1] "no duplicates detected"</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-60-contents" aria-controls="callout-60" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-60" class="callout-60-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a> from <strong>dplyr</strong> package calculates the number of unique values in a vector. Here, it’s used to count the unique values in the entire <code>lnr</code> data frame.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow">nrow</a> from <strong>base</strong> R returns the number of rows in a data frame. Here, it’s used to get the total number of rows in <code>lnr</code>.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a> from <strong>dplyr</strong> package performs a vectorized conditional operation. In this code, it checks if the number of unique values in <code>lnr</code> equals the total number of rows. If they are equal, it returns “no duplicates detected”; otherwise, it returns “possible duplicates detected”.</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-14-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-4-tab">
 <p>since no duplicate is found, we can immediately try to visualize how does the leisure &amp; entertainment point of interest distribution looks like in the map using the following code.</p>
@@ -2870,7 +2888,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-60-contents" aria-controls="callout-60" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-61-contents" aria-controls="callout-61" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2879,7 +2897,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-60" class="callout-60-contents callout-collapse collapse">
+<div id="callout-61" class="callout-61-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape">tm_shape</a> from <strong>tmap</strong> package prepares spatial data for plotting. It’s used here for <code>mpsz</code> and <code>lnr</code> (Leisure &amp; Recreation) datasets.</li>
@@ -2894,9 +2912,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="retails" class="level4">
-<h4 class="anchored" data-anchor-id="retails">Retails</h4>
+</div>
+<div id="tabset-16-10" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-10-tab">
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-15-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-1" role="tab" aria-controls="tabset-15-1" aria-selected="true">import</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-15-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-2" role="tab" aria-controls="tabset-15-2" aria-selected="false">glimpse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-15-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-3" role="tab" aria-controls="tabset-15-3" aria-selected="false">check duplicates</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-15-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-4" role="tab" aria-controls="tabset-15-4" aria-selected="false">distribution map</a></li></ul>
 <div class="tab-content">
@@ -2918,6 +2935,26 @@ Bounding box:  xmin: 4737.982 ymin: 25171.88 xmax: 48265.04 ymax: 50135.28
 Projected CRS: SVY21 / Singapore TM</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-62-contents" aria-controls="callout-62" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-62" class="callout-62-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a> from <strong>sf</strong> package is used to read simple features from a file or database. In this code, it’s applied to the <code>Retails</code> layer of the <code>geospatial</code> data source to import the spatial data as an <code>sf</code> object.</li>
+<li><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a> from <strong>sf</strong> package is used to transform the coordinate reference system (CRS) of the <code>sf</code> object. In this code, it’s applied to the <code>retails</code> object to change its CRS to <code>3414</code>, which is the code for SVY21 / Singapore TM projection.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary">summary</a> from <strong>base</strong> R is used to provide a summary of the <code>sf</code> object, including its dimensions, geometry type, CRS, and a summary of each column. It’s used to display the summary of the <code>retails</code> object after transforming its CRS.</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-15-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-2-tab">
 <p>using glimpse, we can see the structure of the data</p>
@@ -2935,6 +2972,25 @@ $ POI_ST_NAM &lt;chr&gt; "DAKOTA CRES", "DAKOTA CRES", NA, NA, "SERANGOON RD", "
 $ geometry   &lt;POINT [m]&gt; POINT (33713.83 32023.15), POINT (33713.83 32023.15),…</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-63-contents" aria-controls="callout-63" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-63" class="callout-63-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.</li>
+<li>This function is used here to display an overview of the <code>retails</code> data frame. The output will give insights into the types and structures of the data available in <code>retails</code>, such as column names, data types, and sample values. Since the content and structure of the <code>retails</code> data frame are not detailed in the prompt, it’s assumed to contain retail-related spatial data.</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-15-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-3-tab">
 <p>next, check for possible duplicates using this code. <em>considering some financial services might have branches, the duplicate condition here is only if all column value is the same</em></p>
@@ -2946,6 +3002,26 @@ $ geometry   &lt;POINT [m]&gt; POINT (33713.83 32023.15), POINT (33713.83 32023.
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "possible duplicates detected"</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-64-contents" aria-controls="callout-64" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-64" class="callout-64-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a> from <strong>dplyr</strong> package calculates the number of unique values in a vector. Here, it’s used to count the unique values in the entire <code>retails</code> data frame.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow">nrow</a> from <strong>base</strong> R returns the number of rows in a data frame. Here, it’s used to get the total number of rows in <code>retails</code>.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a> from <strong>dplyr</strong> package performs a vectorized conditional operation. In this code, it checks if the number of unique values in <code>retails</code> equals the total number of rows. If they are equal, it returns “no duplicates detected”; otherwise, it returns “possible duplicates detected”.</li>
+</ul>
+</div>
 </div>
 </div>
 <p>since duplicates is found, we will try to check what are the duplicated value using the following code.</p>
@@ -3100,6 +3176,27 @@ $ geometry   &lt;POINT [m]&gt; POINT (33713.83 32023.15), POINT (33713.83 32023.
 </table>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-65-contents" aria-controls="callout-65" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-65" class="callout-65-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated">duplicated</a> from <strong>base</strong> R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it’s applied to the <code>retails</code> data frame to find duplicates.</li>
+<li>The subset operation (<code>retails[...]</code>) is used to keep only one row for each duplicate in <code>retails</code>. The logical condition <code>duplicated(retails)</code> keeps the first occurrence of each duplicate, and <code>duplicated(retails, fromLast = TRUE)</code> keeps the last occurrence.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a> from <strong>dplyr</strong> package is used to reorder rows by column values. In this code, it’s used to sort the <code>duplicates</code> data frame by <code>POI_NAME</code> and <code>POI_ST_NAM</code>.</li>
+<li><a href="https://bookdown.org/yihui/rmarkdown-cookbook/kable.html">kable</a> from <strong>knitr</strong> package is used to create a markdown table from a data frame. In this code, it’s used to display the first 20 rows of the <code>duplicates</code> data frame.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>Based on the table, we can see that the duplicates does comes from the same retail point of interest. Therefore, the following code chunk will execute the duplicate removal and show the result where number of rows have reduced from 37635 to 37463</p>
 <div class="cell">
 <details>
@@ -3119,6 +3216,27 @@ $ POI_ST_NAM &lt;chr&gt; "DAKOTA CRES", "DAKOTA CRES", NA, NA, "SERANGOON RD", "
 $ geometry   &lt;POINT [m]&gt; POINT (33713.83 32023.15), POINT (33713.83 32023.15),…</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-66-contents" aria-controls="callout-66" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-66" class="callout-66-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/duplicated">duplicated</a> from <strong>base</strong> R is used to identify duplicate elements in a vector or rows in a data frame. In this code, it’s applied to the entire <code>retails</code> data frame to find duplicates.</li>
+<li>The subset operation (<code>retails[...]</code>) is used to keep only one row for each duplicate in <code>retails</code>. The logical condition <code>!duplicated(retails)</code> keeps the first occurrence of each duplicate, and <code>duplicated(retails, fromLast = TRUE)</code> keeps the last occurrence.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a quick overview of the data frame’s structure, including column types and the first few entries in each column.</li>
+<li>This code snippet removes duplicate rows from the <code>retails</code> data frame, retaining only one occurrence of each duplicate, and then provides an overview of the resulting data frame.</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-15-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-4-tab">
 <p>next, we try to visualize how does the retail point of interest distribution looks like in the map using the following code.</p>
@@ -3136,10 +3254,34 @@ $ geometry   &lt;POINT [m]&gt; POINT (33713.83 32023.15), POINT (33713.83 32023.
 <p><img src="the2_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-67-contents" aria-controls="callout-67" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-67" class="callout-67-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape">tm_shape</a> from <strong>tmap</strong> package prepares spatial data for plotting. It’s used here for <code>mpsz</code> (planning zones) and <code>retails</code> (retail locations).</li>
+<li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_polygons">tm_polygons</a> adds a layer of polygons to the map. For <code>mpsz</code>, the polygons are set with high transparency (<code>alpha = 0.01</code>).</li>
+<li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_dots">tm_dots</a> adds a layer of dots to the map, representing <code>retails</code> data. The dots are colored light coral and are identified by <code>POI_NAME</code>.</li>
+<li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_layout">tm_layout</a> customizes the layout of the map, including the main title and its position.</li>
+<li>This code snippet creates a thematic map displaying the distribution of retail outlets (<code>retails</code>) over a minimally styled polygonal map of planning zones (<code>mpsz</code>).</li>
+</ul>
 </div>
 </div>
 </div>
-</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="aspatial-1" class="level3">
 <h3 class="anchored" data-anchor-id="aspatial-1">Aspatial</h3>
@@ -3198,7 +3340,7 @@ lowest :     1     2     3     4     5, highest: 41201 46505 72829 74796 97600
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-61-contents" aria-controls="callout-61" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-68-contents" aria-controls="callout-68" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3207,7 +3349,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-61" class="callout-61-contents callout-collapse collapse">
+<div id="callout-68" class="callout-68-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a> from <strong>readr</strong> package reads a CSV file into R, converting it to a data frame.</li>
@@ -3221,7 +3363,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="How to Read the Output?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-62-contents" aria-controls="callout-62" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-69-contents" aria-controls="callout-69" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3230,7 +3372,7 @@ How to Read the Output?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-62" class="callout-62-contents callout-collapse collapse">
+<div id="callout-69" class="callout-69-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The data provides details about the origin and destination points, along with the corresponding number of total trips, time information, and categorization based on day types. The variable summaries indicate the data distribution, with details such as the unique values, frequency, and descriptive statistics for each column.</p>
 </div>
@@ -3291,6 +3433,26 @@ $ REGION_N              &lt;chr&gt; "CENTRAL REGION", "EAST REGION", "CENTRAL RE
 $ REGION_C              &lt;chr&gt; "CR", "ER", "CR", "ER", "ER", "CR", "CR", "CR", …</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-70-contents" aria-controls="callout-70" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-70" class="callout-70-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a> from <strong>readr</strong> package reads a CSV file into R, converting it to a data frame. In this code, it reads data from a file located at <code>"../data/aspatial/hdb.csv"</code>, which likely contains information about Housing Development Board (HDB) properties.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.</li>
+<li>This code snippet imports and provides an overview of the <code>hdb</code> data frame, which presumably contains data related to HDB properties.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>To standardize the geospatial reference, we need to set the CRS code to 3414 based on the latitude and langitude values. The following code will execute it. Simultaneously, the code will also visualize the distribution of HDB across Singapore.</p>
 <div class="cell">
 <details>
@@ -3313,7 +3475,7 @@ $ REGION_C              &lt;chr&gt; "CR", "ER", "CR", "ER", "ER", "CR", "CR", "C
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-63-contents" aria-controls="callout-63" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-71-contents" aria-controls="callout-71" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3322,7 +3484,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-63" class="callout-63-contents callout-collapse collapse">
+<div id="callout-71" class="callout-71-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>The <code>hdb</code> data frame, which contains information on the HDB buildings, is converted to a spatial data frame using the <code>st_as_sf</code> function from the <strong>sf</strong> package. The <code>coords</code> argument specifies the columns that contain the longitude and latitude coordinates, and the <code>crs</code> argument specifies the coordinate reference system (CRS) of the data. The CRS is then transformed to 3414, which is the EPSG code for the SVY21 projection used in Singapore.</li>
@@ -3379,7 +3541,7 @@ $ results.LONGITUDE &lt;chr&gt; "103.800213682734", "103.802398196596", "103.832
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-64-contents" aria-controls="callout-64" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-72-contents" aria-controls="callout-72" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3388,7 +3550,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-64" class="callout-64-contents callout-collapse collapse">
+<div id="callout-72" class="callout-72-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a> from <strong>readr</strong> package reads a CSV file into R, converting it to a data frame.</li>
@@ -3461,7 +3623,7 @@ $ results.LONGITUDE  &lt;chr&gt; "103.840041087946", "103.822440701642", "103.82
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-65-contents" aria-controls="callout-65" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-73-contents" aria-controls="callout-73" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3470,7 +3632,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-65" class="callout-65-contents callout-collapse collapse">
+<div id="callout-73" class="callout-73-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/merge">merge</a> from <strong>base</strong> R combines two data frames by matching rows based on specified columns. In this code, <code>csv</code> and <code>found</code> are merged using <code>postal_code</code> from <code>csv</code> and <code>results.POSTAL</code> from <code>found</code>, with the <code>all = TRUE</code> option to include all rows from both data frames.</li>
@@ -3516,7 +3678,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-66-contents" aria-controls="callout-66" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-74-contents" aria-controls="callout-74" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3525,7 +3687,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-66" class="callout-66-contents callout-collapse collapse">
+<div id="callout-74" class="callout-74-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a> from <strong>dplyr</strong> package changes the names of specific columns in a data frame for clarity. Here, it renames columns in <code>schools</code> to <code>latitude</code> and <code>longitude</code>.</li>
@@ -3547,9 +3709,10 @@ Functions
 </section>
 <section id="data-wrangling" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Data Wrangling</h1>
-<p>The following section will do various data wrangling from creating the hexagon layer, combining the data, duplicate checking, constructing Origin-Destination matrix, creating distance variable, and removing intra-zonal flows.</p>
-<section id="create-hexagon-layer" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="create-hexagon-layer"><span class="header-section-number">3.1</span> Create Hexagon Layer</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-17-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-1" role="tab" aria-controls="tabset-17-1" aria-selected="true">Create Hexagon Layer</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-2" role="tab" aria-controls="tabset-17-2" aria-selected="false">Combine Bus Stop and Hexagon</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-3" role="tab" aria-controls="tabset-17-3" aria-selected="false">Combine Trips and Hexagon</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-4" role="tab" aria-controls="tabset-17-4" aria-selected="false">Final Duplicate Checking</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-5" role="tab" aria-controls="tabset-17-5" aria-selected="false">Construct O-D Matrix</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-6" role="tab" aria-controls="tabset-17-6" aria-selected="false">Create Distance Variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-7" role="tab" aria-controls="tabset-17-7" aria-selected="false">Remove Intra-Zonal Flows</a></li></ul>
+<div class="tab-content">
+<div id="tabset-17-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-17-1-tab">
 <p>In this part, the following code will create honeycomb grid with hexagons with a distance of 375m from the center to the midpoint of the edge as the traffic analysis zone (TAZ). These hexagons will be the zones for the analysis. Simultaneously, the code will also intersect the grid with the bus stop data, and filter out grid that does not have any bus stop.</p>
 <div class="cell">
 <details>
@@ -3582,7 +3745,7 @@ $ num_bus_stops &lt;int&gt; 1, 1, 2, 1, 4, 1, 1, 1, 4, 2, 1, 3, 2, 5, 2, 1, 1, 5
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-67-contents" aria-controls="callout-67" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-75-contents" aria-controls="callout-75" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3591,7 +3754,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-67" class="callout-67-contents callout-collapse collapse">
+<div id="callout-75" class="callout-75-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">st_make_grid</a> from <strong>sf</strong> package creates a grid over a spatial object (<code>busstop</code>). Here, it generates a hexagonal grid with a specified cell size, forming polygons instead of squares.</li>
@@ -3626,7 +3789,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-68-contents" aria-controls="callout-68" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-76-contents" aria-controls="callout-76" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3635,7 +3798,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-68" class="callout-68-contents callout-collapse collapse">
+<div id="callout-76" class="callout-76-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">st_make_grid</a> from <strong>sf</strong> package is used to create a grid over a spatial object (<code>busstop</code>). Here, it generates a hexagonal grid with a specified cell size.</li>
@@ -3649,9 +3812,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="combine-bus-stop-and-hexagon" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="combine-bus-stop-and-hexagon"><span class="header-section-number">3.2</span> Combine Bus Stop and Hexagon</h2>
+</div>
+<div id="tabset-17-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-2-tab">
 <p>In this step, the following code will join the bus stop and hexagon data, and filter out only the required columns for following sections.</p>
 <div class="cell">
 <details>
@@ -3680,7 +3842,7 @@ $ geometry   &lt;POINT [m]&gt; POINT (13576.31 32883.65), POINT (13228.59 44206.
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-69-contents" aria-controls="callout-69" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-77-contents" aria-controls="callout-77" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3689,7 +3851,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-69" class="callout-69-contents callout-collapse collapse">
+<div id="callout-77" class="callout-77-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a> from <strong>sf</strong> package performs a spatial join between two spatial objects. In this case, it joins <code>busstop</code> with <code>hexagons_with_bus_stops</code>. The <code>join = st_within</code> argument specifies that bus stops are joined with hexagons in which they are located.</li>
@@ -3700,9 +3862,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="combine-trips-and-hexagon" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="combine-trips-and-hexagon"><span class="header-section-number">3.3</span> Combine Trips and Hexagon</h2>
+</div>
+<div id="tabset-17-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-3-tab">
 <p>now, we will finally join the passenger trip data with the hex and bus stop data. considering that the data have origin and destination bus stop, we will also have hex for both.</p>
 <div class="cell">
 <details>
@@ -3745,7 +3906,7 @@ $ destination_hex     &lt;fct&gt; 1496, 1496, 1538, 1538, 1559, 1559, 1539, 1581
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-70-contents" aria-controls="callout-70" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-78-contents" aria-controls="callout-78" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3754,7 +3915,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-70" class="callout-70-contents callout-collapse collapse">
+<div id="callout-78" class="callout-78-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://dplyr.tidyverse.org/reference/join.html">left_join</a> from <strong>dplyr</strong> package merges two data frames by matching values in specified columns. Here, it’s used twice to merge <code>busstop_with_hex_info</code> with <code>odb10</code>, first for origin and then for destination bus stops, based on matching bus stop codes.</li>
@@ -3767,9 +3928,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="final-duplicate-checking" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="final-duplicate-checking"><span class="header-section-number">3.4</span> Final Duplicate Checking</h2>
+</div>
+<div id="tabset-17-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-4-tab">
 <p>Before going into the next step, the following code will firstly make sure that there are no duplicates in the dataset.</p>
 <div class="cell">
 <details>
@@ -3780,9 +3940,28 @@ Functions
 <pre><code>[1] "no duplicates detected"</code></pre>
 </div>
 </div>
-</section>
-<section id="construct-o-d-matrix" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="construct-o-d-matrix"><span class="header-section-number">3.5</span> Construct O-D Matrix</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-79-contents" aria-controls="callout-79" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-79" class="callout-79-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a> from <strong>dplyr</strong> package calculates the number of unique values in a vector. Here, it’s used to count the unique values in the entire <code>odb_hex</code> data frame.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow">nrow</a> from <strong>base</strong> R returns the number of rows in a data frame. Here, it’s used to get the total number of rows in <code>odb_hex</code>.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a> from <strong>dplyr</strong> package performs a vectorized conditional operation. In this code, it checks if the number of unique values in <code>odb_hex</code> equals the total number of rows. If they are equal, it returns “no duplicates detected”; otherwise, it returns “possible duplicates detected”.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-17-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-5-tab">
 <p>Next, using the following code, we will build the O-D matrix which represent various which aggregate the trips on a one on one origin vs destination basis.</p>
 <div class="cell">
 <details>
@@ -3810,7 +3989,7 @@ $ trips           &lt;dbl&gt; 1091, 766, 230, 311, 32, 63, 153, 77, 29, 127, 218
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-71-contents" aria-controls="callout-71" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-80-contents" aria-controls="callout-80" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3819,7 +3998,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-71" class="callout-71-contents callout-collapse collapse">
+<div id="callout-80" class="callout-80-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/complete.cases">complete.cases</a> from <strong>base</strong> R finds rows with no missing values (<code>NA</code>). Here, it’s used to filter <code>odb_hex</code> and remove rows with missing data.</li>
@@ -3831,9 +4010,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="create-distance-variable" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="create-distance-variable"><span class="header-section-number">3.6</span> Create Distance Variable</h2>
+</div>
+<div id="tabset-17-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-6-tab">
 <p>After getting the origin-destination matrix, we need to calculate the distance between each origin and destination pair which will be used later for creating desire lines. The following code chunk will execute the required steps.</p>
 <div class="cell">
 <details>
@@ -3882,7 +4060,7 @@ $ distance        &lt;dbl&gt; 337.7979, 1089.6612, 1816.6628, 1553.0464, 2308.28
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-72-contents" aria-controls="callout-72" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-81-contents" aria-controls="callout-81" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3891,7 +4069,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-72" class="callout-72-contents callout-collapse collapse">
+<div id="callout-81" class="callout-81-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/as">as</a> from <strong>base</strong> R converts an object from one class to another, here converting <code>busstop_with_hex_info</code> to a Spatial object (<code>Spatial</code>).</li>
@@ -3907,9 +4085,8 @@ Functions
 </div>
 </div>
 </div>
-</section>
-<section id="remove-intra-zonal-flows" class="level2" data-number="3.7">
-<h2 data-number="3.7" class="anchored" data-anchor-id="remove-intra-zonal-flows"><span class="header-section-number">3.7</span> Remove Intra-Zonal Flows</h2>
+</div>
+<div id="tabset-17-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-7-tab">
 <p>This analysis is focused on the traffic between zones. Therefore the following code chunk will remove intra-zonal flows.</p>
 <div class="cell">
 <details>
@@ -3929,8 +4106,29 @@ $ trips           &lt;dbl&gt; 1091, 766, 230, 311, 32, 63, 153, 77, 29, 127, 218
 $ distance        &lt;dbl&gt; 337.7979, 1089.6612, 1816.6628, 1553.0464, 2308.2822, …</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-82-contents" aria-controls="callout-82" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-82" class="callout-82-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a> from <strong>dplyr</strong> package is used to retain rows in a data frame based on a specified condition. In this code, it filters the <code>odb_flow</code> data frame to keep only the rows where <code>origin_hex</code> and <code>destination_hex</code> are different.</li>
+<li>The <code>as.character</code> function from <strong>base</strong> R is used to ensure that the comparison between <code>origin_hex</code> and <code>destination_hex</code> is done as character strings, likely because these columns are factors or some other class.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a quick overview of the data frame’s structure, including column types and the first few entries in each column.</li>
+<li>This code snippet modifies the <code>odb_flow</code> data frame to exclude rows where the origin and destination hexagons are the same, then provides an overview of the resulting data.</li>
+</ul>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled" title="Why intra-zonal flows is removed?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-73-contents" aria-controls="callout-73" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-83-contents" aria-controls="callout-83" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3939,7 +4137,7 @@ Why intra-zonal flows is removed?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-73" class="callout-73-contents callout-collapse collapse">
+<div id="callout-83" class="callout-83-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The exclusion of intra-zonal flows from the Spatial Interaction Model calibration process is driven by the desire to focus on modeling and understanding interactions between different zones, without interference from flows within the same zone.</p>
 <p>Intra-zonal flows, representing movements within a single zone, may not contribute significantly to the overall spatial interaction patterns that the model aims to capture. By removing intra-zonal flows, the analysis can concentrate on the dynamics and factors influencing interactions between distinct zones, providing a clearer and more interpretable representation of spatial relationships.</p>
@@ -3947,7 +4145,9 @@ Why intra-zonal flows is removed?
 </div>
 </div>
 </div>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="visualize-the-desire-lines" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Visualize the Desire Lines</h1>
@@ -3977,6 +4177,25 @@ $ distance        &lt;dbl&gt; 337.7979, 1089.6612, 1816.6628, 1553.0464, 2308.28
 $ geometry        &lt;LINESTRING [m]&gt; LINESTRING (29845.12 31028...., LINESTRING …</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-84-contents" aria-controls="callout-84" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-84" class="callout-84-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><code>od2line</code> is function from [od](https://itsleeds.github.io/od/#:~:text=The%20od2line()%20function%2C%20for,movement%20between%20origins%20and%20destinations%3A&amp;text=%23%3E%202%20LINESTRING%20(%2D1.518911%2053.79…) used for converting origin-destination data (<code>odb_flow</code>) into spatial lines. It takes flow data and corresponding spatial zones (<code>hexagons_with_bus_stops</code>), and uses a zone identifier (<code>zone_code</code> set as ‘hexagon_id’) to create spatial lines representing the flow between origins and destinations.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.</li>
+</ul>
+</div>
+</div>
+</div>
 <section id="rd-quantile-trips-175" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="rd-quantile-trips-175"><span class="header-section-number">4.1</span> 3rd Quantile Trips (175)</h2>
 <p>Considering the volume of the flowline, we will try to focus on the most important part of the flows. Firstly, we will try to filter on the 3rd Quantile. To do that, the following code will get the quantile of the trips.</p>
@@ -3988,6 +4207,26 @@ $ geometry        &lt;LINESTRING [m]&gt; LINESTRING (29845.12 31028...., LINESTR
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     1.0     7.0    38.0   375.7   175.0 97602.0 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-85-contents" aria-controls="callout-85" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-85" class="callout-85-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary">summary</a> from <strong>base</strong> R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the <code>trips</code> column in the <code>flowline</code> data frame.</li>
+<li>This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the <code>trips</code> column.</li>
+<li>This code snippet is useful for getting a quick statistical overview of the <code>trips</code> data, such as understanding its distribution, central tendency, and spread.</li>
+</ul>
+</div>
 </div>
 </div>
 <p>We can see that the 3rd quantile is at 175 trips. The number will be used to plot the desire lines on the following code.</p>
@@ -4015,7 +4254,7 @@ $ geometry        &lt;LINESTRING [m]&gt; LINESTRING (29845.12 31028...., LINESTR
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-74-contents" aria-controls="callout-74" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-86-contents" aria-controls="callout-86" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4024,7 +4263,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-74" class="callout-74-contents callout-collapse collapse">
+<div id="callout-86" class="callout-86-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tmap_mode">tmap_mode</a> and <a href="https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tmap_options">tmap_options</a> from <strong>tmap</strong> package are used to set up the mode and options for thematic maps.</li>
@@ -4079,6 +4318,27 @@ Functions
  1766.00  2335.44  3384.32  6082.16 97602.00 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-87-contents" aria-controls="callout-87" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-87" class="callout-87-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile">quantile</a> from <strong>stats</strong> package in base R computes sample quantiles for a given set of data. In this code, it’s used to calculate quantiles for the <code>trips</code> column in the <code>flowline</code> data frame.</li>
+<li><code>probs = seq(0, 1, 0.01)</code> specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).</li>
+<li><code>na.rm = TRUE</code> indicates that NA (missing) values should be removed before the calculation.</li>
+<li>This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the <code>trips</code> data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>We can see that distinguishable increase can be seen on the 99th percentile at 6082 trips. The number will be used to plot the desire lines on the following code.</p>
 <div class="cell">
 <details>
@@ -4104,7 +4364,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-75-contents" aria-controls="callout-75" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-88-contents" aria-controls="callout-88" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4113,7 +4373,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-75" class="callout-75-contents callout-collapse collapse">
+<div id="callout-88" class="callout-88-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode">tmap_mode</a> from <strong>tmap</strong> package sets the mode for creating maps. Here, the mode is set to <code>'plot'</code> for static map rendering.</li>
@@ -4147,6 +4407,47 @@ Functions
    36.87  2975.46  5478.89  6347.13  8923.04 25292.04 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-89-contents" aria-controls="callout-89" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-89" class="callout-89-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile">quantile</a> from <strong>stats</strong> package in base R computes sample quantiles for a given set of data. In this code, it’s used to calculate quantiles for the <code>distance</code> column in the <code>flowline</code> data frame.</li>
+<li><code>probs = seq(0, 1, 0.01)</code> specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).</li>
+<li><code>na.rm = TRUE</code> indicates that NA (missing) values should be removed before the calculation.</li>
+<li>This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the <code>distance</code> data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-90-contents" aria-controls="callout-90" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-90" class="callout-90-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary">summary</a> from <strong>base</strong> R provides a concise summary of a vector, list, data frame, or other R objects. In this code, it is used to produce a summary of the <code>distance</code> column in the <code>flowline</code> data frame.</li>
+<li>This summary typically includes the minimum, maximum, median, first quartile, third quartile, and mean of the numeric data in the <code>distance</code> column.</li>
+<li>This code snippet is useful for getting a quick statistical overview of the <code>distance</code> data, such as understanding its distribution, central tendency, and spread.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>We can see that the 3rd quantile is at 8923 distant. The number will be used to plot the desire lines on the following code.</p>
 <div class="cell">
 <details>
@@ -4173,7 +4474,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-76-contents" aria-controls="callout-76" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-91-contents" aria-controls="callout-91" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4182,7 +4483,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-76" class="callout-76-contents callout-collapse collapse">
+<div id="callout-91" class="callout-91-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/3.3-2/topics/tmap_mode">tmap_mode</a> from <strong>tmap</strong> package sets the mode for creating thematic maps. In this code, it’s set to ‘plot’ to produce static maps.</li>
@@ -4244,6 +4545,27 @@ Functions
 15194.10259 15983.84859 17018.69635 18587.39427 25292.03624 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-92-contents" aria-controls="callout-92" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-92" class="callout-92-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile">quantile</a> from <strong>stats</strong> package in base R computes sample quantiles for a given set of data. In this code, it’s used to calculate quantiles for the <code>distance</code> column in the <code>flowline</code> data frame.</li>
+<li><code>probs = seq(0, 1, 0.01)</code> specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).</li>
+<li><code>na.rm = TRUE</code> indicates that NA (missing) values should be removed before the calculation.</li>
+<li>This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the <code>distance</code> data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>Following the previous filter, we also use 99th percentile at 18587 distance for the following plot.</p>
 <div class="cell">
 <details>
@@ -4269,7 +4591,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-77-contents" aria-controls="callout-77" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-93-contents" aria-controls="callout-93" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4278,7 +4600,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-77" class="callout-77-contents callout-collapse collapse">
+<div id="callout-93" class="callout-93-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tmap_mode">tmap_mode</a> from <strong>tmap</strong> package sets the mode for creating maps. Here, the mode is set to <code>'plot'</code> for static map rendering.</li>
@@ -4310,6 +4632,27 @@ Functions
     1     2     5    11    21    38    67   125   254   661 97602 </code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-94-contents" aria-controls="callout-94" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-94" class="callout-94-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile">quantile</a> from <strong>stats</strong> package in base R computes sample quantiles for a given set of data. In this code, it’s used to calculate quantiles for the <code>distance</code> column in the <code>flowline</code> data frame.</li>
+<li><code>probs = seq(0, 1, 0.01)</code> specifies the probabilities for which quantiles should be calculated, creating a sequence from 0 to 1 in increments of 0.01 (i.e., percentiles).</li>
+<li><code>na.rm = TRUE</code> indicates that NA (missing) values should be removed before the calculation.</li>
+<li>This code snippet produces a detailed set of percentiles (from 0th to 100th, at every 1%) for the <code>distance</code> data, useful for understanding its distribution in greater detail, including identifying any potential outliers or patterns in the data spread.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>Next, we define the breaks and plot the chart that will show the spread of trips across decile of cutoff (with an additional arbitrary cutoff on high increase in trip volume). Then, the following code will also assign the cutoff as a column in the flowline dataframe.</p>
 <div class="cell">
 <details>
@@ -4338,6 +4681,27 @@ $ geometry        &lt;LINESTRING [m]&gt; LINESTRING (29845.12 31028...., LINESTR
 $ decile          &lt;ord&gt; 661-5000, 661-5000, 125-254, 254-661, 21-38, 38-67, 12…</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-95-contents" aria-controls="callout-95" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-95" class="callout-95-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package is used to add new variables or modify existing ones in a data frame. In this code, it adds a <code>decile</code> column to the <code>flowline</code> data frame.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut">cut</a> from <strong>base</strong> R divides the range of a numeric vector (<code>trips</code> in this case) into intervals and codes the values according to which interval they fall. The <code>breaks</code> parameter defines the interval boundaries, and <code>labels</code> provides labels for these intervals. <code>ordered_result = TRUE</code> makes the result an ordered factor.</li>
+<li>This code snippet categorizes the <code>trips</code> data into deciles based on specified break points and labels each interval accordingly.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a quick overview of the data frame’s structure, including column types and the first few entries in each column.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>Based on the new ordinal column of decile group, we can plot the following map chart that shows the spread of trips volume.</p>
 <div class="cell">
 <details>
@@ -4357,7 +4721,7 @@ $ decile          &lt;ord&gt; 661-5000, 661-5000, 125-254, 254-661, 21-38, 38-67
 </div>
 <p><img src="../images/trips_spread.gif" class="img-fluid"> for the first 8 decile, the trips slightly change but still more dense on central. on the extra category of &gt;5000, north-downtown, west-downtown, north-east, and short trip becomes more visible</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-78-contents" aria-controls="callout-78" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-96-contents" aria-controls="callout-96" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4366,7 +4730,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-78" class="callout-78-contents callout-collapse collapse">
+<div id="callout-96" class="callout-96-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_shape">tm_shape</a> from <strong>tmap</strong> package prepares spatial data for plotting. It’s used for both <code>mpsz</code> and <code>flowline</code> datasets.</li>
@@ -4392,7 +4756,7 @@ Functions
 <h2 data-number="5.1" class="anchored" data-anchor-id="push-factors"><span class="header-section-number">5.1</span> Push Factors</h2>
 <p>For the push factors we choose counts of HDB, station, train exit, and bus stop in the zone. Additionally we also try to estimate proxy population data using the HDB sales data.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="why those variables are chosen?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-79-contents" aria-controls="callout-79" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-97-contents" aria-controls="callout-97" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4401,7 +4765,7 @@ why those variables are chosen?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-79" class="callout-79-contents callout-collapse collapse">
+<div id="callout-97" class="callout-97-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>HDB counts: in a zone serve as a proxy for residential density. Residential areas are likely to generate a substantial number of bus trips, as residents use buses for daily commuting, shopping, and other activities. Higher HDB counts may indicate higher population density and, subsequently, increased demand for bus services.</p>
 <p>Station Count: The count of stations within a zone is crucial, especially if these stations connect to other modes of transportation or are busy hubs. Stations can act as both push and pull factors. Residents in a zone with multiple stations might use buses to access these stations, and conversely, individuals arriving at stations might use buses for the next leg of their journey.</p>
@@ -4456,7 +4820,7 @@ $ push_hdb_sf_count    &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.9
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-80-contents" aria-controls="callout-80" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-98-contents" aria-controls="callout-98" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4465,7 +4829,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-80" class="callout-80-contents callout-collapse collapse">
+<div id="callout-98" class="callout-98-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package is used to add new variables or modify existing ones in a data frame. Here, it creates a <code>capacity</code> column based on a calculation involving various room types.</li>
@@ -4530,7 +4894,7 @@ $ hex_grid             &lt;POLYGON [m]&gt; POLYGON ((3970.122 27348.13..., POLYG
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-81-contents" aria-controls="callout-81" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-99-contents" aria-controls="callout-99" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4539,7 +4903,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-81" class="callout-81-contents callout-collapse collapse">
+<div id="callout-99" class="callout-99-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a> from <strong>dplyr</strong> package is used to add new variables or modify existing ones in a data frame. Here, it creates a <code>capacity</code> column based on a calculation involving various room types.</li>
@@ -4556,7 +4920,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="How does the HDB capacity estimated?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-82-contents" aria-controls="callout-82" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-100-contents" aria-controls="callout-100" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4565,7 +4929,7 @@ How does the HDB capacity estimated?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-82" class="callout-82-contents callout-collapse collapse">
+<div id="callout-100" class="callout-100-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>To enhance our dataset with information from <a href="https://www.hdb.gov.sg/cs/infoweb/homepage">Housing Development Board (HDB)</a> records, it’s essential to recognize that HDB residential blocks are designed to house a varying number of residents. This diversity is due to the different types of flats available, each intended to cater to different family sizes and living arrangements. To accurately gauge the population within each HDB block, we employ a methodology that combines the count of dwelling units with an estimated occupancy rate.</p>
 <p>The occupancy rate is derived based on standard family compositions associated with each flat type as detailed on the HDB’s types of flats page, which outlines the typical configurations offered to residents. Here’s how we estimate the population for each type of flat:</p>
@@ -4587,7 +4951,7 @@ How does the HDB capacity estimated?
 <h2 data-number="5.2" class="anchored" data-anchor-id="pull-factors"><span class="header-section-number">5.2</span> Pull Factors</h2>
 <p>For the pull factors we choose counts of station, train exit, business, entertainment, F&amp;B, leisure &amp; recreation, retails, and schools in the zone. Additionally we also try to estimate proxy population data using the HDB sales data.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="why those variables are chosen?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-83-contents" aria-controls="callout-83" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-101-contents" aria-controls="callout-101" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4596,7 +4960,7 @@ why those variables are chosen?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-83" class="callout-83-contents callout-collapse collapse">
+<div id="callout-101" class="callout-101-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Counts of Stations: Stations act as major transportation nodes, serving as crucial points for commuters to access different modes of transportation. A higher count of stations in a zone suggests greater connectivity and accessibility, attracting more passengers to use buses for their onward journeys.</p>
 <p>Counts of Train Exits: Similar to stations, train exits represent key points of arrival for commuters. The availability of multiple train exits in a zone indicates a higher likelihood of people disembarking from trains and subsequently using buses for the next leg of their journey.</p>
@@ -4660,7 +5024,7 @@ $ pull_schools_sf_count &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-84-contents" aria-controls="callout-84" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-102-contents" aria-controls="callout-102" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4669,7 +5033,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-84" class="callout-84-contents callout-collapse collapse">
+<div id="callout-102" class="callout-102-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>The <code>add_pull_poi_counts</code> function is a custom-defined function. It is used to add new columns to the <code>factors_holder</code> data frame, each representing the count of points of interest (POIs) nearby.</li>
@@ -4728,7 +5092,7 @@ $ pull_schools_sf_count &lt;dbl&gt; 0.99, 1.00, 0.99, 0.99, 0.99, 0.99, 0.99, 0.
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-85-contents" aria-controls="callout-85" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-103-contents" aria-controls="callout-103" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4737,7 +5101,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-85" class="callout-85-contents callout-collapse collapse">
+<div id="callout-103" class="callout-103-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://dplyr.tidyverse.org/reference/join.html">left_join</a> from <strong>dplyr</strong> package merges two data frames based on matching values in specified columns. Here, it’s used twice: first to join <code>odb_flow</code> with <code>push</code> columns from <code>factors_holder</code>, and then to join <code>pull</code> columns to the resulting data frame.</li>
@@ -4757,8 +5121,29 @@ Functions
 <div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(final_df, <span class="st">"../data/rds/final_df_the2.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-104-contents" aria-controls="callout-104" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-104" class="callout-104-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS">write_rds</a> from <strong>base</strong> R saves an R object (in this case, the <code>final_df</code> data frame) to a file in R’s binary RDS format. This format is specific to R and allows for efficient storage of R objects.</li>
+<li>The first argument is the object to be saved (<code>final_df</code>), and the second argument is the file path where the object will be saved (<code>"../data/rds/final_df_the2.rds"</code>).</li>
+<li>The <code>#| eval: false</code> at the beginning of the code is likely an instruction for an R Markdown document or similar tool, indicating that this line of code should not be evaluated when the document is run.</li>
+<li>This code snippet saves the <code>final_df</code> data frame as an RDS file for future use, providing a convenient way to store and later reload the data frame in its current state.</li>
+</ul>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled" title="What &amp; Why RDS Format?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-86-contents" aria-controls="callout-86" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-105-contents" aria-controls="callout-105" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4767,7 +5152,7 @@ What &amp; Why RDS Format?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-86" class="callout-86-contents callout-collapse collapse">
+<div id="callout-105" class="callout-105-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The RDS format in R is a specialized file format used for storing single R objects. It’s a compact binary format that preserves the exact structure of the saved object, including metadata. This format is particularly efficient for saving and loading objects in R, as it ensures that the object is restored exactly as it was when saved, without any need for reformatting or reassembling data.</p>
 <p>Using the RDS format is beneficial because it allows for fast and efficient storage and retrieval of R objects, making it ideal for situations where you need to save an object and reload it later in another session without any loss of information. The functions <code>write_rds</code> and <code>read_rds</code> (or <code>writeRDS</code> and <code>readRDS</code> in base R) are used for saving to and reading from this format, respectively. RDS is especially useful for large datasets or complex objects where preservation of structure is crucial.</p>
@@ -4808,6 +5193,26 @@ $ pull_retails_count    &lt;dbl&gt; 1669.00, 749.00, 235.00, 334.00, 165.00, 30.
 $ pull_schools_sf_count &lt;dbl&gt; 0.99, 1.00, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, …</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Functions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-106-contents" aria-controls="callout-106" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-106" class="callout-106-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS">read_rds</a> from <strong>base</strong> R loads an R object saved in RDS format. In this code, it’s used to read the <code>final_df</code> data frame from a file located at <code>"../data/rds/final_df_the2.rds"</code>.</li>
+<li><a href="https://dplyr.tidyverse.org/reference/glimpse.html">glimpse</a> from <strong>dplyr</strong> package provides a transposed summary of the data frame, offering a quick look at its structure, including the types of columns and the first few entries in each column.</li>
+<li>This code snippet loads <code>final_df</code> from an RDS file and provides an overview of its structure, which is useful for understanding the types and arrangement of data contained in the data frame after it has been reloaded.</li>
+</ul>
+</div>
+</div>
+</div>
 <p>Another thing to note before starting, is that the <code>glm</code> model function that will be used does not have a built in R2 value calculation. Therefore the following code will build a function to calculate the R2.</p>
 <div class="cell">
 <details>
@@ -4820,7 +5225,7 @@ $ pull_schools_sf_count &lt;dbl&gt; 0.99, 1.00, 0.99, 0.99, 0.99, 0.99, 0.99, 0.
 </details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-87-contents" aria-controls="callout-87" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-107-contents" aria-controls="callout-107" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4829,7 +5234,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-87" class="callout-87-contents callout-collapse collapse">
+<div id="callout-107" class="callout-107-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/cor">cor</a> from <strong>stats</strong> R package is used to compute the correlation between <code>observed</code> and <code>estimated</code>. In this code, it’s used to calculate the correlation coefficient <code>r</code>.</li>
@@ -4839,7 +5244,7 @@ Functions
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is GLM?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-88-contents" aria-controls="callout-88" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-108-contents" aria-controls="callout-108" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4848,7 +5253,7 @@ What is GLM?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-88" class="callout-88-contents callout-collapse collapse">
+<div id="callout-108" class="callout-108-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>A Generalized Linear Model (GLM) is a statistical framework used for modeling relationships between a dependent variable and one or more independent variables. Unlike ordinary linear regression, GLM accommodates a broader range of data distributions, making it suitable for situations where the response variable follows a non-normal distribution.</p>
 <p>In R Studio, the <code>glm</code> function is utilized to fit a GLM. It allows you to specify the form of the model, the type of error distribution, and the link function connecting the predictors to the expected value of the response. Commonly used error distributions include Gaussian (for normal data), binomial (for binary data), and Poisson (for count data).</p>
@@ -4881,7 +5286,7 @@ What is GLM?
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-89-contents" aria-controls="callout-89" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-109-contents" aria-controls="callout-109" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4890,7 +5295,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-89" class="callout-89-contents callout-collapse collapse">
+<div id="callout-109" class="callout-109-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/cor">cor</a> from <strong>stats</strong> package in base R computes a correlation matrix. In this code, it’s used to calculate the correlation matrix for selected columns (columns 3 through 18) of <code>final_df</code>.</li>
@@ -4915,10 +5320,8 @@ Functions
 </section>
 <section id="the-4-models-without-elimination" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="the-4-models-without-elimination"><span class="header-section-number">6.2</span> The 4 Models Without Elimination</h2>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-16-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-1" role="tab" aria-controls="tabset-16-1" aria-selected="true">Unconstrained</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-2" role="tab" aria-controls="tabset-16-2" aria-selected="false">Origin Constrained</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-3" role="tab" aria-controls="tabset-16-3" aria-selected="false">Destination Constrained</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-4" role="tab" aria-controls="tabset-16-4" aria-selected="false">Doubly Constrained</a></li></ul>
-<div class="tab-content">
-<div id="tabset-16-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-16-1-tab">
+<section id="unconstrained" class="level3">
+<h3 class="anchored" data-anchor-id="unconstrained">Unconstrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -4993,7 +5396,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-90-contents" aria-controls="callout-90" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-110-contents" aria-controls="callout-110" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5002,7 +5405,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-90" class="callout-90-contents callout-collapse collapse">
+<div id="callout-110" class="callout-110-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> package in base R fits generalized linear models. Here, <code>orcSIM</code> is a Poisson regression model with a log link function, predicting <code>trips</code> based on various <code>pull_*_count</code> variables, <code>log(distance)</code>, and <code>origin_hex</code>. The <code>log</code> function is applied to the count variables and distance, indicating a log-linear relationship.</li>
@@ -5032,8 +5435,9 @@ Functions
 <li><strong>log(distance):</strong> -1.180 (p &lt; 2e-16)</li>
 </ul>
 <p><strong>Model Fit:</strong> The coefficient of determination (R-squared) for the model is 0.188, indicating that approximately 18.8% of the variability in trip counts can be explained by the selected predictor variables. While this suggests a moderate level of explanatory power, it also highlights the existence of unaccounted factors influencing trip counts. The significance of the individual coefficients supports the model’s ability to capture meaningful relationships within the dataset, despite the overall modest R-squared value.</p>
-</div>
-<div id="tabset-16-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-2-tab">
+</section>
+<section id="origin-constrained" class="level3">
+<h3 class="anchored" data-anchor-id="origin-constrained">Origin Constrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -5912,7 +6316,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-91-contents" aria-controls="callout-91" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-111-contents" aria-controls="callout-111" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5921,7 +6325,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-91" class="callout-91-contents callout-collapse collapse">
+<div id="callout-111" class="callout-111-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it’s applied to the <code>trips</code> as the response variable and a set of predictor variables in the <code>final_df</code> data frame.</li>
@@ -5954,8 +6358,9 @@ Functions
 <li>and various other dummy origin variables in which many are statistically significant.</li>
 </ul>
 <p><strong>Model Fit:</strong> The coefficient of determination (R-squared) for the model is 0.283, indicating that approximately 28.3% of the variability in trip counts can be explained by the selected predictor variables. The significance of individual coefficients and the model’s goodness-of-fit metrics, such as the residual deviance and AIC, support its effectiveness in capturing patterns within the dataset. The p-values associated with each coefficient highlight their statistical significance in influencing trip counts.</p>
-</div>
-<div id="tabset-16-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-3-tab">
+</section>
+<section id="destination-constrained" class="level3">
+<h3 class="anchored" data-anchor-id="destination-constrained">Destination Constrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -6852,8 +7257,9 @@ Number of Fisher Scoring iterations: 8</code></pre>
 <li>and various other dummy destination variables in which many are statistically significant.</li>
 </ul>
 <p><strong>Model Fit:</strong> The R-squared value for the model is approximately 0.367, indicating that around 36.7% of the variability in trip counts can be explained by the selected predictor variables. The model’s goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor’s p-value underscores its significance in explaining the observed variation in trip counts.</p>
-</div>
-<div id="tabset-16-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-4-tab">
+</section>
+<section id="doubly-constrained" class="level3">
+<h3 class="anchored" data-anchor-id="doubly-constrained">Doubly Constrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -8529,7 +8935,7 @@ Number of Fisher Scoring iterations: 9</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-92-contents" aria-controls="callout-92" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-112-contents" aria-controls="callout-112" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -8538,7 +8944,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-92" class="callout-92-contents callout-collapse collapse">
+<div id="callout-112" class="callout-112-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> package in base R fits generalized linear models. In this code, <code>docSIM</code> is a Poisson regression model with a log link function. The model predicts <code>trips</code> based on <code>origin_hex</code>, <code>destination_hex</code>, and the logarithm of <code>distance</code>.</li>
@@ -8563,19 +8969,15 @@ Functions
 <li>and various other dummy origin and destination variables in which many are statistically significant.</li>
 </ul>
 <p><strong>Model Fit:</strong> The model’s R-squared value is approximately 0.534, indicating that around 53.4% of the variability in trip counts is explained by the selected predictor variables. The goodness-of-fit metrics, including the residual deviance and AIC, support the model’s effectiveness in capturing patterns within the dataset. The p-values for each predictor underscore their significance in explaining the observed variation in trip counts.</p>
-</div>
-</div>
-</div>
 <div class="notebox lightbulb">
 <p>Note that <code>push_est_pop</code> which represent proxy for population in the origin location counterintuitively have a negative coefficient. Nevertheless,it might simply be a symptomps of <strong>multicollinearity</strong>. As we can see, the <code>push_hdb_sf_count</code> which previously was identified to be highly correlated with <code>push_hdb_sf_count</code>, have positive coefficient. This in a way suggest that <strong>the impact of the two offset each other to some extent, and the net effect most likely be positive</strong>. We can see on the later whether this hunch is correct in the next section, where highly correlated variables are eliminated from the model.</p>
 </div>
 </section>
+</section>
 <section id="the-3-models-with-elimination" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="the-3-models-with-elimination"><span class="header-section-number">6.3</span> The 3 Models With Elimination</h2>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-17-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-1" role="tab" aria-controls="tabset-17-1" aria-selected="true">Unconstrained</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-2" role="tab" aria-controls="tabset-17-2" aria-selected="false">Origin Constrained</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-3" role="tab" aria-controls="tabset-17-3" aria-selected="false">Destination Constrained</a></li></ul>
-<div class="tab-content">
-<div id="tabset-17-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-17-1-tab">
+<section id="unconstrained-1" class="level3">
+<h3 class="anchored" data-anchor-id="unconstrained-1">Unconstrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -8642,7 +9044,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-93-contents" aria-controls="callout-93" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-113-contents" aria-controls="callout-113" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -8651,7 +9053,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-93" class="callout-93-contents callout-collapse collapse">
+<div id="callout-113" class="callout-113-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it’s applied to the <code>trips</code> as the response variable and a set of predictor variables in the <code>final_df</code> data frame.</li>
@@ -8678,8 +9080,9 @@ Functions
 <li><strong>log(distance):</strong> -1.169 (p &lt; 2e-16)</li>
 </ul>
 <p><strong>Model Fit:</strong> The R-squared value for the model is approximately 0.131, suggesting that the selected predictor variables collectively explain around 13.1% of the variability in trip counts. The goodness-of-fit metrics, including the residual deviance and AIC, demonstrate the model’s efficacy in capturing patterns within the data. Notably, all predictor variables exhibit highly significant p-values, emphasizing their importance in explaining the observed variation in trip counts.</p>
-</div>
-<div id="tabset-17-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-2-tab">
+</section>
+<section id="origin-constrained-1" class="level3">
+<h3 class="anchored" data-anchor-id="origin-constrained-1">Origin Constrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -9553,7 +9956,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-94-contents" aria-controls="callout-94" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-114-contents" aria-controls="callout-114" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -9562,7 +9965,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-94" class="callout-94-contents callout-collapse collapse">
+<div id="callout-114" class="callout-114-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it’s applied to the <code>trips</code> as the response variable and a set of predictor variables in the <code>final_df</code> data frame.</li>
@@ -9594,8 +9997,9 @@ Functions
 <li>and various other dummy origin variables in which many are statistically significant.</li>
 </ul>
 <p><strong>Model Fit:</strong> The R-squared value for the model is approximately 0.250, indicating that around 25% of the variability in trip counts can be explained by the selected predictor variables. The model’s goodness-of-fit metrics, including the residual deviance and AIC, support its efficacy in capturing patterns within the dataset. Each predictor’s p-value underscores its significance in explaining the observed variation in trip counts. The non-significant p-value like <strong>origin_hex1013</strong> suggests that this variable may not be a strong predictor of trip counts in this context.</p>
-</div>
-<div id="tabset-17-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-3-tab">
+</section>
+<section id="destination-constrained-1" class="level3">
+<h3 class="anchored" data-anchor-id="destination-constrained-1">Destination Constrained</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -10464,7 +10868,7 @@ Number of Fisher Scoring iterations: 8</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-95-contents" aria-controls="callout-95" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-115-contents" aria-controls="callout-115" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10473,7 +10877,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-95" class="callout-95-contents callout-collapse collapse">
+<div id="callout-115" class="callout-115-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm">glm</a> from <strong>stats</strong> R package is used to fit generalized linear models, specified by giving a symbolic description of the linear predictor and a description of the error distribution. In this code, it’s applied to the <code>trips</code> as the response variable and a set of predictor variables in the <code>final_df</code> data frame.</li>
@@ -10505,9 +10909,7 @@ Functions
 <li>and various other dummy destination variables in which many are statistically significant.</li>
 </ul>
 <p><strong>Model Fit:</strong> The model’s R-squared value is approximately 0.346, indicating that around 34.6% of the variability in trip counts can be explained by the selected predictor variables. The goodness-of-fit metrics, such as the residual deviance and AIC, support the model’s effectiveness in capturing patterns within the dataset. All predictor variables demonstrate statistical significance, emphasizing their roles in explaining the observed variation in trip counts.</p>
-</div>
-</div>
-</div>
+</section>
 </section>
 <section id="compare-the-result" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="compare-the-result"><span class="header-section-number">6.4</span> Compare The Result</h2>
@@ -10544,7 +10946,7 @@ Doubly_Constrained                       |   glm | 2.8e+07 (&gt;.999) | 2.8e+07 
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-96-contents" aria-controls="callout-96" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-116-contents" aria-controls="callout-116" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10553,7 +10955,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-96" class="callout-96-contents callout-collapse collapse">
+<div id="callout-116" class="callout-116-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>The <code>list</code> function from <strong>base</strong> R is used to create a list named <code>model_list</code> that contains seven elements. Each element is a model simulation, and they are named as follows: ‘Unconstrained’, ‘Unconstrained_with_Elimination’, ‘Origin_Constrained’, ‘Origin_Constrained_with_Elimination’, ‘Destination_Constrained’, ‘Destination_Constrained_with_Elimination’, and ‘Doubly_Constrained’. The values of these elements are the corresponding model simulations (<code>uncSIM</code>, <code>uncSIM2</code>, <code>orcSIM</code>, <code>orcSIM2</code>, <code>decSIM</code>, <code>decSIM2</code>, <code>docSIM</code>).</li>
@@ -10566,7 +10968,7 @@ Functions
 <p>The Destination Constrained models follow, displaying improved performance over the Unconstrained models, as indicated by their lower AIC, BIC, and RMSE values. The addition of variable elimination to the Origin and Destination Constrained models shows slight increases in AIC and BIC values with corresponding minor increases in RMSE, which suggests that while the elimination process simplifies the models, it does so at the cost of some predictive performance.</p>
 <p>Note that these results are inline with what the R2 suggested in previous finding.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="What is AIC?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-97-contents" aria-controls="callout-97" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-117-contents" aria-controls="callout-117" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10575,14 +10977,14 @@ What is AIC?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-97" class="callout-97-contents callout-collapse collapse">
+<div id="callout-117" class="callout-117-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <strong>Akaike Information Criterion (AIC)</strong> is a measure of the relative quality of a statistical model for a given set of data. It provides a means for model selection by comparing models and choosing the one that minimizes information loss.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is AIC Weights?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-98-contents" aria-controls="callout-98" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-118-contents" aria-controls="callout-118" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10591,14 +10993,14 @@ What is AIC Weights?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-98" class="callout-98-contents callout-collapse collapse">
+<div id="callout-118" class="callout-118-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>These weights are derived from the AIC values of each model and are used to compare each model’s likelihood of being the best model among the set of models being considered. A lower AIC value indicates a better model fit, and the corresponding weight represents the model’s probability relative to the others. A weight close to 1 suggests a high likelihood that it is the best model, while a weight close to 0 suggests a lower likelihood.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is BIC?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-99-contents" aria-controls="callout-99" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-119-contents" aria-controls="callout-119" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10607,14 +11009,14 @@ What is BIC?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-99" class="callout-99-contents callout-collapse collapse">
+<div id="callout-119" class="callout-119-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <strong>Bayesian Information Criterion (BIC)</strong> is similar to AIC, but it introduces a penalty term for the number of parameters in the model to discourage overfitting.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is BIC Weights?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-100-contents" aria-controls="callout-100" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-120-contents" aria-controls="callout-120" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10623,14 +11025,14 @@ What is BIC Weights?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-100" class="callout-100-contents callout-collapse collapse">
+<div id="callout-120" class="callout-120-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Similar to AIC weights, BIC weights are calculated from the BIC values, which include a penalty for the number of parameters in the model to avoid overfitting. The BIC is more stringent than the AIC, especially as the sample size increases. As with AIC, a BIC weight close to 1 indicates a stronger model relative to the others in terms of both fit and parsimony.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is RMSE?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-101-contents" aria-controls="callout-101" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-121-contents" aria-controls="callout-121" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10639,7 +11041,7 @@ What is RMSE?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-101" class="callout-101-contents callout-collapse collapse">
+<div id="callout-121" class="callout-121-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <strong>Root Mean Square Error (RMSE)</strong> is a frequently used measure of the differences between values predicted by a model and the values observed. It represents the square root of the second sample moment of the differences between predicted values and observed values or the quadratic mean of these differences.</p>
 </div>
@@ -10713,7 +11115,7 @@ What is RMSE?
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Functions">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-102-contents" aria-controls="callout-102" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-122-contents" aria-controls="callout-122" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10722,7 +11124,7 @@ Functions
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-102" class="callout-102-contents callout-collapse collapse">
+<div id="callout-122" class="callout-122-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>The <code>round_and_rename</code> function is a user-defined function that takes two arguments: <code>sim_data</code> and <code>sim_name</code>. It rounds the fitted values in <code>sim_data</code> to 0 decimal places, converts them to a data frame, and renames the column using <code>sim_name</code>. The new column name is the concatenation of <code>sim_name</code> and “_trips”.</li>
@@ -10764,7 +11166,7 @@ Functions
 <li><p>Lastly, future project can also consider to use <strong><em>Spatial Econometric Interaction Models</em></strong> where factors can be given spatial weight. This might in turn be better to represent the characteristic of various geospatial conditions.</p></li>
 </ul>
 <div class="callout callout-style-default callout-note callout-titled" title="What is Spurious Regression?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-103-contents" aria-controls="callout-103" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-123-contents" aria-controls="callout-123" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10773,14 +11175,14 @@ What is Spurious Regression?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-103" class="callout-103-contents callout-collapse collapse">
+<div id="callout-123" class="callout-123-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Spurious regression occurs when two unrelated variables show a strong statistical relationship in a regression analysis, even though there is no true cause-and-effect connection between them. In other words, the apparent relationship is misleading and arises by chance. This phenomenon can mislead researchers into thinking they have discovered a meaningful connection when, in fact, there is none. It’s a cautionary concept, reminding us to carefully consider the theoretical basis and real-world relevance of variables before concluding that they are genuinely related based solely on statistical results.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="What is Spatial Econometric Interaction Model (SIEM)?">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-104-contents" aria-controls="callout-104" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-124-contents" aria-controls="callout-124" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -10789,7 +11191,7 @@ What is Spatial Econometric Interaction Model (SIEM)?
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-104" class="callout-104-contents callout-collapse collapse">
+<div id="callout-124" class="callout-124-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>A Spatial Econometric Interaction Model is a statistical tool used to analyze how the interactions between different locations or units influence economic phenomena. In simpler terms, it helps us understand how economic variables in one area can affect or be affected by variables in neighboring areas. This model accounts for spatial dependencies, recognizing that nearby locations may share similarities or influence each other.</p>
 <p>Imagine you want to study housing prices in different neighborhoods. A Spatial Econometric Interaction Model would not only consider local factors like the number of bedrooms and neighborhood amenities but also account for how prices in one neighborhood might be influenced by prices in nearby neighborhoods. It helps capture the idea that economic conditions in one area can spill over and impact neighboring areas, providing a more realistic and accurate analysis of regional economic relationships.</p>
